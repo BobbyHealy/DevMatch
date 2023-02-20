@@ -1,4 +1,4 @@
-export default function Example() {
+export default function Login() {
   return (
     <div>
       <div className='flex min-h-full flex-col bg-white justify-center py-12 sm:px-6 lg:px-8'>
@@ -15,7 +15,7 @@ export default function Example() {
           <p className='mt-2 text-center text-sm text-gray-600'>
             Or{" "}
             <a
-              href='#'
+              href='/account/signup'
               className='font-medium text-indigo-600 hover:text-indigo-500'
             >
               create an account
