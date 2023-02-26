@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Input from "../../components/Input";
+// import {Routes, Route, useNavigate} from 'react-router-dom';
 
 
 
@@ -10,6 +11,7 @@ const INITIAL_STATE = {
 
 
 function updateProfile() {
+    // const navigate = useNavigate();
     const [user, setUser] = useState(INITIAL_STATE);
     {/*ToDO: fetch user */};
   
@@ -22,6 +24,10 @@ function updateProfile() {
       e.preventDefault();  
       {/*update database */}
     };
+    const routeChange = () =>{ 
+        let path = `/account/profile`; 
+        navigate(path);
+      }
 
   return (
     <div className="relative">
