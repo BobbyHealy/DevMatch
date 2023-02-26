@@ -4,6 +4,7 @@
 
 import React, { Component, useState} from "react";
 import { InputText } from 'primereact/inputtext';
+
 function profile(){
 
 
@@ -52,26 +53,31 @@ function profile(){
               />
           </div>
         </div>
-        <a
+
+        <div className='mt-8 sm:mx-auto sm:w-full sm:max-w-md scroll-smooth'>
+          <div className='bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10'>
+                    <a
               href='/account/updateProfile'
-              className='font-medium text-indigo-600 hover:text-indigo-500'
+              className='font-medium text-left text-indigo-600 text-'
             >
               edit
             </a>
-        <div className="username text-center p-4">
-        <label htmlFor="" className="mt-3 font-sembold text-5xl">{userName}</label>
-        </div>
-        <div className="text-center p-4">
-          <div>ID: {userID}</div>
-          <div>Email: {email}</div>
-          <div>Year: {year}</div>
-          <div>
-            <div className="font-bold">Skills</div>
-            <div>{skillList}</div>
-          </div>
-          <div>
-            <div className="font-bold">Projects</div>
-            <div>{projectList}</div>
+            <div className="username text-center p-4">
+            <label htmlFor="" className="mt-3 font-sembold text-5xl">{userName}</label>
+            </div>
+            <div className="text-center p-4">
+              <div>ID: {userID}</div>
+              <div>Email: {email}</div>
+              <div>Year: {year}</div>
+              <div>
+                <div className="font-bold">Skills</div>
+                <div>{skillList}</div>
+              </div>
+              <div>
+                <div className="font-bold">Projects</div>
+                <div>{projectList}</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
