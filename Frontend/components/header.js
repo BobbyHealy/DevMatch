@@ -1,32 +1,28 @@
 import HeaderIcon from "./headerIcon"
+import Image from "next/image"
+import { HiHome } from "react-icons/fa"
 
-function Header() {
+export default function Header() {
     return (
         <div>
             <h1> Header</h1>
 
             {/*TODO: Add LOGO Left side*/}
-            <div>
-                <Image
-                    src=""
-                    width={40}
-                    height={40}
-                    layout="fixed"
-                />
-            </div>
+            <div></div>
 
             {/* Center */}
             <div className="flex-justify-center flex-grow">
                 <div className="flex space-x-6 md:space-x-2">
-                    <HeaderIcon Icon={HomeIcon}/>
-                    <HeaderIcon Icon={UserGroupIcon}/>
-                    <HeaderIcon Icon={SettingsIcon}/>
+                    <HeaderIcon active Icon={HiHome}/>
+
 
                 </div>
             </div>
 
+            {/* Right */}
+            <div className="flex items-center sm:space-x-2 justify-end">
+                <p className="whitespace-nowrap font-semibold pr-3">Lingjet</p>
+            </div>
         </div>
-    )
+    );
 }
-
-export default Header
