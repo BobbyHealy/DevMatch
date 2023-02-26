@@ -14,6 +14,10 @@ const URL = "https://devmatch-4d490-default-rtdb.firebaseio.com"
 
 const authToken = "token"
 
+/*
+ * This stores the specifications of users
+ * NOTE: Projects are stored by their project ids
+ */
 type user struct {
 	Email         string   `json:"email"`
 	Password      string   `json:"password"`
@@ -23,6 +27,19 @@ type user struct {
 	ProjectJoined []string `json:"pJoined"`
 	Rating        int      `json:"rating"`
 	Skills        []string `json:"skills"`
+}
+
+/*
+ * This stores the specifications of projects
+ * NOTE: owners and members are stored as their user ids
+ */
+type project struct {
+	ProjectID    string   `json:"pid"`
+	OwnersID     []string `json:"owners"`
+	ProjectName  string   `json:"name"`
+	MembersID    []string `json:"members"`
+	NeededSkills []string `json:"skills"`
+	//TaskBoard     Scrumboard `json: "board"`
 }
 
 // albums slice to seed record album data.
