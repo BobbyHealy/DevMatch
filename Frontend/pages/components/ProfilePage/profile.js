@@ -3,21 +3,25 @@
 
 
 import React, { Component, useState} from "react";
-import SkillList from "../SkillList/SkillList";
 import { InputText } from 'primereact/inputtext';
-function ProfilePage(){
+function profile(){
 
-  const [skills, setSkills] = useState(['TestSkill'])
+
+  const [skills, setSkills] = useState(['TestSkill','TesSkill2'])
+  const [projects, setProject] = useState(['Project','Project2'])
   const photo =
     "https://media.licdn.com/dms/image/C4D03AQHHZKUrMMhCsQ/profile-displayphoto-shrink_800_800/0/1610704750210?e=2147483647&v=beta&t=OHuErweO0MQ3CeXJlSKkBpu-FOxPQh1sjcuVOQVTZb8";
   const userName = "Auden Huang";
+  const userID = "001"
+  const email = "huan1908@purdue.edu"
   const year = "Senior";
-  const [image, setimage] = useState("")
-
+  // const [image, setimage] = useState("")
+  const skillList = skills.map((skill) => <li>{skill}</li>);
+  const projectList = projects.map((p) => <li>{p}</li>);
   return (
-    <>
+    <div className="">
       <div className="profile_img text-center p-4">
-        <div className="flex flex-column justify-content-center align-items-center">
+        <div className="flex flex-column justify-center items-center">
           <img
           style={{
             width: "200px",
@@ -37,22 +41,34 @@ function ProfilePage(){
           accept="/image/*"
           onChange={(event)=>{
             const file = event.target.files[0];
-            if(file&& file.type.substring(0,5)==="image"){
-              setimage(file)
-            }else
-            {
-              setimage(photo)
-            }
+            setimage(file)
+            // if(file&& file.type.substring(0,5)==="image"){
+            //   setimage(file)
+            // }else
+            // {
+            //   setimage(photo)
+            // }
           }}
           />
          </div>
       <div className="username text-center p-4">
       <label htmlFor="" className="mt-3 font-sembold text-5xl">{userName}</label>
       </div>
-      <div className="Skills text-center p-4">
-      <SkillList skills = {skills}/>
+      <div className="text-center p-4">
+        <div>ID: {userID}</div>
+        <div>Email: {email}</div>
+        <div>Year: {year}</div>
+        <div>
+          <div className="font-bold">Skills</div>
+          <div>{skillList}</div>
+        </div>
+        <div>
+          <div className="font-bold">Projects</div>
+          <div>{projectList}</div>
+        </div>
       </div>
-    </>
+    </div>
+    //ToDo: add edit profile button and function
   );
 }
 export default ProfilePage
