@@ -4,10 +4,10 @@ import { Inter } from "@next/font/google";
 import styles from "@/styles/Home.module.css";
 import ComponentTest from "./componentTest";
 import Example from "./componentTest";
-import ProfilePage from "./components/ProfilePage/ProfilePage.js"
+import ProfilePage from "./account/profile.js"
 
 // const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
-  return <ProfilePage/>;
+  return<div></div>;
 }
