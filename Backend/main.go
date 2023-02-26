@@ -10,22 +10,23 @@ import (
 	"gopkg.in/zabawaba99/firego.v1"
 )
 
-const URL = "https://somefirebaseapp.firebaseIO.com"
+const URL = "https://devmatch-4d490-default-rtdb.firebaseio.com"
 
 const authToken = "token"
 
 type user struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	UserID   string `json:"userID"`
+	Email         string   `json:"email"`
+	Password      string   `json:"password"`
+	UserID        string   `json:"userID"`
+	Name          string   `json:"name"`
+	ProjectOwned  []string `json:"pOwned"` //This is a slice. Dynamically sized array. (Change to type project later)
+	ProjectJoined []string `json:"pJoined"`
+	Rating        int      `json:"rating"`
+	Skills        []string `json:"skills"`
 }
 
 // albums slice to seed record album data.
-var users = []user{
-	{Email: "test@gmail.com", Password: "1234", UserID: "1"},
-	{Email: "test2@gmail.com", Password: "1234", UserID: "2"},
-	{Email: "test3@gmail.com", Password: "1234", UserID: "3"},
-}
+var users = []user{}
 
 func main() {
 	router := gin.Default()
@@ -33,17 +34,11 @@ func main() {
 	//setValue("test")
 	//updateValue("test")
 	//getValue("test")
-	queryValue("test")
+	//queryValue("test")
 	router.GET("/users", getUsers)
 	router.POST("/addUser", postUsers)
 
 	router.Run("localhost:8080")
-}
-
-// getAlbums responds with the list of all users as JSON.
-func getUsers(c *gin.Context) {
-
-	c.IndentedJSON(http.StatusOK, users)
 }
 
 func pushValue(anything string) {
@@ -102,7 +97,7 @@ func queryValue(anything string) {
 }
 
 func getValue(anything string) {
-	f := firego.New("https://devmatch-4d490-default-rtdb.firebaseio.com/skillList", nil)
+	f := firego.New("https://devmatch-4d490-default-rtdb.firebaseio.com/asdf", nil)
 	var v map[string]interface{}
 	if err := f.Value(&v); err != nil {
 		log.Fatal(err)
@@ -110,8 +105,31 @@ func getValue(anything string) {
 	fmt.Printf("%s\n", v)
 }
 
+/*
+ * Use the key "uid" to get user by user id.
+ */
+func getUsers(c *gin.Context) {
+	uid, exists := c.GetQuery("uid")
+	if !exists {
+		fmt.Println("Request with key")
+		return
+	} else {
+		fmt.Println(uid)
+	}
+	//path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
+	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Users/" + uid
+	f := firego.New(path, nil)
+	var v user
+	if err := f.Value(&v); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%+v\n", v)
+	c.IndentedJSON(http.StatusOK, v)
+}
+
 // postUsers adds a user from JSON received in the request body.
 func postUsers(c *gin.Context) {
+
 	var newUser user
 
 	// Call BindJSON to bind the received JSON to
@@ -119,7 +137,12 @@ func postUsers(c *gin.Context) {
 	if err := c.BindJSON(&newUser); err != nil {
 		return
 	}
-
+	id := newUser.UserID
+	f := firego.New("https://devmatch-4d490-default-rtdb.firebaseio.com/Users/", nil)
+	v := map[string]user{id: newUser}
+	if err := f.Update(v); err != nil {
+		log.Fatal(err)
+	}
 	// Add the new album to the slice.
 	users = append(users, newUser)
 	c.IndentedJSON(http.StatusCreated, newUser)
