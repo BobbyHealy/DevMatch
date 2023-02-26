@@ -20,7 +20,7 @@ function profile(){
   const skillList = skills.map((skill) => <li>{skill}</li>);
   const projectList = projects.map((p) => <li>{p}</li>);
   return (
-    <div class="relative">
+    <div className="relative">
       <div className=" fixed top-0 left-0 right-0 h-full bg-white">
               <div className="profile_img text-center p-4">
           <div className="flex justify-center items-center">
