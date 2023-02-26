@@ -52,7 +52,12 @@ function profile(){
               />
           </div>
         </div>
-
+        <a
+              href='/account/updateProfile'
+              className='font-medium text-indigo-600 hover:text-indigo-500'
+            >
+              edit
+            </a>
         <div className="username text-center p-4">
         <label htmlFor="" className="mt-3 font-sembold text-5xl">{userName}</label>
         </div>
