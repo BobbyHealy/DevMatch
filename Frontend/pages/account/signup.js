@@ -1,4 +1,21 @@
+import { useAuth } from "@/context/AuthContext";
+import { useState } from "react";
+
 export default function SignUp() {
+  const { user, signup } = useAuth();
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+
+    try {
+      await signup(email, password);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div>
       <div className='flex min-h-full flex-col bg-white justify-center py-12 sm:px-6 lg:px-8'>
@@ -25,7 +42,7 @@ export default function SignUp() {
 
         <div className='mt-8 sm:mx-auto sm:w-full sm:max-w-md'>
           <div className='bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10'>
-            <form className='space-y-6' action='#' method='POST'>
+            <form className='space-y-6' onSubmit={handleSignup}>
               <div>
                 <label
                   htmlFor='email'
@@ -40,12 +57,14 @@ export default function SignUp() {
                     type='email'
                     autoComplete='email'
                     required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className='block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm'
                   />
                 </div>
               </div>
 
-              <div>
+              {/* <div>
                 <label
                   htmlFor='email'
                   className='block text-sm font-medium text-gray-700'
@@ -62,7 +81,7 @@ export default function SignUp() {
                     className='block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm'
                   />
                 </div>
-              </div>
+              </div> */}
 
               <div>
                 <label
@@ -78,12 +97,14 @@ export default function SignUp() {
                     type='password'
                     autoComplete='current-password'
                     required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     className='block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm'
                   />
                 </div>
               </div>
 
-              <div>
+              {/* <div>
                 <label
                   htmlFor='password'
                   className='block text-sm font-medium text-gray-700'
@@ -100,7 +121,7 @@ export default function SignUp() {
                     className='block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm'
                   />
                 </div>
-              </div>
+              </div> */}
 
               <div>
                 <button

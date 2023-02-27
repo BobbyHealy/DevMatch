@@ -1,0 +1,45 @@
+{
+  "Users": {
+    "user1": {
+      "email": "test1@gmail.com",
+      "name": "john",
+      "pJoined": [
+        "blank",
+        "proj1"
+      ],
+      "pOwned": [
+        "blank",
+        "proj1"
+      ],
+      "password": "4321",
+      "rating": 100,
+      "skils": [
+        "java",
+        "c"
+      ],
+      "userID": "6"
+    }
+  },
+
+  "skillList": {
+    "c": "",
+    "c++": "",
+    "csharp": "",
+    "css": "",
+    "go": "",
+    "html": "",
+    "java": "",
+    "javascript": "",
+    "kotlin": "",
+    "nodejs": "",
+    "opengl": "",
+    "php": "",
+    "python": "",
+    "react": "",
+    "ruby": "",
+    "rust": "",
+    "sql": "",
+    "swift": "",
+    "typescript": ""
+  }
+}
