@@ -6,6 +6,8 @@ import styles from "@/styles/Home.module.css";
 import ProfilePage from "./account/profile.js"
 import ComponentTest from "../components/componentTest";
 import Example from "../components/componentTest";
+import ProjFeed from "./main_feed/projectFeed";
+import Login from "./account/login";
 import Feed from "./feed";
 import { useAuth } from "@/context/AuthContext";
 import Router from "next/router";
