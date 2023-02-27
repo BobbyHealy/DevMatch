@@ -23,15 +23,15 @@ const project = {
 
 export default function ProjComponent() {
   return (
-    <div className='bg-white'>
+    <div className='bg-grey rounded-lg'>
       <h1>
         <img
-          className='h-18 w-full object-cover lg:h-24'
+          className='h-18 w-full object-cover lg:h-24 rounded-t-lg'
           src={project.banner}
           alt=''
         />
       </h1>
-      <div className="bg-white px-4 py-5 sm:py-6">
+      <div className="bg-white px-4 py-5 sm:py-6 rounded-lg">
         <div className='flex space-x-3'>
             <div className='flex-shrink-0'>
             <img
