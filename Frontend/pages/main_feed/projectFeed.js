@@ -26,7 +26,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Example() {
+export default function ProjectFeed() {
   return (
     <div className='min-h-screen bg-gray-100'>
       <Popover
@@ -218,7 +218,9 @@ export default function Example() {
               {/* Left */}
             </nav>
           </div>
-          <main className='lg:col-span-9 xl:col-span-6'>{/* Middle */}</main>
+          <main className='lg:col-span-9 xl:col-span-6'>{/* Middle */}
+            <ProjComponent></ProjComponent>
+          </main>
           <aside className='hidden xl:col-span-4 xl:block'>
             <div className='sticky top-6 space-y-4'>{/* Right */}</div>
           </aside>
