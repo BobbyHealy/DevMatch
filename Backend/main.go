@@ -42,9 +42,6 @@ type project struct {
 	//TaskBoard     Scrumboard `json: "board"`
 }
 
-// albums slice to seed record album data.
-var users = []user{}
-
 func main() {
 	router := gin.Default()
 	//pushValue("test")
@@ -54,7 +51,8 @@ func main() {
 	//queryValue("test")
 	router.GET("/users", getUsers)
 	router.POST("/addUser", postUsers)
-
+	router.GET("/projects", getProject)
+	router.POST("/addProject", postProject)
 	router.Run("localhost:8080")
 }
 
@@ -114,7 +112,7 @@ func queryValue(anything string) {
 }
 
 func getValue(anything string) {
-	f := firego.New("https://devmatch-4d490-default-rtdb.firebaseio.com/asdf", nil)
+	f := firego.New("https://devmatch-4d490-default-rtdb.firebaseio.com/", nil)
 	var v map[string]interface{}
 	if err := f.Value(&v); err != nil {
 		log.Fatal(err)
@@ -161,6 +159,45 @@ func postUsers(c *gin.Context) {
 		log.Fatal(err)
 	}
 	// Add the new album to the slice.
-	users = append(users, newUser)
 	c.IndentedJSON(http.StatusCreated, newUser)
+}
+
+func postProject(c *gin.Context) {
+
+	var newProj project
+
+	// Call BindJSON to bind the received JSON to
+	// newUser.
+	if err := c.BindJSON(&newProj); err != nil {
+		return
+	}
+	id := newProj.ProjectID
+	f := firego.New("https://devmatch-4d490-default-rtdb.firebaseio.com/Projects/", nil)
+	v := map[string]project{id: newProj}
+	if err := f.Update(v); err != nil {
+		log.Fatal(err)
+	}
+	c.IndentedJSON(http.StatusCreated, newProj)
+}
+
+/*
+ * Use the key "uid" to get user by user id.
+ */
+func getProject(c *gin.Context) {
+	pid, exists := c.GetQuery("pid")
+	if !exists {
+		fmt.Println("Request with key")
+		return
+	} else {
+		fmt.Println(pid)
+	}
+	//path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
+	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Projects/" + pid
+	f := firego.New(path, nil)
+	var v project
+	if err := f.Value(&v); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%+v\n", v)
+	c.IndentedJSON(http.StatusOK, v)
 }
