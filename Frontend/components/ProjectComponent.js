@@ -1,13 +1,6 @@
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { EnvelopeIcon } from "@heroicons/react/20/solid";
-import {
-  CodeBracketIcon,
-  EllipsisVerticalIcon,
-  FlagIcon,
-  StarIcon,
-} from "@heroicons/react/20/solid";
-import { Denk_One } from "@next/font/google";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
