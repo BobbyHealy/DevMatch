@@ -50,6 +50,7 @@ func main() {
 	//getValue("test")
 	//queryValue("test")
 	router.GET("/users", getUsers)
+	router.POST("/updateUser", updateUser)
 	router.POST("/addUser", postUsers)
 	router.GET("/projects", getProject)
 	router.POST("/addProject", postProject)
@@ -203,16 +204,14 @@ func getProject(c *gin.Context) {
 }
 
 func updateUser(c *gin.Context) {
-
 	var updatedUser user
 	if err := c.BindJSON(&updatedUser); err != nil {
 		return
 	}
-	updatedSkills := updatedUser.Skills
-
-	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Users/" + uid + "/skills"
+	uid := updatedUser.UserID
+	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Users/"
 	f := firego.New(path, nil)
-	v := map[string]user{updatedSkills: updatedUser}
+	v := map[string]user{uid: updatedUser}
 	if err := f.Update(v); err != nil {
 		log.Fatal((err))
 	}
