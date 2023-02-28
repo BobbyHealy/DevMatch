@@ -6,7 +6,7 @@ export default function dm() {
   return (
     <div className='fixed top-0 left-0 right-0 h-full bg-orange-100'>
         <div className='flex justify-center h-full content-center '>
-            <div className= "flex border border-white rounded-lg w-9/12 h-4/5 overflow-hidden">
+            <div className= "flex border border-white rounded-lg w-11/12 h-5/6 overflow-hidden">
                
             <Sidebar/>
             
