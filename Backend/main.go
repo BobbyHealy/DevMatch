@@ -201,3 +201,20 @@ func getProject(c *gin.Context) {
 	fmt.Printf("%+v\n", v)
 	c.IndentedJSON(http.StatusOK, v)
 }
+
+func updateUser(c *gin.Context) {
+
+	var updatedUser user
+	if err := c.BindJSON(&updatedUser); err != nil {
+		return
+	}
+	updatedSkills := updatedUser.Skills
+
+	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Users/" + uid + "/skills"
+	f := firego.New(path, nil)
+	v := map[string]user{updatedSkills: updatedUser}
+	if err := f.Update(v); err != nil {
+		log.Fatal((err))
+	}
+	c.IndentedJSON(http.StatusOK, updatedUser)
+}
