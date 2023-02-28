@@ -4,6 +4,7 @@ import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import UserComponent from "@/components/UserComponent";
 import ProjComponent from "@/components/ProjectComponent";
+import Router from "next/router";
 
 const user = {
   name: "Chelsea Hagon",
@@ -18,7 +19,7 @@ const navigation = [
   { name: "Directory", href: "#", current: false },
 ];
 const userNavigation = [
-  { name: "Your Profile", href: "#" },
+  { name: "Your Profile", href: "account/profile" },
   { name: "Settings", href: "#" },
   { name: "Sign out", href: "#" },
 ];
