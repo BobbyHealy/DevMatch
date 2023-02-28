@@ -3,6 +3,7 @@ import { Menu, Popover, Transition } from "@headlessui/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import UserComponent from "@/components/UserComponent";
+import ProjComponent from "@/components/ProjectComponent";
 
 const user = {
   name: "Chelsea Hagon",
@@ -12,7 +13,7 @@ const user = {
 };
 const navigation = [
   { name: "Dashboard", href: "#", current: true },
-  { name: "Calendar", href: "#", current: false },
+  { name: "Calendar", href: "#", current: true },
   { name: "Teams", href: "#", current: false },
   { name: "Directory", href: "#", current: false },
 ];
@@ -44,13 +45,10 @@ export default function Feed() {
               <div className='relative flex justify-between lg:gap-8 xl:grid xl:grid-cols-12'>
                 <div className='flex md:absolute md:inset-y-0 md:left-0 lg:static xl:col-span-2'>
                   <div className='flex flex-shrink-0 items-center'>
-                    <a href='#'>
-                      <img
-                        className='block h-8 w-auto'
-                        src='https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600'
-                        alt='Your Company'
-                      />
-                    </a>
+                    {/* Logo */}
+                    <h2 className='text-3xl font-bold tracking-tight text-orange-400 xl:-ml-24'>
+                      DevMatch
+                    </h2>
                   </div>
                 </div>
                 <div className='min-w-0 flex-1 md:px-8 lg:px-0 xl:col-span-6'>
@@ -218,7 +216,29 @@ export default function Feed() {
               {/* Left */}
             </nav>
           </div>
-          <main className='lg:col-span-9 xl:col-span-6'>{/* Middle */}</main>
+          <main className='lg:col-span-9 xl:col-span-6'>
+            {/* Update this to use API + map to generate a bunch of enties of either User or Project components */}
+            {/* ProjComponent on feed example */}
+            <div className='pb-4'>
+              <ProjComponent />
+            </div>
+            <div className='pb-4'>
+              <ProjComponent />
+            </div>
+            <div className='pb-4'>
+              <ProjComponent />
+            </div>
+            <div className='pb-4'>
+              <ProjComponent />
+            </div>
+            <div className='pb-4'>
+              <ProjComponent />
+            </div>
+            {/* User Component on feed example */}
+            <div className='pb-4'>
+              <UserComponent />
+            </div>
+          </main>
           <aside className='hidden xl:col-span-4 xl:block'>
             <div className='sticky top-6 space-y-4'>{/* Right */}</div>
           </aside>
