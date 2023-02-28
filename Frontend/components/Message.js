@@ -1,12 +1,28 @@
-import React from 'react'
+import React, { useContext, useEffect, useRef } from "react";
 
-export default function Message() {
+export default function Message({ message }) {
+    const ref = useRef();
+    useEffect(() => {
+        ref.current?.scrollIntoView({ behavior: "smooth" });
+      }, [message]);
+    const currentUser = {
+        id: 1,
+        name: "Auden",
+        imageUrl:
+        "https://media.licdn.com/dms/image/C4D03AQHHZKUrMMhCsQ/profile-displayphoto-shrink_800_800/0/1610704750210?e=2147483647&v=beta&t=OHuErweO0MQ3CeXJlSKkBpu-FOxPQh1sjcuVOQVTZb8", 
+    }
+    const receiver = {
+        id: 13,
+        name: "Henry",
+        imageUrl:
+        "https://media.licdn.com/dms/image/C4D03AQHHZKUrMMhCsQ/profile-displayphoto-shrink_800_800/0/1610704750210?e=2147483647&v=beta&t=OHuErweO0MQ3CeXJlSKkBpu-FOxPQh1sjcuVOQVTZb8", 
+    }
   return (
     <div>
         {/* if it is receiver */}
         <div className='flex mb-5 gap-5 '> 
             <div className='info flex flex-col text-gray-300 font-light'>
-                <img className='bg-white w-10 h-10 object-cover rounded-full' src=''/>
+                <img className='bg-white w-10 h-10 object-cover rounded-full' src={receiver.imageUrl}/>
                 <span>just now</span>
             </div>
             <div className='content flex flex-col gap-2 max-w-[calc(80%)]'>
@@ -17,7 +33,7 @@ export default function Message() {
         {/* if it is sender */}
         <div className='flex mb-5 gap-5 flex-row-reverse'> 
             <div className='info flex flex-col text-gray-300 font-light'>
-                <img className='bg-white w-10 h-10 object-cover rounded-full' src=''/>
+                <img className='bg-white w-10 h-10 object-cover rounded-full' src={currentUser.imageUrl}/>
                 <span>just now</span>
             </div>
             <div className='content flex flex-col items-end gap-2 max-w-[calc(80%)]'>
