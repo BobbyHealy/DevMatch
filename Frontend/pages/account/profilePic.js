@@ -32,7 +32,7 @@ function profilePic() {
                 </div>
                 <div className="upload text-center p-4">
                 <InputText type = "file" 
-                    accept="/image/*"
+                    accept="*.jpg"
                     onChange={(event)=>{
                     const file = event.target.files[0];
                     setimage(file)

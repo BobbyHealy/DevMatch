@@ -49,7 +49,7 @@ function profile(){
                     </div>
                     <a
                     href='/account/profilePic'
-                    className='font-medium text-left text-indigo-600 text-'
+                    className='font-medium text-left text-indigo-600 '
                     >
                     editPhoto
                     </a>
@@ -70,7 +70,7 @@ function profile(){
                     </div>
                     <a
                     href='/account/updateProfile'
-                    className='font-medium text-left text-indigo-600 text-'
+                    className='font-medium text-left text-indigo-600'
                     >
                     editProfile
                     </a>

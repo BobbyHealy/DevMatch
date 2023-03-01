@@ -2,6 +2,7 @@ import { Fragment, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import Router from "next/router";
 import { useRouter } from 'next/router';
+import { InputText } from 'primereact/inputtext';
 
 import {
   Bars3Icon,
@@ -57,6 +58,9 @@ export default function projectSpace() {
     }
     const handleSubmit= () =>{
         // Update database
+        setEdit(false)
+    }
+    const handleCancel=()=>{
         setEdit(false)
     }
     const redirectToFeed= () => {
@@ -248,7 +252,7 @@ export default function projectSpace() {
             <div className="py-6">
 
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div>
+                    <div className=''>
                         <img className="h-32 w-full object-cover lg:h-48" src={project.banner} alt="" />
                     </div>
                     <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
@@ -259,6 +263,13 @@ export default function projectSpace() {
                                     src={project.avatar}
                                     alt=""
                                 />
+                                {edit&&<InputText type = "file" 
+                                accept="*.jpg"
+                                onChange={(event)=>{
+                                const file = event.target.files[0];
+                                // setimage(file)
+                                }}
+                                />}
                             </div>
 
                             <div className="mt-6 sm:flex sm:min-w-0 sm:flex-1 sm:items-center sm:justify-end sm:space-x-6 sm:pb-1">
@@ -279,6 +290,13 @@ export default function projectSpace() {
                             <h1 className="truncate text-2xl font-bold text-gray-900">{project.name}</h1>
                         </div>}
                         {edit&&<div className="mt-6 hidden min-w-0 flex-1 sm:block 2xl:hidden">
+                            <InputText type = "file" 
+                            accept="*.jpg"
+                            onChange={(event)=>{
+                            const file = event.target.files[0];
+                            // setimage(file)
+                            }}
+                            />
                             <input type="text"  
                             className="truncate text-2xl font-bold text-gray-900  placeholder-gray-300" 
                             placeholder={project.name}
@@ -313,7 +331,12 @@ export default function projectSpace() {
                     </dl>
                 </div>}
                 {edit&&<div className="mx-auto mt-6 max-w-5xl px-4 sm:px-6 lg:px-8">
-                    <button onClick={handleSubmit}> Submit</button>
+                    <div className='flex h-12 p-2 gap-2  items-center gap-2' > 
+                        <button className=' rounded-md border bg-white text-black my-1 py-1 px-4 text-sm shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2' 
+                        onClick={handleSubmit}> Submit</button>
+                        <button className=' rounded-md border bg-white text-black my-1 py-1 px-4 text-sm shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2' 
+                        onClick={handleCancel}> Cencel</button>
+                    </div>
                     <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
                         <div className="sm:col-span-1">
                             <dt className="text-sm font-medium text-gray-500">Owner(s)</dt>
