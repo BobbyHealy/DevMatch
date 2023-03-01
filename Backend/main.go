@@ -231,11 +231,11 @@ func updateUser(c *gin.Context) {
 
 func search(c *gin.Context) {
 	var thisSearch searchType
-	fmt.Println("here")
+	//fmt.Println("here")
 	if err := c.BindJSON(&thisSearch); err != nil {
 		return
 	}
-	fmt.Println("here2")
+	//fmt.Println("here2")
 	isProject := thisSearch.Project
 	limit := thisSearch.Limit
 	if isProject {
