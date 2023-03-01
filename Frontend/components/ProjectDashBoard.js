@@ -1,6 +1,6 @@
 import React from 'react'
 import ProjectSearchBar from './ProjectSearchBar'
-import Project from './Project'
+import Projects from './Projects'
 export default function ProjectDashBoard() {
     const project = {
         name: 'DevMatch',
@@ -13,7 +13,7 @@ export default function ProjectDashBoard() {
     <div className='flex justify-center h-full content-center'>
         <div className='bg-blue-300'>
             <ProjectSearchBar/>
-            <Project/>
+            <Projects/>
         </div>
     </div>
   )
