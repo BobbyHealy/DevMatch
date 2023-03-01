@@ -25,6 +25,7 @@ type user struct {
 	ProjectJoined []string `json:"pJoined"`
 	Rating        int      `json:"rating"`
 	Skills        []string `json:"skills"`
+	ProfilePic    string   `json:"profilePic"`
 }
 
 /*
@@ -32,11 +33,13 @@ type user struct {
  * NOTE: owners and members are stored as their user ids
  */
 type project struct {
-	ProjectID    string   `json:"pid"`
-	OwnersID     []string `json:"owners"`
-	ProjectName  string   `json:"name"`
-	MembersID    []string `json:"members"`
-	NeededSkills []string `json:"skills"`
+	ProjectID         string   `json:"pid"`
+	OwnersID          []string `json:"owners"`
+	ProjectName       string   `json:"name"`
+	MembersID         []string `json:"members"`
+	NeededSkills      []string `json:"skills"`
+	ProjectProfilePic string   `json:"projectProfile"`
+	ProjectBannerPic  string   `json:"projectBannerPic"`
 	//TaskBoard     Scrumboard `json: "board"`
 }
 
