@@ -31,25 +31,34 @@ function classNames(...classes) {
 
 export default function projectSpace() {
     const [skills, setSkills] = useState(['TestSkill','TesSkill2'])
+    const [edit, setEdit] = useState(false)
     const [members, setMembers] = useState(['Auden Huang', 'Jerry Martin'])
     const skillList = skills.map((skill) => <li>{skill}</li>);
     const mList = members.map((skill) => <div>{skill}</div>);
+    const [des, setDes] = useState("")
+    
     const project = {
         name: 'DevMatch',
+        owner: 'John Doe',
+        members: mList,
         avatar:'https://logopond.com/avatar/257420/logopond.png',
         banner:'https://cdn.pixabay.com/photo/2015/11/19/08/52/banner-1050629__340.jpg',
         banner2:'https://images.unsplash.com/photo-1444628838545-ac4016a5418a?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80',
-        infos: {
-            owner: 'John Doe',
-            members: mList,
-            
-        },
         Require: skillList,
         description: "Description"
     }
   
     const redirectToProfile= () => {
         Router.push('./profile');
+    }
+    const handleEdit= () => {
+        setEdit(true)
+    }
+    const handleSubmit= () =>{
+        setEdit(false)
+    }
+    const redirectToFeed= () => {
+        Router.push('../../Feed');
     }
     const [section, setSection] = useState(navigation[0])
     
@@ -260,32 +269,75 @@ export default function projectSpace() {
                         </div>
                         <div className="mt-6 hidden min-w-0 flex-1 sm:block 2xl:hidden">
                             <h1 className="truncate text-2xl font-bold text-gray-900">{project.name}</h1>
+        
                         </div>
                     </div>
                 </div>
-                <div className="mx-auto mt-6 max-w-5xl px-4 sm:px-6 lg:px-8">
-                <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
-                {Object.keys(project.infos).map((info) => (
-                        <div key={info} className="sm:col-span-1">
-                        <dt className="text-sm font-medium text-gray-500">{info}</dt>
-                        <dd className="mt-1 text-sm text-gray-900">{project.infos[info]}</dd>
+                {!edit&&<div className="mx-auto mt-6 max-w-5xl px-4 sm:px-6 lg:px-8">
+                    <span onClick={handleEdit}> Edit Info</span>
+                    <dl className="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+                        <div className="sm:col-span-1">
+                            <dt className="text-sm font-medium text-gray-500">Owner(s)</dt>
+                            <dd className="mt-1 text-sm text-gray-900">{project.owner}</dd>
                         </div>
-                ))}
-                <div className="sm:col-span-2">
-                    <dt className="text-sm font-medium text-gray-500">About</dt>
-                    <dd
-                    className="mt-1 max-w-prose space-y-5 text-sm text-gray-900"
-                    dangerouslySetInnerHTML={{ __html: project.description}}
-                    />
-                </div>
-                <div className="sm:col-span-2">
-                    <dt className="text-sm font-medium text-gray-500">Require Skill</dt>
-                    <dd
-                    className="mt-1 max-w-prose space-y-5 text-sm text-gray-900"
-                    >{project.Require}</dd>
-                </div>
-                </dl>
-            </div>
+                        <div className="sm:col-span-1">
+                            <dt className="text-sm font-medium text-gray-500">Members</dt>
+                            <dd className="mt-1 text-sm text-gray-900">{project.members}</dd>
+                        </div>
+                        <div className="sm:col-span-2">
+                            <dt className="text-sm font-medium text-gray-500">About</dt>
+                            <dd
+                            className="mt-1 max-w-prose space-y-5 text-sm text-gray-900"
+                            dangerouslySetInnerHTML={{ __html: project.description}}
+                            />
+                        </div>
+                        <div className="sm:col-span-2">
+                            <dt className="text-sm font-medium text-gray-500">Require Skill</dt>
+                            <dd
+                            className="mt-1 max-w-prose space-y-5 text-sm text-gray-900"
+                            >{project.Require}</dd>
+                        </div>
+                    </dl>
+                </div>}
+                {edit&&<div className="mx-auto mt-6 max-w-5xl px-4 sm:px-6 lg:px-8">
+                    <button onClick={handleSubmit}> Submit</button>
+                    <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
+                        <div className="sm:col-span-1">
+                            <dt className="text-sm font-medium text-gray-500">Owner(s)</dt>
+                            <dd className="mt-1 text-sm text-gray-900">{project.owner}</dd>
+                            <button className=' rounded-md border bg-white text-black my-1 py-1 px-4 text-sm shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2' > Transfer Ownership</button>
+
+                        </div>
+                        <div className="sm:col-span-1">
+                            <dt className="text-sm font-medium text-gray-500">Members</dt>
+                            <dd className="mt-1 text-sm text-gray-900">{project.members}</dd>
+                            <div className='flex h-12 p-2 gap-2  items-center gap-2' > 
+                                <button className=' rounded-md border bg-white text-black my-1 py-1 px-4 text-sm shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2' > add</button>
+                                <button className=' rounded-md border bg-white text-black my-1 py-1 px-4 text-sm shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2' > remove</button>
+                            </div>
+                        </div>
+                        <div className="sm:col-span-2">
+                            <dt className="text-sm font-medium text-gray-500">About</dt>
+                            <dd
+                            className="mt-1 max-w-prose space-y-5 text-sm text-gray-900"
+                            >  <input type="text" 
+                            className='bg-transparent border-none outline-none text-black placeholder-gray-300' 
+                            placeholder= {project.description}
+                            onChange={e=>setDes(e.target.value)}
+                            /></dd>
+                        </div>
+                        <div className="sm:col-span-2">
+                            <dt className="text-sm font-medium text-gray-500">Require Skill</dt>
+                            <dd
+                            className="mt-1 max-w-prose space-y-5 text-sm text-gray-900"
+                            >{project.Require}</dd>
+                            <div className='flex h-12 p-2 gap-2  items-center gap-2' > 
+                                <button className=' rounded-md border bg-white text-black my-1 py-1 px-4 text-sm shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2' > add</button>
+                                <button className=' rounded-md border bg-white text-black my-1 py-1 px-4 text-sm shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2' > remove</button>
+                            </div>
+                        </div>
+                    </dl>
+                </div>}
             </div>
 
           </main>
