@@ -10,6 +10,9 @@ function profile(){
 
 
   const [skills, setSkills] = useState(['TestSkill','TesSkill2'])
+  const [phone, setPhone] = useState("")
+  const [des, setDes] = useState("")
+  const [edit, setEdit] = useState(false)
   const [projects, setProject] = useState(['Project','Project2'])
   const skillList = skills.map((skill) => <li>{skill}</li>);
   const projectList = projects.map((p) => <li>{p}</li>);
@@ -31,9 +34,20 @@ function profile(){
   const redirectToDM= () => {
     Router.push('./dm');
   }
+  const handleEdit=()=>{
+    setEdit(true)
+  }
+  const handleSubmit=()=>{
+    setEdit(false)
+
+  }
+  const handleCancel=()=>{
+    setEdit(false)
+
+  }
   return(
     <div className="relative">
-      <div className=" fixed top-0 left-0 right-0 h-full bg-white">
+      <div className=" fixed top-0 left-0 right-0 h-full bg-white overflow-scroll">
             <div>
                 <div>
                 <img className="h-32 w-full object-cover lg:h-48" src={profileImageURL} alt="" />
@@ -68,14 +82,20 @@ function profile(){
                         <span>DMs</span>
                         </button>
                     </div>
-                    <a
-                    href='/account/updateProfile'
-                    className='font-medium text-left text-indigo-600'
-                    >
+                    {!edit&&<span className='font-medium text-left text-indigo-600'
+                    onClick={handleEdit}>
                     editProfile
-                    </a>
-                        </div>
+                    </span>}
+                    {edit&&
+                    <div className='flex h-12 p-2 gap-2  items-center gap-2' > 
+                      <button className=' rounded-md border bg-white text-black my-1 py-1 px-4 text-sm shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2' 
+                      onClick={handleSubmit}> Submit</button>
+                      <button className=' rounded-md border bg-white text-black my-1 py-1 px-4 text-sm shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
+                      onClick={handleCancel}> Cancel</button>
+                    </div>}
+          
                     </div>
+                </div>
                 <div className="mt-6 hidden min-w-0 flex-1 sm:block 2xl:hidden">
                     <h1 className="truncate text-2xl font-bold text-gray-900">{user.name}</h1>
                 </div>
@@ -110,7 +130,7 @@ function profile(){
 
             </div> */}
             {/* Description list */}
-            <div className="mx-auto mt-6 max-w-5xl px-4 sm:px-6 lg:px-8">
+            <div className="flex mx-auto mt-6 max-w-5xl px-4 sm:px-6 lg:px-8">
                 <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
                 {Object.keys(user.infos).map((info) => (
                     <div key={info} className="sm:col-span-1">
