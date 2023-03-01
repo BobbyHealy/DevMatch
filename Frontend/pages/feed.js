@@ -3,6 +3,7 @@ import { Menu, Popover, Transition } from "@headlessui/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import UserComponent from "@/components/UserComponent";
+import ProjComponent from "@/components/ProjectComponent";
 
 const user = {
   name: "Chelsea Hagon",
@@ -140,7 +141,7 @@ export default function Feed() {
 
                   <a
                     href='#'
-                    className='ml-6 inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
+                    className='ml-6 inline-flex items-center rounded-md border border-transparent bg-orange-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
                   >
                     New Project
                   </a>
@@ -218,7 +219,9 @@ export default function Feed() {
               {/* Left */}
             </nav>
           </div>
-          <main className='lg:col-span-9 xl:col-span-6'>{/* Middle */}</main>
+          <main className='lg:col-span-9 xl:col-span-6'>{/* Middle */}
+                    <ProjComponent></ProjComponent>
+          </main>
           <aside className='hidden xl:col-span-4 xl:block'>
             <div className='sticky top-6 space-y-4'>{/* Right */}</div>
           </aside>

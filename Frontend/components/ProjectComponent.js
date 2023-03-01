@@ -12,7 +12,7 @@ const project = {
     owner: 'John Doe',
     avatar:'https://logopond.com/avatar/257420/logopond.png',
     banner:'https://cdn.pixabay.com/photo/2015/11/19/08/52/banner-1050629__340.jpg',
-    banner2:'https://images.unsplash.com/photo-1444628838545-ac4016a5418a?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80',
+    banner2:'https://w0.peakpx.com/wallpaper/630/104/HD-wallpaper-vector-sunset-orange-sun-sunset-painted-sunset-vector-landscape-seascape.jpg',
 }
 
 export default function ProjComponent() {
@@ -21,7 +21,7 @@ export default function ProjComponent() {
       <h1>
         <img
           className='h-18 w-full object-cover lg:h-24 rounded-t-lg'
-          src={project.banner}
+          src={project.banner2}
           alt=''
         />
       </h1>
@@ -59,7 +59,7 @@ export default function ProjComponent() {
             <div className='flex flex-shrink-0 self-center'>
               <button
                 type='button'
-                className='inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'>
+                className='inline-flex items-center rounded-md border border-transparent bg-orange-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'>
                 Join
                 <UserGroupIcon className='ml-2 -mr-1 h-5 w-5' aria-hidden='true' />
               </button>
@@ -67,7 +67,7 @@ export default function ProjComponent() {
             <div className='flex flex-shrink-0 self-center'>
               <button
                   type='button'
-                  className='inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'>
+                  className='inline-flex items-center rounded-md border border-transparent bg-orange-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'>
                   Message
                   <EnvelopeIcon className='ml-2 -mr-1 h-5 w-5' aria-hidden='true' />
               </button>
