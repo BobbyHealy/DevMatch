@@ -19,8 +19,6 @@ const authToken = "token"
  * NOTE: Projects are stored by their project ids
  */
 type user struct {
-	Email         string   `json:"email"`
-	Password      string   `json:"password"`
 	UserID        string   `json:"userID"`
 	Name          string   `json:"name"`
 	ProjectOwned  []string `json:"pOwned"` //This is a slice. Dynamically sized array. (Change to type project later)
@@ -53,6 +51,7 @@ func main() {
 	router.POST("/addUser", postUsers)
 	router.GET("/projects", getProject)
 	router.POST("/addProject", postProject)
+
 	router.Run("localhost:8080")
 }
 
