@@ -10,8 +10,8 @@ import {
   UsersIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import Profile from "../../components/profile";
-import DMs from "../../components/dm";
+import Profile from "../../components/Profile";
+import DMs from "../../components/DMs";
 
 const navigation = [
   { name: "Overview", href: "#", icon: HomeIcon, current: true },
