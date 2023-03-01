@@ -12,7 +12,18 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function UserComponent() {
+const default_user = {
+  userID: "1928109281",
+  name: "Roberto Healy",
+  pOwned: ["1231231233"],
+  pJoined: ["31232131223"],
+  rating: 0,
+  skills: ["JavaScript, CSS, HTML"],
+  profile_picture: "",
+};
+
+export default function UserComponent(props) {
+  const { user = default_user } = props;
   return (
     <div className='bg-white px-4 py-5 sm:px-6 rounded-lg'>
       <div className='flex space-x-3'>
@@ -26,17 +37,20 @@ export default function UserComponent() {
         <div className='min-w-0 flex-1'>
           <p className='text-sm font-semibold text-gray-900'>
             <a href='#' className='hover:underline'>
-              User Name
+              {user.name}
             </a>
           </p>
           <p className='text-sm text-gray-500'>
             <a href='#' className='hover:underline'>
-              Rating: 4
+              Rating: {" " + user.rating}
             </a>
           </p>
           <p className='text-sm text-gray-500'>
             <a href='#' className='hover:underline'>
-              Skill List: JavaScript, CSS, HTML
+              Skill List:{" "}
+              {user.skills.map((e) => (
+                <>{e + " "}</>
+              ))}
             </a>
           </p>
           <p className='text-sm text-gray-500'>
