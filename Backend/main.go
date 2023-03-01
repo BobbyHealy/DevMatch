@@ -42,6 +42,11 @@ type project struct {
 	//TaskBoard     Scrumboard `json: "board"`
 }
 
+type searchType struct {
+	Project bool `json:"project"`
+	Limit   int  `json:"limit"`
+}
+
 func main() {
 	router := gin.Default()
 	//pushValue("test")
@@ -54,6 +59,7 @@ func main() {
 	router.POST("/addUser", postUsers)
 	router.GET("/projects", getProject)
 	router.POST("/addProject", postProject)
+	router.GET("/search", search)
 	router.Run("localhost:8080")
 }
 
@@ -104,16 +110,16 @@ func updateValue(anything string) {
 }
 
 func queryValue(anything string) {
-	f := firego.New("https://devmatch-4d490-default-rtdb.firebaseio.com/Hold", nil)
+	f := firego.New("https://devmatch-4d490-default-rtdb.firebaseio.com/Users", nil)
 	var v map[string]interface{}
-	if err := f.StartAt("r").EndAt("v").LimitToFirst(2).OrderBy("field").Value(&v); err != nil {
+	if err := f.OrderBy("$key").LimitToFirst(1).Value(&v); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Printf("%s\n", v)
 }
 
 func getValue(anything string) {
-	f := firego.New("https://devmatch-4d490-default-rtdb.firebaseio.com/", nil)
+	f := firego.New("https://devmatch-4d490-default-rtdb.firebaseio.com/Users", nil)
 	var v map[string]interface{}
 	if err := f.Value(&v); err != nil {
 		log.Fatal(err)
@@ -216,4 +222,34 @@ func updateUser(c *gin.Context) {
 		log.Fatal((err))
 	}
 	c.IndentedJSON(http.StatusOK, updatedUser)
+}
+
+func search(c *gin.Context) {
+	var thisSearch searchType
+	fmt.Println("here")
+	if err := c.BindJSON(&thisSearch); err != nil {
+		return
+	}
+	fmt.Println("here2")
+	isProject := thisSearch.Project
+	limit := thisSearch.Limit
+	if isProject {
+		path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Projects/"
+		f := firego.New(path, nil)
+		var v []interface{}
+		if err := f.OrderBy("$key").LimitToFirst(int64(limit)).Value(&v); err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("%+v\n", v)
+		c.IndentedJSON(http.StatusOK, v)
+		return
+	}
+	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Users/"
+	f := firego.New(path, nil)
+	var d map[string]interface{}
+	if err := f.OrderBy("$key").LimitToLast(int64(limit)).Value(&d); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%+v\n", d)
+	c.IndentedJSON(http.StatusOK, d)
 }
