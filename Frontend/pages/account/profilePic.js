@@ -10,11 +10,11 @@ const user = {
 
 function profilePic() {
     const redirectToProfile= () => {
-        Router.push('./profile');
+        Router.push('./');
     }
     const handleSubmit=()=>{
         // update firebase
-        Router.push('./profile');
+        Router.push('./');
     }
   return (
     <div className="relative">
