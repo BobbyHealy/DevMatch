@@ -40,10 +40,7 @@ function Profile(){
     setEdit(false)
 
   }
-  const redirectToManageProject=()=>
-  {
-    Router.push('../../manageProject');
-  }
+
   return(
     <div className="relative">
 
@@ -174,8 +171,6 @@ function Profile(){
                   <div className="sm:col-span-1">
                   <dt className="text-sm font-medium text-gray-500">Projects</dt>
                   <dd className="mt-1 text-sm text-gray-900">{user.infos.Project}</dd>
-                  <button className=' rounded-md border bg-white text-black my-1 py-1 px-4 text-sm shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2' 
-                  onClick={redirectToManageProject}> Manage Projects</button>
                   </div>
                 <div className="sm:col-span-2">
                     <dt className="text-sm font-medium text-gray-500">About</dt>

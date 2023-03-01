@@ -12,10 +12,12 @@ import {
 } from "@heroicons/react/24/outline";
 import Profile from "../../components/Profile";
 import DMs from "../../components/DMs";
+import ManageProjects from "@/components/ManageProjects";
 
 const navigation = [
   { name: "Overview", href: "#", icon: HomeIcon, current: true },
   { name: "DMs", href: "#", icon: UsersIcon, current: false },
+  { name: "Manage Projects", href: "#", icon: UsersIcon, current: false },
 ];
 
 function classNames(...classes) {
@@ -33,6 +35,9 @@ export default function Example() {
         break;
       case "DMs":
         <DMs />;
+        break;
+      case "Manage Projects":
+        <ManageProjects/>;
         break;
 
       default:
@@ -208,6 +213,8 @@ export default function Example() {
               <Profile />
             ) : selectedTab === "DMs" ? (
               <DMs />
+            ) : selectedTab === "Manage Projects" ? (
+                <ManageProjects />
             ) : (
               <></>
             )}
