@@ -34,7 +34,6 @@ function profile(){
   return(
     <div className="relative">
       <div className=" fixed top-0 left-0 right-0 h-full bg-white">
-            {/* Profile header */}
             <div>
                 <div>
                 <img className="h-32 w-full object-cover lg:h-48" src={profileImageURL} alt="" />

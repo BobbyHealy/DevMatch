@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Input from "../components/UpdateInput";
+import Input from "../components/Input";
 // import {Routes, Route, useNavigate} from 'react-router-dom';
 
 
