@@ -5,6 +5,7 @@ import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import UserComponent from "@/components/UserComponent";
 import ProjComponent from "@/components/ProjectComponent";
 import Router from "next/router";
+import ProjectDashBoard from "@/components/projectDashBoard";
 
 const user = {
   name: "Chelsea Hagon",
@@ -214,6 +215,7 @@ export default function Feed() {
               aria-label='Sidebar'
               className='sticky top-6 divide-y divide-gray-300'
             >
+              
               {/* Left */}
             </nav>
           </div>
@@ -241,7 +243,7 @@ export default function Feed() {
             </div>
           </main>
           <aside className='hidden xl:col-span-4 xl:block'>
-            <div className='sticky top-6 space-y-4'>{/* Right */}</div>
+            <div className='sticky top-6 space-y-4 h-full'>{/* Right */}<ProjectDashBoard/></div>
           </aside>
         </div>
       </div>
