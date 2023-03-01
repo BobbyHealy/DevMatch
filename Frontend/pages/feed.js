@@ -53,7 +53,7 @@ export default function Feed() {
           <aside className='hidden xl:col-span-4 xl:block'>
             <div className='sticky top-6 space-y-4 h-full'>
               {/* Right */}
-              <div className='sticky top-28 z-30'>
+              <div className='sticky top-24 z-30'>
                 <ProjectDashBoard />
               </div>
             </div>
