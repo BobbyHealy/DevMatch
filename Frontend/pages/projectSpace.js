@@ -36,6 +36,7 @@ export default function projectSpace() {
     const skillList = skills.map((skill) => <li>{skill}</li>);
     const mList = members.map((skill) => <div>{skill}</div>);
     const [des, setDes] = useState("")
+    const [name, setName] = useState("")
     
     const project = {
         name: 'DevMatch',
@@ -55,6 +56,7 @@ export default function projectSpace() {
         setEdit(true)
     }
     const handleSubmit= () =>{
+        // Update database
         setEdit(false)
     }
     const redirectToFeed= () => {
@@ -260,21 +262,32 @@ export default function projectSpace() {
                             </div>
 
                             <div className="mt-6 sm:flex sm:min-w-0 sm:flex-1 sm:items-center sm:justify-end sm:space-x-6 sm:pb-1">
-                                <div className="mt-6 min-w-0 flex-1 sm:hidden 2xl:block">
+                                {!edit&&<div className="mt-6 min-w-0 flex-1 sm:hidden 2xl:block">
                                     <h1 className="truncate text-2xl font-bold text-gray-900">{project.name}</h1>
-                                </div>
+                                </div>}
+                                {edit&&<div className="mt-6 min-w-0 flex-1 sm:hidden 2xl:block">
+                                <input type="text"  
+                                className="truncate text-2xl font-bold text-gray-900  placeholder-gray-300" 
+                                placeholder={project.name}
+                                onChange={e=>setName(e.target.value)}/>
+                                </div>}
 
                     
                             </div>
                         </div>
-                        <div className="mt-6 hidden min-w-0 flex-1 sm:block 2xl:hidden">
+                        {!edit&&<div className="mt-6 hidden min-w-0 flex-1 sm:block 2xl:hidden">
                             <h1 className="truncate text-2xl font-bold text-gray-900">{project.name}</h1>
-        
-                        </div>
+                        </div>}
+                        {edit&&<div className="mt-6 hidden min-w-0 flex-1 sm:block 2xl:hidden">
+                            <input type="text"  
+                            className="truncate text-2xl font-bold text-gray-900  placeholder-gray-300" 
+                            placeholder={project.name}
+                            onChange={e=>setName(e.target.value)}/>
+                        </div>}
                     </div>
                 </div>
                 {!edit&&<div className="mx-auto mt-6 max-w-5xl px-4 sm:px-6 lg:px-8">
-                    <span onClick={handleEdit}> Edit Info</span>
+                    <span className="" onClick={handleEdit}> Edit Info</span>
                     <dl className="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
                         <div className="sm:col-span-1">
                             <dt className="text-sm font-medium text-gray-500">Owner(s)</dt>
