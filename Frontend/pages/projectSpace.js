@@ -53,7 +53,7 @@ export default function projectSpace() {
     }
   
     const redirectToProfile= () => {
-        Router.push('./profile');
+        Router.push('./account');
     }
 
     const handleEdit= () => {
@@ -178,7 +178,8 @@ export default function projectSpace() {
                         </div>
                         <div className="ml-3">
                           <p className="text-base font-medium text-gray-700 group-hover:text-gray-900">{user.name}</p>
-                          <p className="text-sm font-medium text-gray-500 group-hover:text-gray-700">View profile</p>
+                          <p className="text-sm font-medium text-gray-500 group-hover:text-gray-700"
+                          onClick={redirectToProfile}>View profile</p>
                         </div>
                       </div>
                     </a>
@@ -237,7 +238,8 @@ export default function projectSpace() {
               </div>
               <div className="ml-3">
                 <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">{user.name}</p>
-                <p className="text-xs font-medium text-gray-500 group-hover:text-gray-700">View profile</p>
+                <p className="text-xs font-medium text-gray-500 group-hover:text-gray-700"
+                onClick={redirectToProfile}>View profile</p>
               </div>
             </div>
           </a>

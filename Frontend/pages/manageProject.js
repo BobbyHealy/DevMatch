@@ -24,7 +24,7 @@ const projectObj2= {
 }
 const projets = [
     projectObj,projectObj2
-    // More people...
+    // More projects
   ]
 
 function manageProject() {
