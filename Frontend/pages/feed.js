@@ -8,24 +8,7 @@ import Router from "next/router";
 import ProjectDashBoard from "@/components/projectDashBoard";
 import Header from "@/components/header";
 import { projectExamplesArray } from "@/mockup_data/project_array";
-
-const user = {
-  name: "Chelsea Hagon",
-  email: "chelsea.hagon@example.com",
-  imageUrl:
-    "https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-};
-const navigation = [
-  { name: "Dashboard", href: "#", current: true },
-  { name: "Calendar", href: "#", current: true },
-  { name: "Teams", href: "#", current: false },
-  { name: "Directory", href: "#", current: false },
-];
-const userNavigation = [
-  { name: "Your Profile", href: "account" },
-  { name: "Settings", href: "account" },
-  { name: "Sign out", href: "#" },
-];
+import { userExampleArray } from "@/mockup_data/user_array";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -55,6 +38,14 @@ export default function Feed() {
               return (
                 <div className='pb-6'>
                   <ProjComponent project={e} />
+                </div>
+              );
+            })}
+            {/* UserComponent on feed example */}
+            {userExampleArray.map((e) => {
+              return (
+                <div className='pb-6'>
+                  <UserComponent user={e} />
                 </div>
               );
             })}
