@@ -131,7 +131,7 @@ function profile(){
             </div> */}
             {/* Description list */}
             <div className="flex mx-auto mt-6 max-w-5xl px-4 sm:px-6 lg:px-8">
-                <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
+                {!edit&&<dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
                 {Object.keys(user.infos).map((info) => (
                     <div key={info} className="sm:col-span-1">
                     <dt className="text-sm font-medium text-gray-500">{info}</dt>
@@ -145,7 +145,49 @@ function profile(){
                     dangerouslySetInnerHTML={{ __html: user.description}}
                     />
                 </div>
-                </dl>
+                </dl>}
+                {edit&&<dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
+                  <div className="sm:col-span-1">
+                  <dt className="text-sm font-medium text-gray-500">Phone</dt>
+                  <dd className="mt-1 text-sm text-gray-900">
+                  <input type="text" 
+                    className='bg-transparent border-none outline-none text-black placeholder-gray-300' 
+                    placeholder= {user.infos.Phone}
+                    onChange={e=>setPhone(e.target.value)}
+                    /></dd>
+                  </div>
+                  <div className="sm:col-span-1">
+                  <dt className="text-sm font-medium text-gray-500">Email</dt>
+                  <dd className="mt-1 text-sm text-gray-900">{user.infos.Email}</dd>
+                  </div>
+                  <div className="sm:col-span-1">
+                  <dt className="text-sm font-medium text-gray-500">Rating</dt>
+                  <dd className="mt-1 text-sm text-gray-900">{user.infos.Rating}</dd>
+                  </div>
+                  <div className="sm:col-span-1">
+                  <dt className="text-sm font-medium text-gray-500">Skills</dt>
+                  <dd className="mt-1 text-sm text-gray-900">{user.infos.Skills}</dd>
+                  <div className='flex h-12 p-2 gap-2  items-center gap-2' > 
+                        <button className=' rounded-md border bg-white text-black my-1 py-1 px-4 text-sm shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2' > Add</button>
+                        <button className=' rounded-md border bg-white text-black my-1 py-1 px-4 text-sm shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2' > Remove</button>
+                  </div>
+                  </div>
+                  <div className="sm:col-span-1">
+                  <dt className="text-sm font-medium text-gray-500">Projects</dt>
+                  <dd className="mt-1 text-sm text-gray-900">{user.infos.Project}</dd>
+                  <button className=' rounded-md border bg-white text-black my-1 py-1 px-4 text-sm shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2' > Manage Projects</button>
+                  </div>
+                <div className="sm:col-span-2">
+                    <dt className="text-sm font-medium text-gray-500">About</dt>
+                    <dd
+                    className="mt-1 max-w-prose space-y-5 text-sm text-gray-900"
+                    ><input type="text" 
+                    className='bg-transparent border-none outline-none text-black placeholder-gray-300' 
+                    placeholder= {user.description}
+                    onChange={e=>setDes(e.target.value)}
+                    /></dd>
+                </div>
+                </dl>}
             </div>
         </div>
     </div>

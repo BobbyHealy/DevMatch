@@ -348,8 +348,8 @@ export default function projectSpace() {
                             <dt className="text-sm font-medium text-gray-500">Members</dt>
                             <dd className="mt-1 text-sm text-gray-900">{project.members}</dd>
                             <div className='flex h-12 p-2 gap-2  items-center gap-2' > 
-                                <button className=' rounded-md border bg-white text-black my-1 py-1 px-4 text-sm shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2' > add</button>
-                                <button className=' rounded-md border bg-white text-black my-1 py-1 px-4 text-sm shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2' > remove</button>
+                                <button className=' rounded-md border bg-white text-black my-1 py-1 px-4 text-sm shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2' > Add</button>
+                                <button className=' rounded-md border bg-white text-black my-1 py-1 px-4 text-sm shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2' > Remove</button>
                             </div>
                         </div>
                         <div className="sm:col-span-2">
@@ -368,8 +368,8 @@ export default function projectSpace() {
                             className="mt-1 max-w-prose space-y-5 text-sm text-gray-900"
                             >{project.Require}</dd>
                             <div className='flex h-12 p-2 gap-2  items-center gap-2' > 
-                                <button className=' rounded-md border bg-white text-black my-1 py-1 px-4 text-sm shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2' > add</button>
-                                <button className=' rounded-md border bg-white text-black my-1 py-1 px-4 text-sm shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2' > remove</button>
+                                <button className=' rounded-md border bg-white text-black my-1 py-1 px-4 text-sm shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2' > Add</button>
+                                <button className=' rounded-md border bg-white text-black my-1 py-1 px-4 text-sm shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2' > Remove</button>
                             </div>
                         </div>
                     </dl>

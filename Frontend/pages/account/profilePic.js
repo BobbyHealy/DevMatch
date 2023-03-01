@@ -12,6 +12,10 @@ function profilePic() {
     const redirectToProfile= () => {
         Router.push('./profile');
     }
+    const handleSubmit=()=>{
+        // update firebase
+        Router.push('./profile');
+    }
   return (
     <div className="relative">
         <div className=" fixed top-0 left-0 right-0 h-full bg-white">
@@ -45,8 +49,12 @@ function profilePic() {
                     }}
                     />
                     <button className="rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    onClick={handleSubmit}
+                    >Submit</button>
+                    <button className="rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                     onClick={()=> redirectToProfile()}
                     >Cancel</button>
+
                 </div>
             </div>
         </div>
