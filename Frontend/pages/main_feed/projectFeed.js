@@ -218,7 +218,8 @@ export default function ProjectFeed() {
               {/* Left */}
             </nav>
           </div>
-          <main className='lg:col-span-9 xl:col-span-6'>{/* Middle */}
+          <main className='lg:col-span-9 xl:col-span-6'>
+            {/* Middle */}
             <ProjComponent></ProjComponent>
           </main>
           <aside className='hidden xl:col-span-4 xl:block'>
