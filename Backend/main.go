@@ -42,6 +42,11 @@ type project struct {
 	//TaskBoard     Scrumboard `json: "board"`
 }
 
+/*
+ * This stores the type of search that is being requested
+ * as well as the limit of search results that will be
+ * returned
+ */
 type searchType struct {
 	Project bool `json:"project"`
 	Limit   int  `json:"limit"`
