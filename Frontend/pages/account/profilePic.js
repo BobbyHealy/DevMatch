@@ -1,13 +1,13 @@
-
-import React, { Component, useState} from "react";
-import { InputText } from 'primereact/inputtext';
+import React, { Component, useState } from "react";
+import { InputText } from "primereact/inputtext";
 import Router from "next/router";
 
 const user = {
-    name: "Auden Huang",
-    imageUrl:
+  name: "Auden Huang",
+  imageUrl:
     "https://media.licdn.com/dms/image/C4D03AQHHZKUrMMhCsQ/profile-displayphoto-shrink_800_800/0/1610704750210?e=2147483647&v=beta&t=OHuErweO0MQ3CeXJlSKkBpu-FOxPQh1sjcuVOQVTZb8",
-  }
+};
+
 function profilePic() {
     const redirectToProfile= () => {
         Router.push('./profile');
@@ -31,7 +31,7 @@ function profilePic() {
                 }}
                 src={user.imageUrl} alt=""/>
 
-                {/* <div className="name"> Name: {userName}</div> 
+            {/* <div className="name"> Name: {userName}</div> 
                 <div className="year"> Year: {year}</div>  */}
                 </div>
                 <div className="upload text-center p-4">
@@ -58,8 +58,8 @@ function profilePic() {
                 </div>
             </div>
         </div>
-    </div>
-  )
+      </div>
+  );
 }
 
-export default profilePic
+export default profilePic;

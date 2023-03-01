@@ -3,6 +3,8 @@ import { Dialog, Transition } from '@headlessui/react'
 import Router from "next/router";
 import { useRouter } from 'next/router';
 import { InputText } from 'primereact/inputtext';
+import Scrumboard from './Scrumboard';
+
 
 import {
   Bars3Icon,
@@ -14,7 +16,7 @@ import {
 
 
 const navigation = [
-  { name: 'Overview', href: '#', icon: HomeIcon, current: true },
+  { name: 'Overview', href: '#', icon: HomeIcon, current: false },
   { name: 'ScrumBoard', href: '#Scrum', icon: ClipboardIcon, current: false },
 
 ]
@@ -53,6 +55,7 @@ export default function projectSpace() {
     const redirectToProfile= () => {
         Router.push('./profile');
     }
+
     const handleEdit= () => {
         setEdit(true)
     }
@@ -66,7 +69,9 @@ export default function projectSpace() {
     const redirectToFeed= () => {
         Router.push('../../Feed');
     }
-    const [section, setSection] = useState(navigation[0])
+
+    const [section, setSection] = useState("#")
+
     
     const [sidebarOpen, setSidebarOpen] = useState(false)
 
@@ -139,6 +144,7 @@ export default function projectSpace() {
                         <a
                           key={item.name}
                           href={item.href}
+                          onClick ={()=>setSection(item.href)}
                           className={
                             classNames(
                             item.current
@@ -201,6 +207,7 @@ export default function projectSpace() {
               <a
                 key={item.name}
                 href={item.href}
+                onClick ={()=>setSection(item.href)}
                 className={classNames(
                   item.current ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
                   'group flex items-center rounded-md px-2 py-2 text-sm font-medium'
@@ -248,7 +255,9 @@ export default function projectSpace() {
               <Bars3Icon className="h-6 w-6" aria-hidden="true" />
             </button>
           </div>
-          <main className="flex-1">
+            {section==="#"&&<main className="flex-1">
+                {navigation[0].current=true}
+                {navigation[1].current=false}
             <div className="py-6">
 
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -376,7 +385,13 @@ export default function projectSpace() {
                 </div>}
             </div>
 
-          </main>
+          </main>}
+          {section==="#Scrum"&&<main className="flex-1">
+            {navigation[0].current=false}
+            {navigation[1].current =true}
+            <Scrumboard/>
+            </main>
+          }
         </div>
       </div>
     </>
