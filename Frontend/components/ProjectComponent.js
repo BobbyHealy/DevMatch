@@ -19,6 +19,7 @@ const default_project = {
     "https://t4.ftcdn.net/jpg/04/95/28/65/360_F_495286577_rpsT2Shmr6g81hOhGXALhxWOfx1vOQBa.jpg",
 };
 
+
 export default function ProjComponent(props) {
   const { project = default_project, ...restProps } = props;
   return (

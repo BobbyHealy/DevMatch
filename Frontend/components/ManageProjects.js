@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Input from "../components/Input";
+import Input from "./Input";
 // import {Routes, Route, useNavigate} from 'react-router-dom';
 
 
@@ -24,10 +24,10 @@ const projectObj2= {
 }
 const projets = [
     projectObj,projectObj2
-    // More people...
+    // More projects
   ]
 
-function manageProject() {
+export default function ManageProject() {
     return (
         <div className="px-4 sm:px-6 lg:px-8">
         <div className="sm:flex sm:items-center">
@@ -134,4 +134,4 @@ function manageProject() {
         </div>
     )   
 }
-export default manageProject
+
