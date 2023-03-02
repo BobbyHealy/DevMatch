@@ -65,10 +65,19 @@ func main() {
 	router.POST("/addUser", postUsers)
 	router.GET("/projects", getProject)
 	router.POST("/addProject", postProject)
+	router.POST("/updateProject", updateProject)
 	router.GET("/search", search)
+
 	router.POST("/addDM", postDirectMessage)
 	router.POST("/updateDM", updateDirectMessage)
 	router.GET("/directmessages", getDirectMessage)
+  
+	router.GET("/prettyProject", getPrettyProject)
+	router.GET("/prettyUser", getPrettyUser)
+
+	router.DELETE("/removeUser", removeUser)
+	router.DELETE("/removeProject", removeProject)
+
 	router.Run("localhost:8080")
 	
 }
@@ -144,7 +153,6 @@ func getUsers(c *gin.Context) {
 	uid, exists := c.GetQuery("uid")
 	if !exists {
 		fmt.Println("Request with key")
-		c.IndentedJSON(http.StatusBadRequest, nil)
 		return
 	} else {
 		fmt.Println(uid)
@@ -153,15 +161,8 @@ func getUsers(c *gin.Context) {
 	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Users/" + uid
 	f := firego.New(path, nil)
 	var v user
-
 	if err := f.Value(&v); err != nil {
 		log.Fatal(err)
-		c.IndentedJSON(http.StatusBadRequest, v)
-		return
-	}
-	if v.UserID == "" {
-		c.IndentedJSON(http.StatusBadRequest, nil)
-		return
 	}
 	fmt.Printf("%+v\n", v)
 	c.IndentedJSON(http.StatusOK, v)
@@ -182,7 +183,6 @@ func postUsers(c *gin.Context) {
 	v := map[string]user{id: newUser}
 	if err := f.Update(v); err != nil {
 		log.Fatal(err)
-		return
 	}
 	// Add the new album to the slice.
 	c.IndentedJSON(http.StatusCreated, newUser)
@@ -213,7 +213,6 @@ func getProject(c *gin.Context) {
 	pid, exists := c.GetQuery("pid")
 	if !exists {
 		fmt.Println("Request with key")
-		c.IndentedJSON(http.StatusBadRequest, nil)
 		return
 	} else {
 		fmt.Println(pid)
@@ -224,10 +223,6 @@ func getProject(c *gin.Context) {
 	var v project
 	if err := f.Value(&v); err != nil {
 		log.Fatal(err)
-	}
-	if v.ProjectID == "" {
-		c.IndentedJSON(http.StatusBadRequest, nil)
-		return
 	}
 	fmt.Printf("%+v\n", v)
 	c.IndentedJSON(http.StatusOK, v)
@@ -276,4 +271,169 @@ func search(c *gin.Context) {
 	}
 	fmt.Printf("%+v\n", d)
 	c.IndentedJSON(http.StatusOK, d)
+}
+
+func getUserFromID(uid string) user {
+
+	//path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
+	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Users/" + uid
+	f := firego.New(path, nil)
+	var v user
+
+	if err := f.Value(&v); err != nil {
+		log.Fatal(err)
+	}
+	if v.UserID == "" {
+		return user{}
+	}
+	return v
+}
+
+/*
+ * Gets project from pid along with array of names of members and array of owners
+ */
+
+func removeUser(c *gin.Context) {
+	uid, exists := c.GetQuery("uid")
+	if !exists {
+		fmt.Println("Request with key")
+		return
+	} else {
+		fmt.Println(uid)
+	}
+	//path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
+	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Users/" + uid
+	f := firego.New(path, nil)
+	if err := f.Remove(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func removeProject(c *gin.Context) {
+	pid, exists := c.GetQuery("pid")
+	if !exists {
+		fmt.Println("Request with key")
+		return
+	} else {
+		fmt.Println(pid)
+	}
+	//path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
+	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Projects/" + pid
+	f := firego.New(path, nil)
+	if err := f.Remove(); err != nil {
+		log.Fatal(err)
+	}
+
+}
+
+func getProjectFromID(pid string) project {
+
+	//path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
+	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Projects/" + pid
+	f := firego.New(path, nil)
+	var v project
+
+	if err := f.Value(&v); err != nil {
+		log.Fatal(err)
+	}
+	if v.ProjectID == "" {
+		return project{}
+	}
+	return v
+}
+
+/*
+ * Use the key "uid" to get user by user id.
+ */
+func getPrettyUser(c *gin.Context) {
+	uid, exists := c.GetQuery("uid")
+	if !exists {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	} else {
+		fmt.Println(uid)
+	}
+	//path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
+	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Users/" + uid
+	f := firego.New(path, nil)
+	var v user
+
+	if err := f.Value(&v); err != nil {
+		log.Fatal(err)
+		c.IndentedJSON(http.StatusBadRequest, v)
+		return
+	}
+	if v.UserID == "" {
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	}
+	fmt.Printf("%+v\n", v)
+
+	var names []string //names of members
+	for j := 0; j < len(v.ProjectJoined); j++ {
+		name := getProjectFromID(v.ProjectJoined[j]).ProjectName
+		names = append(names, name)
+	}
+
+	var ownerNames []string //names of owners
+	for j := 0; j < len(v.ProjectOwned); j++ {
+		name := getProjectFromID(v.ProjectOwned[j]).ProjectName
+		ownerNames = append(ownerNames, name)
+	}
+
+	c.IndentedJSON(http.StatusOK, []interface{}{v, names, ownerNames})
+	if err := f.Remove(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+/*
+ * Use the key "uid" to get user by user id.
+ */
+func getPrettyProject(c *gin.Context) {
+	pid, exists := c.GetQuery("pid")
+	if !exists {
+		fmt.Println("Request with key")
+		return
+	} else {
+		fmt.Println(pid)
+	}
+	//path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
+	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Projects/" + pid
+	f := firego.New(path, nil)
+	var v project
+	if err := f.Value(&v); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%+v\n", v)
+
+	var names []string //names of members
+	for j := 0; j < len(v.MembersID); j++ {
+		name := getUserFromID(v.MembersID[j]).Name
+		names = append(names, name)
+	}
+
+	var ownerNames []string //names of owners
+	for j := 0; j < len(v.OwnersID); j++ {
+		name := getUserFromID(v.OwnersID[j]).Name
+		ownerNames = append(ownerNames, name)
+	}
+
+	c.IndentedJSON(http.StatusOK, []interface{}{v, names, ownerNames})
+
+}
+
+func updateProject(c *gin.Context) {
+	var newProj project
+	if err := c.BindJSON(&newProj); err != nil {
+		return
+	}
+	id := newProj.ProjectID
+	f := firego.New("https://devmatch-4d490-default-rtdb.firebaseio.com/Projects/", nil)
+	v := map[string]project{id: newProj}
+	if err := f.Update(v); err != nil {
+		log.Fatal(err)
+	}
+	c.IndentedJSON(http.StatusCreated, newProj)
 }
