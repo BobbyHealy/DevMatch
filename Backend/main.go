@@ -74,7 +74,7 @@ func main() {
 	router.POST("/addGC", postGroupChat)
 	router.POST("/updateGC", updateGroupChat)
 	router.GET("/groupchats", getGroupChat)
-  
+
 	router.GET("/prettyProject", getPrettyProject)
 	router.GET("/prettyUser", getPrettyUser)
 
@@ -82,7 +82,7 @@ func main() {
 	router.DELETE("/removeProject", removeProject)
 
 	router.Run("localhost:8080")
-	
+
 }
 
 func pushValue(anything string) {
@@ -183,6 +183,10 @@ func postUsers(c *gin.Context) {
 	}
 	id := newUser.UserID
 	f := firego.New("https://devmatch-4d490-default-rtdb.firebaseio.com/Users/", nil)
+	if newUser.ProfilePic == "" {
+		newUser.ProfilePic = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/1200px-Default_pfp.svg.png"
+	}
+
 	v := map[string]user{id: newUser}
 	if err := f.Update(v); err != nil {
 		log.Fatal(err)
