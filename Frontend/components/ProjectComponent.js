@@ -19,7 +19,6 @@ const default_project = {
     "https://t4.ftcdn.net/jpg/04/95/28/65/360_F_495286577_rpsT2Shmr6g81hOhGXALhxWOfx1vOQBa.jpg",
 };
 
-
 export default function ProjComponent(props) {
   const { project = default_project, ...restProps } = props;
   return (
@@ -51,22 +50,22 @@ export default function ProjComponent(props) {
                 Owner: {project.owners[0]}
               </a>
             </p>
-            <p className='text-sm text-gray-500'>
+            <div className='text-sm text-gray-500'>
               <a href='#' className='hover:underline'>
                 Skills Needed:{" "}
-                {project.skills.map((e) => (
-                  <>{e + " "}</>
+                {project.skills.map((e, i) => (
+                  <p key={i}>{e + " "}</p>
                 ))}
               </a>
-            </p>
-            <p className='text-sm text-gray-500'>
+            </div>
+            <div className='text-sm text-gray-500'>
               <a href='#' className='hover:underline'>
                 Other members:{" "}
-                {project.members.map((e) => (
-                  <>{e + " "}</>
+                {project.members.map((e, i) => (
+                  <p key={i}>{e + " "}</p>
                 ))}
               </a>
-            </p>
+            </div>
           </div>
           <div className='flex flex-shrink-0 self-center'>
             <button
