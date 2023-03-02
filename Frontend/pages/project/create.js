@@ -1,22 +1,76 @@
 import Header from "@/components/header";
 import SkillList from "@/components/SkillList";
+import { useAuth } from "@/context/AuthContext";
+import { getAuth } from "firebase/auth";
 import Head from "next/head";
 import Router from "next/router";
 import { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
-export default function FollowUp() {
-  const [name, setName] = useState("");
+export default function Create() {
+  const { user, login, logout, userInfo } = useAuth();
+  const [projectName, setName] = useState("");
   const [skills, setSkills] = useState("");
+  const [profileLink, setProfileLink] = useState("");
+  const [bannerLink, setBannerLink] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSumbit = async (e) => {
     e.preventDefault();
+    const projectID = uuidv4();
+    const skillsArr = skills.split(",");
+    var raw = JSON.stringify({
+      a: "a",
+      pid: projectID,
+      owners: [user.uid],
+      name: projectName,
+      tmembers: [user.uid],
+      skills: skillsArr,
+      projectProfile: profileLink,
+      projectBannerPic: bannerLink,
+    });
 
-    fetch("http://localhost:3000/api/addUser")
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    var requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+    };
+
+    const getName = userInfo.name !== undefined ? userInfo.name : "Foo Bar";
+    var raw2 = JSON.stringify({
+      userID: user.uid,
+      name: getName,
+      rating: 100,
+      profilePic: userInfo.profilePic,
+      pOwned:
+        userInfo.pOwned !== null
+          ? [...userInfo.pOwned, projectID]
+          : [projectID],
+      pJoined: userInfo.pJoined !== null ? userInfo.pJoined : undefined,
+      skills: userInfo.skills !== null ? userInfo.skills : undefined,
+    });
+
+    var requestOptions2 = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw2,
+    };
+
+    fetch("http://localhost:3000/api/addProject", requestOptions)
       .then((response) => response.text())
       .then((result) => {
         console.log(result);
-        Router.push("../feed");
+        fetch("http://localhost:3000/api/addUser", requestOptions2)
+          .then((response) => response.text())
+          .then((result) => {
+            console.log(result);
+
+            Router.push("../feed");
+          })
+          .catch((error) => console.log("error", error));
       })
       .catch((error) => console.log("error", error));
   };
@@ -36,10 +90,10 @@ export default function FollowUp() {
           <div className='md:col-span-1'>
             <div className='px-6 py-10'>
               <h3 className='text-lg font-medium leading-6 text-gray-900'>
-                Personal Information
+                Project Information
               </h3>
               <p className='mt-1 text-sm text-gray-600'>
-                Tell us about yourself
+                Tell us about the project
               </p>
             </div>
           </div>
@@ -53,13 +107,13 @@ export default function FollowUp() {
                         htmlFor='first-name'
                         className='block text-sm font-medium text-gray-700'
                       >
-                        Name
+                        Project Name
                       </label>
                       <input
                         type='text'
                         name='first-name'
                         id='first-name'
-                        value={name}
+                        value={projectName}
                         onChange={(e) => setName(e.target.value)}
                         autoComplete='given-name'
                         className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm'
@@ -79,6 +133,42 @@ export default function FollowUp() {
                         id='first-name'
                         value={skills}
                         onChange={(e) => setSkills(e.target.value)}
+                        autoComplete='given-name'
+                        className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm'
+                      />
+                    </div>
+
+                    <div className='col-span-6 sm:col-span-3'>
+                      <label
+                        htmlFor='first-name'
+                        className='block text-sm font-medium text-gray-700'
+                      >
+                        {"Profile Picture Link (Temporary Upload Issue)"}
+                      </label>
+                      <input
+                        type='text'
+                        name='first-name'
+                        id='first-name'
+                        value={profileLink}
+                        onChange={(e) => setProfileLink(e.target.value)}
+                        autoComplete='given-name'
+                        className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm'
+                      />
+                    </div>
+
+                    <div className='col-span-6 sm:col-span-3'>
+                      <label
+                        htmlFor='first-name'
+                        className='block text-sm font-medium text-gray-700'
+                      >
+                        {"Banner Picture Link (Temporary Upload Issue)"}
+                      </label>
+                      <input
+                        type='text'
+                        name='first-name'
+                        id='first-name'
+                        value={bannerLink}
+                        onChange={(e) => setBannerLink(e.target.value)}
                         autoComplete='given-name'
                         className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm'
                       />

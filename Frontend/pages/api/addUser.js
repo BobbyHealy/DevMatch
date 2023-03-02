@@ -15,7 +15,7 @@ export default function handler(req, res) {
     maxRedirects: 20,
   };
   const reqBody = req.body;
-  // console.log(reqBody);
+  console.log(reqBody);
   var req = http.request(options, function (res1) {
     var chunks = [];
 
