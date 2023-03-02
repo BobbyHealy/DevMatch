@@ -36,7 +36,7 @@ type project struct {
 	ProjectID         string   `json:"pid"`
 	OwnersID          []string `json:"owners"`
 	ProjectName       string   `json:"name"`
-	MembersID         []string `json:"members"`
+	MembersID         []string `json:"tmembers"`
 	NeededSkills      []string `json:"skills"`
 	ProjectProfilePic string   `json:"projectProfile"`
 	ProjectBannerPic  string   `json:"projectBannerPic"`
@@ -267,7 +267,7 @@ func search(c *gin.Context) {
 	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Users/"
 	f := firego.New(path, nil)
 	var d map[string]interface{}
-	if err := f.OrderBy("$key").LimitToLast(int64(limit)).Value(&d); err != nil {
+	if err := f.OrderBy("$key").LimitToFirst(int64(limit)).Value(&d); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Printf("%+v\n", d)
