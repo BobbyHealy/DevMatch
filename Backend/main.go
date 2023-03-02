@@ -313,29 +313,10 @@ func removeProject(c *gin.Context) {
 	//path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
 	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Projects/" + pid
 	f := firego.New(path, nil)
-	var v project
-	if err := f.Value(&v); err != nil {
+	if err := f.Remove(); err != nil {
 		log.Fatal(err)
 	}
-	if v.ProjectID == "" {
-		c.IndentedJSON(http.StatusBadRequest, nil)
-		return
-	}
-	fmt.Printf("%+v\n", v)
 
-	var names []string //names of members
-	for j := 0; j < len(v.MembersID); j++ {
-		name := getUserFromID(v.MembersID[j]).Name
-		names = append(names, name)
-	}
-
-	var ownerNames []string //names of owners
-	for j := 0; j < len(v.OwnersID); j++ {
-		name := getUserFromID(v.MembersID[j]).Name
-		ownerNames = append(ownerNames, name)
-	}
-	//pretty = prettyProject(v)
-	c.IndentedJSON(http.StatusOK, []interface{}{v, names, ownerNames})
 }
 
 func getProjectFromID(pid string) project {
