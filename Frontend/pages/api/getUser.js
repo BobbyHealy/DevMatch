@@ -1,34 +1,24 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+export default async function (req, res) {
+  return new Promise((resolve, reject) => {
+    var requestOptions = {
+      method: "GET",
+      redirect: "follow",
+    };
 
-export default function handler(req, res) {
-  var http = require("follow-redirects").http;
-  var fs = require("fs");
+    fetch(`http://localhost:8080/users?uid=${req.body.userID}`, requestOptions)
+      .then((response) => response.text())
+      .then((result) => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.setHeader("Cache-Control", "max-age=180000");
+        res.end(JSON.stringify(JSON.parse(result)));
+        resolve();
+      })
 
-  var options = {
-    method: "GET",
-    hostname: "localhost",
-    port: 8080,
-    path: `/users?uid=${req.body.userID}`,
-    headers: {},
-    maxRedirects: 20,
-  };
-
-  var req = http.request(options, function (fres) {
-    var chunks = [];
-
-    fres.on("data", function (chunk) {
-      chunks.push(chunk);
-    });
-
-    fres.on("end", function (chunk) {
-      var body = Buffer.concat(chunks);
-      res.status(200).json(JSON.parse(body.toString()));
-    });
-
-    fres.on("error", function (error) {
-      res.status(400).json(JSON.parse(body.toString()));
-    });
+      .catch((error) => {
+        res.json(error);
+        res.status(405).end();
+        resolve(); // in case something goes wrong in the catch block (as vijay commented)
+      });
   });
-
-  req.end();
 }

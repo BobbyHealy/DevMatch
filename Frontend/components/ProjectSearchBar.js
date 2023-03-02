@@ -2,12 +2,6 @@ import React, { useContext, useEffect, useState } from "react";
 import Router from "next/router";
 
 export default function () {
-  const currentUser = {
-    id: 1,
-    name: "Auden",
-    imageUrl:
-      "https://media.licdn.com/dms/image/C4D03AQHHZKUrMMhCsQ/profile-displayphoto-shrink_800_800/0/1610704750210?e=2147483647&v=beta&t=OHuErweO0MQ3CeXJlSKkBpu-FOxPQh1sjcuVOQVTZb8",
-  };
   const proj = {
     name: "DevMatch",
     owner: "John Doe",
@@ -90,7 +84,7 @@ export default function () {
       {err && <span>Project Not Found!</span>}
       {project && (
         <div
-          className='uflex p-2 items-center gap-2 hover:bg-blue-600'
+          className='uflex p-2 items-center gap-2 hover:bg-gray-200'
           onClick={handleSelect}
         >
           <img
