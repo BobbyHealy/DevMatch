@@ -67,12 +67,19 @@ func main() {
 	router.POST("/addProject", postProject)
 	router.POST("/updateProject", updateProject)
 	router.GET("/search", search)
+
+	router.POST("/addDM", postDirectMessage)
+	router.POST("/updateDM", updateDirectMessage)
+	router.GET("/directmessages", getDirectMessage)
+  
 	router.GET("/prettyProject", getPrettyProject)
 	router.GET("/prettyUser", getPrettyUser)
 
 	router.DELETE("/removeUser", removeUser)
 	router.DELETE("/removeProject", removeProject)
+
 	router.Run("localhost:8080")
+	
 }
 
 func pushValue(anything string) {
