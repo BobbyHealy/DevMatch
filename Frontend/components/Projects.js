@@ -75,37 +75,39 @@ export default function Projects() {
   };
 
   useEffect(() => {
-    if (completeUser.pOwned !== undefined && timesChanged < 3) {
-      const cmdPromises = completeUser.pOwned.map((projectId) => {
-        var myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
-        var raw = JSON.stringify({
-          pid: projectId,
-        });
-        var requestOptions = {
-          method: "POST",
-          headers: myHeaders,
-          body: raw,
-        };
+    if (completeUser.pOwned !== null && timesChanged < 3) {
+      if (completeUser.pOwned !== undefined) {
+        const cmdPromises = completeUser.pOwned.map((projectId) => {
+          var myHeaders = new Headers();
+          myHeaders.append("Content-Type", "application/json");
+          var raw = JSON.stringify({
+            pid: projectId,
+          });
+          var requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: raw,
+          };
 
-        return new Promise((resolve, reject) => {
-          fetch("http://localhost:3000/api/getProject", requestOptions)
-            .then((response) => response.text())
-            .then((result) => resolve(JSON.parse(result)))
-            .catch((err) => {
-              reject(err);
-            });
+          return new Promise((resolve, reject) => {
+            fetch("http://localhost:3000/api/getProject", requestOptions)
+              .then((response) => response.text())
+              .then((result) => resolve(JSON.parse(result)))
+              .catch((err) => {
+                reject(err);
+              });
+          });
         });
-      });
 
-      Promise.allSettled(cmdPromises).then((results) => {
-        setCurrProj(
-          results.map((e) => {
-            return e.value;
-          })
-        );
-        setTimesChanged(timesChanged + 1);
-      });
+        Promise.allSettled(cmdPromises).then((results) => {
+          setCurrProj(
+            results.map((e) => {
+              return e.value;
+            })
+          );
+          setTimesChanged(timesChanged + 1);
+        });
+      }
     }
   }, [completeUser, userInfo]);
 
