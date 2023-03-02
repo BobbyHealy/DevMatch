@@ -28,7 +28,7 @@ func getDirectMessage(c *gin.Context) {
 	} else {
 		fmt.Println(id)
 	}
-	//path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
+
 	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/DirectMessages/" + id
 	f := firego.New(path, nil)
 	var v directmessage

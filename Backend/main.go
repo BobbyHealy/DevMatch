@@ -71,6 +71,9 @@ func main() {
 	router.POST("/addDM", postDirectMessage)
 	router.POST("/updateDM", updateDirectMessage)
 	router.GET("/directmessages", getDirectMessage)
+	router.POST("/addGC", postGroupChat)
+	router.POST("/updateGC", updateGroupChat)
+	router.GET("/groupchats", getGroupChat)
   
 	router.GET("/prettyProject", getPrettyProject)
 	router.GET("/prettyUser", getPrettyUser)
