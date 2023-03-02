@@ -65,6 +65,7 @@ func main() {
 	router.POST("/addUser", postUsers)
 	router.GET("/projects", getProject)
 	router.POST("/addProject", postProject)
+	router.POST("/updateProject", updateProject)
 	router.GET("/search", search)
 	router.DELETE("/removeUser", removeUser)
 	router.DELETE("/removeProject", removeProject)
@@ -292,4 +293,18 @@ func removeProject(c *gin.Context) {
 	if err := f.Remove(); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func updateProject(c *gin.Context) {
+	var newProj project
+	if err := c.BindJSON(&newProj); err != nil {
+		return
+	}
+	id := newProj.ProjectID
+	f := firego.New("https://devmatch-4d490-default-rtdb.firebaseio.com/Projects/", nil)
+	v := map[string]project{id: newProj}
+	if err := f.Update(v); err != nil {
+		log.Fatal(err)
+	}
+	c.IndentedJSON(http.StatusCreated, newProj)
 }
