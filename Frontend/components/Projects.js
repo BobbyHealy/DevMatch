@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Router from "next/router";
 import { useAuth } from "@/context/AuthContext";
+import { resolve } from "styled-jsx/css";
 
 export default function Projects() {
   const { user, userInfo } = useAuth();
@@ -28,7 +29,7 @@ export default function Projects() {
   };
   //   const [projects, setProjects] = useState([proj1, proj2]);
   const [completeUser, setCompleteUser] = useState({});
-  const [currProj, setCurrProj] = useState({ projects: [] });
+  const [currProj, setCurrProj] = useState([]);
   const [timesChanged, setTimesChanged] = useState(0);
 
   useEffect(() => {
@@ -59,38 +60,57 @@ export default function Projects() {
     }
   }, [user, userInfo]);
 
+  const exec = async (projectId) => {
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    var raw = JSON.stringify({
+      pid: projectId,
+    });
+    var requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+    };
+    fetch("http://localhost:3000/api/getProject", requestOptions);
+  };
+
   useEffect(() => {
-    if (completeUser.pOwned !== undefined && timesChanged == 0) {
-      const arr = [...completeUser.pOwned];
-      completeUser.pOwned.forEach((e, i) => {
-        // console.log("THIS IS HAPPENING " + i);
+    if (completeUser.pOwned !== undefined && timesChanged < 3) {
+      const cmdPromises = completeUser.pOwned.map((projectId) => {
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
-
         var raw = JSON.stringify({
-          pid: e,
+          pid: projectId,
         });
-
         var requestOptions = {
           method: "POST",
           headers: myHeaders,
           body: raw,
         };
 
-        fetch("http://localhost:3000/api/getProject", requestOptions)
-          .then((response) => response.text())
-          .then((result) => {
-            arr[i] = JSON.parse(result);
-          })
-          .catch((error) => console.log("error", error));
+        return new Promise((resolve, reject) => {
+          fetch("http://localhost:3000/api/getProject", requestOptions)
+            .then((response) => response.text())
+            .then((result) => resolve(JSON.parse(result)))
+            .catch((err) => {
+              reject(err);
+            });
+        });
       });
-      console.log(JSON.stringify(arr));
-      setCurrProj({ projects: arr });
+
+      Promise.allSettled(cmdPromises).then((results) => {
+        setCurrProj(
+          results.map((e) => {
+            return e.value;
+          })
+        );
+        setTimesChanged(timesChanged + 1);
+      });
     }
-  }, [completeUser]);
+  }, [completeUser, userInfo]);
 
   useEffect(() => {
-    console.log(JSON.stringify(currProj));
+    console.log(currProj);
   }, [currProj]);
 
   const redirectToProject = (id) => {
@@ -117,13 +137,13 @@ export default function Projects() {
     setProjects(copyProjects);
   };
   return (
-    <div className=''>
-      {currProj.projects.map((project, index) => {
+    <div className='bg-white'>
+      {currProj.map((project, index) => {
         // console.log("PRoject:");
         // console.log(currProj.projects);
         return (
           <div
-            className='flex p-2 items-center gap-2 hover:bg-blue-600'
+            className='flex p-2 items-center gap-2 hover:bg-gray-200'
             onClick={redirectToProject}
             onDragStart={(e) => dragStart(e, index)}
             onDragEnter={(e) => dragEnter(e, index)}
@@ -131,13 +151,31 @@ export default function Projects() {
             key={index}
             draggable
           >
-            <img
-              src={project.projectProfile}
-              className='bg-white h-6 w-6 rounded-full object-cover'
-            ></img>
-            <div className='info'>
-              <span className='text-lg font-medium'>{project.name}</span>
-              <p className='text-sm text-gray-100'>{project.skills}</p>
+            <div className='flex-shrink-0'>
+              <img
+                className='h-10 w-10 rounded-full'
+                src={
+                  project.projectProfile !== ""
+                    ? project.projectProfile
+                    : "https://cvhrma.org/wp-content/uploads/2015/07/default-profile-photo.jpg"
+                }
+                alt=''
+              />
+            </div>
+            <div className='min-w-0 flex-1'>
+              <p className='text-sm font-semibold text-gray-900'>
+                <a href='#' className='hover:underline'>
+                  {project.name}
+                </a>
+              </p>
+              <div className='text-sm text-gray-500'>
+                <a href='#' className='hover:underline'>
+                  Skills Needed:{" "}
+                  {project.skills.map((e, i) => (
+                    <p key={i}>{e + " "}</p>
+                  ))}
+                </a>
+              </div>
             </div>
           </div>
         );
