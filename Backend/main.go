@@ -66,7 +66,7 @@ func main() {
 	router.GET("/projects", getProject)
 	router.POST("/addProject", postProject)
 	router.POST("/updateProject", updateProject)
-	router.GET("/search", search)
+	router.POST("/search", search)
 
 	router.POST("/addDM", postDirectMessage)
 	router.POST("/updateDM", updateDirectMessage)
