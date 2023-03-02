@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "5eac42f1-ee3e-4e67-95e3-6a6feca4bc5a",
-		"name": "Update User and Projects API",
+		"name": "Direct Message API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "25903206"
 	},

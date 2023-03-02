@@ -11,10 +11,10 @@ import (
 
 
 type directmessage struct {
-	DMID  string `json:"dmID"`
-	DMUsers    []string `json:"dmUsers"`
+	DMID  		  string `json:"dmID"`
+	UserOne 	  string `json:"userOne"`
+	UserTwo 	  string `json:"userTwo"`
 	Messages    []string `json:"messages"`
-	
 }
 
 
