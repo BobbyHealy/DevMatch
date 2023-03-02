@@ -1,0 +1,81 @@
+{
+	"info": {
+		"_postman_id": "5eac42f1-ee3e-4e67-95e3-6a6feca4bc5a",
+		"name": "Update User and Projects API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25903206"
+	},
+	"item": [
+		{
+			"name": "Add DM",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"dmID\": \"1\", \"dmUsers\": [\"1\", \"2\"], \"messages\": [\"hello\", \"hi there\", \"how are you\"]}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/addDM",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"addDM"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update DM",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"dmID\": \"1\", \"dmUsers\": [\"1\", \"2\", \"3\"], \"messages\": [\"hello\", \"hi there\", \"how are you\", \"im good\"]}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/updateDM",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"updateDM"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get DM",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/directMessages?id=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"directMessages"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

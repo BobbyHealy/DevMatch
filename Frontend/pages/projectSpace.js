@@ -3,7 +3,7 @@ import { Dialog, Transition } from '@headlessui/react'
 import Router from "next/router";
 import { useRouter } from 'next/router';
 import { InputText } from 'primereact/inputtext';
-import Scrumboard from './Scrumboard';
+import Scrumboard from '@/components/Scrumboard';
 
 
 import {

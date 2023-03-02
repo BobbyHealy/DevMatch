@@ -1,5 +1,6 @@
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
+import Router from "next/router";
 
 export default function SignUp() {
   const { user, signup } = useAuth();
@@ -11,6 +12,8 @@ export default function SignUp() {
 
     try {
       await signup(email, password);
+      Router.push("../../")
+
     } catch (err) {
       console.log(err);
     }
