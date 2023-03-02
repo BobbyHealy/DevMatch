@@ -45,14 +45,14 @@ export default function UserComponent(props) {
               Rating: {" " + user.rating}
             </a>
           </p>
-          <p className='text-sm text-gray-500'>
+          <div className='text-sm text-gray-500'>
             <a href='#' className='hover:underline'>
               Skill List:{" "}
-              {user.skills.map((e) => (
-                <>{e + " "}</>
+              {user.skills.map((e, i) => (
+                <p key={i}>{e + " "}</p>
               ))}
             </a>
-          </p>
+          </div>
           <p className='text-sm text-gray-500'>
             <a href='#' className='hover:underline'>
               Other Projects: 1, 2, 3

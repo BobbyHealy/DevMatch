@@ -34,17 +34,17 @@ export default function Feed() {
           <main className='lg:col-span-9 xl:col-span-6'>
             {/* Update this to use API + map to generate a bunch of enties of either User or Project components */}
             {/* ProjComponent on feed example */}
-            {projectExamplesArray.map((e) => {
+            {projectExamplesArray.map((e, i) => {
               return (
-                <div className='pb-6'>
+                <div key={e.toString() + i} className='pb-6'>
                   <ProjComponent project={e} />
                 </div>
               );
             })}
             {/* UserComponent on feed example */}
-            {userExampleArray.map((e) => {
+            {userExampleArray.map((e, i) => {
               return (
-                <div className='pb-6'>
+                <div key={e.toString() + i} className='pb-6'>
                   <UserComponent user={e} />
                 </div>
               );
