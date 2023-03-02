@@ -14,31 +14,27 @@ export default function handler(req, res) {
     },
     maxRedirects: 20,
   };
-
-  var req = http.request(options, function (fres) {
+  const reqBody = req.body;
+  // console.log(reqBody);
+  var req = http.request(options, function (res1) {
     var chunks = [];
 
-    fres.on("data", function (chunk) {
+    res1.on("data", function (chunk) {
       chunks.push(chunk);
     });
 
-    fres.on("end", function (chunk) {
+    res1.on("end", function (chunk) {
       var body = Buffer.concat(chunks);
-      // console.log(body.toString());
-      res.status(200).json(JSON.parse(body.toString()));
+      res.status(201).json(JSON.parse(body.toString()));
     });
 
-    fres.on("error", function (error) {
-      // console.error(error);
-      res.status(200).json(error);
+    res1.on("error", function (error) {
+      console.error(error);
+      res.status(400).json(JSON.parse(body.toString()));
     });
   });
 
-  var postData = JSON.stringify({
-    userId: "1069",
-    name: "name",
-    skills: [""],
-  });
+  var postData = JSON.stringify(reqBody);
 
   req.write(postData);
 
