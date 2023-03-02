@@ -13,7 +13,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"dmID\": \"1\", \"dmUsers\": [\"1\", \"2\"], \"messages\": [\"hello\", \"hi there\", \"how are you\"]}"
+					"raw": "{\"dmID\": \"1\", \"userOne\": \"bob\", \"userTwo\": \"alice\", \"messages\": [\"hello\", \"hi there\", \"how are you\"]}"
 				},
 				"url": {
 					"raw": "http://localhost:8080/addDM",
@@ -36,7 +36,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"dmID\": \"1\", \"dmUsers\": [\"1\", \"2\", \"3\"], \"messages\": [\"hello\", \"hi there\", \"how are you\", \"im good\"]}"
+					"raw": "{\"dmID\": \"1\", \"userOne\": \"bob\", \"userTwo\": \"alice\", \"messages\": [\"hello\", \"hi there\", \"how are you\", \"im good\"]}"
 				},
 				"url": {
 					"raw": "http://localhost:8080/updateDM",
@@ -58,14 +58,14 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/directMessages?id=1",
+					"raw": "http://localhost:8080/directmessages?id=1",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
-						"directMessages"
+						"directmessages"
 					],
 					"query": [
 						{
