@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Input from "./Input";
+import Router from "next/router";
 // import {Routes, Route, useNavigate} from 'react-router-dom';
 
 
@@ -27,7 +28,10 @@ const projets = [
     // More projects
   ]
 
-export default function ManageProject() {
+export default function ManageProjects() {
+    const redirectToProject= () => {
+        Router.push('./projectSpace');
+    }
     return (
         <div className="px-4 sm:px-6 lg:px-8">
         <div className="sm:flex sm:items-center">
@@ -117,7 +121,8 @@ export default function ManageProject() {
                         </td>
 
                         <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0 ">
-                        <a href="#" className="text-indigo-600 hover:text-indigo-900">
+                        <a href="#" className="text-indigo-600 hover:text-indigo-900"
+                        onClick={redirectToProject}>
                             Edit<span className="sr-only">, {project.name}</span>
                         </a>
                         <a href="#" className="text-red-600 hover:text-indigo-900 p-2">
