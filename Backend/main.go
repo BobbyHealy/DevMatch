@@ -66,7 +66,11 @@ func main() {
 	router.GET("/projects", getProject)
 	router.POST("/addProject", postProject)
 	router.GET("/search", search)
+	router.POST("/addDM", postDirectMessage)
+	router.POST("/updateDM", updateDirectMessage)
+	router.GET("/directmessages", getDirectMessage)
 	router.Run("localhost:8080")
+	
 }
 
 func pushValue(anything string) {
