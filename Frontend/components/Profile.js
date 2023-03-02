@@ -76,9 +76,40 @@ function Profile() {
   const handleEdit = () => {
     setEdit(true);
   };
-  const handleSubmit = () => {
-    setEdit(false);
+
+  const handleSubmit = async (e) => {
+    const skillsArr = newSkills.split(",");
+    var raw = JSON.stringify({
+      userID: user.uid,
+      name: newName,
+      rating: 100,
+      skills: skillsArr,
+      pOwned: user.pOwned !== undefined ? user.pOwned : undefined,
+      pJoined: user.pJoined !== undefined ? user.pJoined : undefined,
+      profilePic: user.profilePic !== undefined ? user.profilePic : undefined,
+    });
+
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    var requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+    };
+
+    fetch("http://localhost:3000/api/addUser", requestOptions)
+      .then((response) => response.text())
+      .then((result) => {
+        console.log(result);
+        setEdit(false);
+      })
+      .catch((error) => console.log("error", error));
   };
+
+  // const handleSubmit = () => {
+  //   setEdit(false);
+  // };
   const handleCancel = () => {
     setEdit(false);
   };

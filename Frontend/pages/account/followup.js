@@ -1,18 +1,46 @@
 import Header from "@/components/header";
 import SkillList from "@/components/SkillList";
+import { useAuth } from "@/context/AuthContext";
 import Head from "next/head";
 import Router from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function FollowUp() {
+  const { user, login, logout, userInfo } = useAuth();
   const [name, setName] = useState("");
   const [skills, setSkills] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  //   useEffect(() => {
+  //     console.log(skills.split(","));
+  //     var raw = JSON.stringify({
+  //       userID: user.uid,
+  //       name: name,
+  //       rating: 100,
+  //     });
+  //     console.log(raw);
+  //   }, [skills]);
+
   const handleSumbit = async (e) => {
     e.preventDefault();
+    const skillsArr = skills.split(",");
+    var raw = JSON.stringify({
+      userID: user.uid,
+      name: name,
+      rating: 100,
+      skills: skillsArr,
+    });
 
-    fetch("http://localhost:3000/api/addUser")
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    var requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+    };
+
+    fetch("http://localhost:3000/api/addUser", requestOptions)
       .then((response) => response.text())
       .then((result) => {
         console.log(result);

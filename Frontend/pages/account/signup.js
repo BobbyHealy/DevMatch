@@ -12,8 +12,7 @@ export default function SignUp() {
 
     try {
       await signup(email, password);
-      Router.push("../../")
-
+      Router.push("./followup");
     } catch (err) {
       console.log(err);
     }
