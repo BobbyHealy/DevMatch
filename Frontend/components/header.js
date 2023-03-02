@@ -1,14 +1,10 @@
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Menu, Popover, Transition } from "@headlessui/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useAuth } from "@/context/AuthContext";
+import Router from "next/router";
 
-const user = {
-  name: "Chelsea Hagon",
-  email: "chelsea.hagon@example.com",
-  imageUrl:
-    "https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-};
 const navigation = [
   { name: "Dashboard", href: "#", current: true },
   { name: "Calendar", href: "#", current: true },
@@ -22,9 +18,59 @@ const userNavigation = [
 ];
 
 export default function Header() {
+  const { user, login, logout, userInfo } = useAuth();
+  const [completeUser, setCompleteUser] = useState({
+    userId: "",
+    name: "Foo Bar",
+    email: "foo@bar.com",
+    rating: 100,
+    profilePic: "",
+    pOwned: [""],
+    pJoined: [""],
+    skills: [""],
+  });
+
+  useEffect(() => {
+    if (user === null && userInfo === null) {
+      Router.push("/account/login");
+    } else if (userInfo === null) {
+      setCompleteUser({
+        userID: user.userID !== undefined ? user.userID : "",
+        name: "Foo Bar",
+        email: user.email !== undefined ? user.email : "foo@bar.com",
+        rating: 100,
+        profilePic: "",
+        pOwned: [],
+        pJoined: [],
+        skills: [],
+      });
+    } else {
+      setCompleteUser({
+        userID: user.userID !== undefined ? user.userID : "",
+        name: userInfo.name !== undefined ? userInfo.name : "Foo Bar",
+        email: user.email !== undefined ? user.email : "foo@bar.com",
+        rating: userInfo.rating !== undefined ? userInfo.rating : 100,
+        profilePic:
+          userInfo.profilePic !== undefined ? userInfo.profilePic : "",
+        pOwned: userInfo.pOwned !== undefined ? userInfo.pOwned : [],
+        pJoined: userInfo.pJoined !== undefined ? userInfo.pJoined : [],
+        skills: userInfo.skills !== undefined ? userInfo.skills : [],
+      });
+    }
+  }, [user, userInfo]);
+
   function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
   }
+
+  const handleLogout = async (e) => {
+    try {
+      await logout();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <Popover
       as='header'
@@ -98,7 +144,7 @@ export default function Header() {
                       <span className='sr-only'>Open user menu</span>
                       <img
                         className='h-8 w-8 rounded-full'
-                        src={user.imageUrl}
+                        src={completeUser.profilePic}
                         alt=''
                       />
                     </Menu.Button>
@@ -115,17 +161,29 @@ export default function Header() {
                     <Menu.Items className='absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none'>
                       {userNavigation.map((item) => (
                         <Menu.Item key={item.name}>
-                          {({ active }) => (
-                            <a
-                              href={item.href}
-                              className={classNames(
-                                active ? "bg-gray-100" : "",
-                                "block py-2 px-4 text-sm text-gray-700"
-                              )}
-                            >
-                              {item.name}
-                            </a>
-                          )}
+                          {({ active }) =>
+                            item.name === "Sign out" ? (
+                              <a
+                                onClick={() => handleLogout()}
+                                className={classNames(
+                                  active ? "bg-gray-100" : "",
+                                  "block py-2 px-4 text-sm text-gray-700"
+                                )}
+                              >
+                                {item.name}
+                              </a>
+                            ) : (
+                              <a
+                                href={item.href}
+                                className={classNames(
+                                  active ? "bg-gray-100" : "",
+                                  "block py-2 px-4 text-sm text-gray-700"
+                                )}
+                              >
+                                {item.name}
+                              </a>
+                            )
+                          }
                         </Menu.Item>
                       ))}
                     </Menu.Items>
@@ -165,16 +223,16 @@ export default function Header() {
                 <div className='flex-shrink-0'>
                   <img
                     className='h-10 w-10 rounded-full'
-                    src={user.imageUrl}
+                    src={completeUser.profilePic}
                     alt=''
                   />
                 </div>
                 <div className='ml-3'>
                   <div className='text-base font-medium text-gray-800'>
-                    {user.name}
+                    {completeUser.name}
                   </div>
                   <div className='text-sm font-medium text-gray-500'>
-                    {user.email}
+                    {completeUser.email}
                   </div>
                 </div>
                 <button
@@ -186,15 +244,25 @@ export default function Header() {
                 </button>
               </div>
               <div className='mx-auto mt-3 max-w-3xl space-y-1 px-2 sm:px-4'>
-                {userNavigation.map((item) => (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    className='block rounded-md py-2 px-3 text-base font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900'
-                  >
-                    {item.name}
-                  </a>
-                ))}
+                {userNavigation.map((item) =>
+                  item.name === "Sign out" ? (
+                    <a
+                      key={item.name}
+                      onClick={() => handleLogout()}
+                      className='block rounded-md py-2 px-3 text-base font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                    >
+                      {item.name}
+                    </a>
+                  ) : (
+                    <a
+                      key={item.name}
+                      href={item.href}
+                      className='block rounded-md py-2 px-3 text-base font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                    >
+                      {item.name}
+                    </a>
+                  )
+                )}
               </div>
             </div>
           </Popover.Panel>

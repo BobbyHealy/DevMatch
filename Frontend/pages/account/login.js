@@ -1,18 +1,28 @@
 import { useAuth } from "@/context/AuthContext";
-import { useState } from "react";
+import Router from "next/router";
+import { useEffect, useState } from "react";
 
 export default function Login() {
-  const { user, login, logout } = useAuth();
+  const { user, login, logout, updateCurrentUserInfo } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  useEffect(() => {
+    if (user !== null) {
+      Router.push("../feed");
+    }
+  }, [user]);
+
   const handleLogin = async (e) => {
     e.preventDefault();
-
+    let success = false;
     try {
       await login(email, password);
+      // await updateCurrentUserInfo();
+      success = true;
     } catch (err) {
       console.log(err);
+      console.log("HERE IS WHERE YOU CAN POP");
     }
   };
 
