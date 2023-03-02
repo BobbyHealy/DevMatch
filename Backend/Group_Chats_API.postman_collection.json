@@ -1,76 +1,76 @@
 {
 	"info": {
-		"_postman_id": "5eac42f1-ee3e-4e67-95e3-6a6feca4bc5a",
-		"name": "Direct Message API",
+		"_postman_id": "37757910-c5bf-41c7-a3f5-f7a70cd1cec8",
+		"name": "Group Chat API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "25903206"
 	},
 	"item": [
 		{
-			"name": "Add DM",
+			"name": "Add GC",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"dmID\": \"1\", \"userOne\": \"bob\", \"userTwo\": \"alice\", \"messages\": [\"hello\", \"hi there\", \"how are you\"]}"
+					"raw": "{\"gcID\": \"2\", \"projectID\": \"3\", \"userIDs\": [\"1\", \"2\", \"3\"], \"messages\": [\"hello\", \"hi there\", \"how are you\"]}"
 				},
 				"url": {
-					"raw": "http://localhost:8080/addDM",
+					"raw": "http://localhost:8080/addGC",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
-						"addDM"
+						"addGC"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Update DM",
+			"name": "Update GC",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"dmID\": \"1\", \"userOne\": \"bob\", \"userTwo\": \"alice\", \"messages\": [\"hello\", \"hi there\", \"how are you\", \"im good\"]}"
+					"raw": "{\"gcID\": \"2\", \"projectID\": \"3\", \"userIDs\": [\"1\", \"2\", \"3\", \"4\"], \"messages\": [\"hello\", \"hi there\", \"how are you\", \"im good\"]}"
 				},
 				"url": {
-					"raw": "http://localhost:8080/updateDM",
+					"raw": "http://localhost:8080/updateGC",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
-						"updateDM"
+						"updateGC"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Get DM",
+			"name": "Get GC",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/directmessages?id=1",
+					"raw": "http://localhost:8080/groupchats?id=2",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
-						"directmessages"
+						"groupchats"
 					],
 					"query": [
 						{
 							"key": "id",
-							"value": "1"
+							"value": "2"
 						}
 					]
 				}
