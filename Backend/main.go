@@ -66,6 +66,8 @@ func main() {
 	router.GET("/projects", getProject)
 	router.POST("/addProject", postProject)
 	router.GET("/search", search)
+	router.DELETE("/removeUser", removeUser)
+	router.DELETE("/removeProject", removeProject)
 	router.Run("localhost:8080")
 }
 
@@ -140,7 +142,6 @@ func getUsers(c *gin.Context) {
 	uid, exists := c.GetQuery("uid")
 	if !exists {
 		fmt.Println("Request with key")
-		c.IndentedJSON(http.StatusBadRequest, nil)
 		return
 	} else {
 		fmt.Println(uid)
@@ -149,15 +150,8 @@ func getUsers(c *gin.Context) {
 	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Users/" + uid
 	f := firego.New(path, nil)
 	var v user
-
 	if err := f.Value(&v); err != nil {
 		log.Fatal(err)
-		c.IndentedJSON(http.StatusBadRequest, v)
-		return
-	}
-	if v.UserID == "" {
-		c.IndentedJSON(http.StatusBadRequest, nil)
-		return
 	}
 	fmt.Printf("%+v\n", v)
 	c.IndentedJSON(http.StatusOK, v)
@@ -178,7 +172,6 @@ func postUsers(c *gin.Context) {
 	v := map[string]user{id: newUser}
 	if err := f.Update(v); err != nil {
 		log.Fatal(err)
-		return
 	}
 	// Add the new album to the slice.
 	c.IndentedJSON(http.StatusCreated, newUser)
@@ -209,7 +202,6 @@ func getProject(c *gin.Context) {
 	pid, exists := c.GetQuery("pid")
 	if !exists {
 		fmt.Println("Request with key")
-		c.IndentedJSON(http.StatusBadRequest, nil)
 		return
 	} else {
 		fmt.Println(pid)
@@ -220,10 +212,6 @@ func getProject(c *gin.Context) {
 	var v project
 	if err := f.Value(&v); err != nil {
 		log.Fatal(err)
-	}
-	if v.ProjectID == "" {
-		c.IndentedJSON(http.StatusBadRequest, nil)
-		return
 	}
 	fmt.Printf("%+v\n", v)
 	c.IndentedJSON(http.StatusOK, v)
@@ -272,4 +260,36 @@ func search(c *gin.Context) {
 	}
 	fmt.Printf("%+v\n", d)
 	c.IndentedJSON(http.StatusOK, d)
+}
+
+func removeUser(c *gin.Context) {
+	uid, exists := c.GetQuery("uid")
+	if !exists {
+		fmt.Println("Request with key")
+		return
+	} else {
+		fmt.Println(uid)
+	}
+	//path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
+	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Users/" + uid
+	f := firego.New(path, nil)
+	if err := f.Remove(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func removeProject(c *gin.Context) {
+	pid, exists := c.GetQuery("pid")
+	if !exists {
+		fmt.Println("Request with key")
+		return
+	} else {
+		fmt.Println(pid)
+	}
+	//path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
+	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Projects/" + pid
+	f := firego.New(path, nil)
+	if err := f.Remove(); err != nil {
+		log.Fatal(err)
+	}
 }
