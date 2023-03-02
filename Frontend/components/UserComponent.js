@@ -48,9 +48,9 @@ export default function UserComponent(props) {
           <div className='text-sm text-gray-500'>
             <a href='#' className='hover:underline'>
               Skill List:{" "}
-              {user.skills.map((e, i) => (
-                <p key={i}>{e + " "}</p>
-              ))}
+              {user.skills !== undefined
+                ? user.skills.map((e, i) => <p key={i}>{e + " "}</p>)
+                : "N/a"}
             </a>
           </div>
           <p className='text-sm text-gray-500'>

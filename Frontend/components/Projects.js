@@ -171,9 +171,9 @@ export default function Projects() {
               <div className='text-sm text-gray-500'>
                 <a href='#' className='hover:underline'>
                   Skills Needed:{" "}
-                  {project.skills.map((e, i) => (
-                    <p key={i}>{e + " "}</p>
-                  ))}
+                  {project.skills != undefined
+                    ? project.skills.map((e, i) => <p key={i}>{e + " "}</p>)
+                    : "N/a"}
                 </a>
               </div>
             </div>

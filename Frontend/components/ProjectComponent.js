@@ -26,7 +26,7 @@ export default function ProjComponent(props) {
       <h1>
         <img
           className='h-18 w-full object-cover lg:h-24 rounded-t-lg'
-          src={project.banner_picture}
+          src={project.projectBannerPic}
           alt=''
         />
       </h1>
@@ -35,7 +35,7 @@ export default function ProjComponent(props) {
           <div className='flex-shrink-0'>
             <img
               className='h-10 w-10 rounded-full'
-              src={project.profile_picture}
+              src={project.projectProfile}
               alt=''
             />
           </div>
@@ -47,23 +47,24 @@ export default function ProjComponent(props) {
             </p>
             <p className='text-sm text-gray-500'>
               <a href='#' className='hover:underline'>
-                Owner: {project.owners[0]}
+                Owner:{" "}
+                {project.owners !== undefined ? project.owners[0] : "N/a"}
               </a>
             </p>
             <div className='text-sm text-gray-500'>
               <a href='#' className='hover:underline'>
                 Skills Needed:{" "}
-                {project.skills.map((e, i) => (
-                  <p key={i}>{e + " "}</p>
-                ))}
+                {project.skills !== undefined
+                  ? project.skills.map((e, i) => <p key={i}>{e + " "}</p>)
+                  : "N/a"}
               </a>
             </div>
             <div className='text-sm text-gray-500'>
               <a href='#' className='hover:underline'>
                 Other members:{" "}
-                {project.members.map((e, i) => (
-                  <p key={i}>{e + " "}</p>
-                ))}
+                {project.members !== undefined
+                  ? project.members.map((e, i) => <p key={i}>{e + " "}</p>)
+                  : "N/a"}
               </a>
             </div>
           </div>
