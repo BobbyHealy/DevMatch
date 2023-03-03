@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { storage } from "@/config/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useAuth } from "@/context/AuthContext";
+import GroupChat from "@/components/GroupChat";
 
 import {
   Bars3Icon,
@@ -20,6 +21,7 @@ import { useSearchParams } from "react-router-dom";
 const navigation = [
   { name: "Overview", href: "#", icon: HomeIcon, current: false },
   { name: "ScrumBoard", href: "#Scrum", icon: ClipboardIcon, current: false },
+  { name: "GroupChat", href: "#GC", icon: ClipboardIcon, current: false },
 ];
 
 function classNames(...classes) {
@@ -130,6 +132,7 @@ useEffect(() => {
           projectD.projectBannerPic !== undefined
             ? projectD.projectBannerPic
             : undefined,
+        
       });
 
       var myHeaders = new Headers();
@@ -493,6 +496,7 @@ useEffect(() => {
             <main className='flex-1'>
               {(navigation[0].current = true)}
               {(navigation[1].current = false)}
+              {(navigation[2].current = false)}
               <div className='py-6'>
                 <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
                   <div className=''>
@@ -713,13 +717,25 @@ useEffect(() => {
               </div>
             </main>
           )}
+  
           {section === "#Scrum" && (
             <main className='flex-1'>
               {(navigation[0].current = false)}
               {(navigation[1].current = true)}
+              {(navigation[2].current = false)}
               <Scrumboard />
             </main>
           )}
+          {section === "#GC" && (
+            <main className='flex-1'>
+              {(navigation[0].current = false)}
+              {(navigation[1].current = false)}
+              {(navigation[2].current = true)}
+              <GroupChat/>
+            </main>
+          )}
+
+
         </div>
       </div>
     </>
