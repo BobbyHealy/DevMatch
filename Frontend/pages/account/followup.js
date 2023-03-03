@@ -4,12 +4,17 @@ import { useAuth } from "@/context/AuthContext";
 import Head from "next/head";
 import Router from "next/router";
 import { useEffect, useState } from "react";
+import { InputText } from "primereact/inputtext";
+import { storage } from "@/config/firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export default function FollowUp() {
   const { user, login, logout, userInfo } = useAuth();
   const [name, setName] = useState("");
   const [skills, setSkills] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const[image, setimage] = useState(null)
+  const[url, setUrl] = useState(null)
 
   //   useEffect(() => {
   //     console.log(skills.split(","));
@@ -20,33 +25,91 @@ export default function FollowUp() {
   //     });
   //     console.log(raw);
   //   }, [skills]);
+  useEffect(() => {
+    if (!image) {
+        setUrl(undefined)
+        return
+    }
+
+    const objectUrl = URL.createObjectURL(image)
+    setUrl(objectUrl)
+
+    // free memory when ever this component is unmounted
+    return () => URL.revokeObjectURL(objectUrl)
+}, [image])
 
   const handleSumbit = async (e) => {
     e.preventDefault();
-    const skillsArr = skills.split(",");
-    var raw = JSON.stringify({
-      userID: user.uid,
-      name: name,
-      rating: 100,
-      skills: skillsArr,
-    });
+    if(image)
+    {
+    var imageRef = ref(storage, "image")
+    uploadBytes(imageRef, image)
+    .then(() => {
+        getDownloadURL(imageRef)
+        .then((url) => {
+            setUrl(url)
+            var raw = JSON.stringify({
+                userID: user.uid,
+                name: name,
+                rating: 100,
+                skills: skillsArr,
+                pOwned: userInfo.pOwned !== undefined ?  userInfo.pOwned : undefined,
+                pJoined: userInfo.pJoined !== undefined ?  userInfo.pOwned : undefined,
+                profilePic: url,
+              });
+              
+              var myHeaders = new Headers();
+              myHeaders.append("Content-Type", "application/json");
+          
+              var requestOptions = {
+                method: "POST",
+                headers: myHeaders,
+                body: raw,
+              };
+          
+              fetch("http://localhost:3000/api/addUser", requestOptions)
+                .then((response) => response.text())
+                .then((result) => {
+                  console.log(result);
+                })
+                .catch((error) => console.log("error", error));
 
-    var myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
+          
+        })
+        .catch((error) => {
+            console.log(error.message, "error getting the image url");
+        })
+        setimage(null);
+    
+      })}
+      else
+      {
+        const skillsArr = skills.split(",");
+        var raw = JSON.stringify({
+          userID: user.uid,
+          name: name,
+          rating: 100,
+          skills: skillsArr,
+          ProfilePic: url !== undefined ? url : userInfo.profilePic,
+        });
+        
 
-    var requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-    };
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
 
-    fetch("http://localhost:3000/api/addUser", requestOptions)
-      .then((response) => response.text())
-      .then((result) => {
-        console.log(result);
-        Router.push("../feed");
-      })
-      .catch((error) => console.log("error", error));
+        var requestOptions = {
+          method: "POST",
+          headers: myHeaders,
+          body: raw,
+        };
+
+        fetch("http://localhost:3000/api/addUser", requestOptions)
+          .then((response) => response.text())
+          .then((result) => {
+            console.log(result);
+            Router.push("../feed");
+          })
+          .catch((error) => console.log("error", error));}
   };
 
   return (
@@ -117,21 +180,27 @@ export default function FollowUp() {
                         Profile photo
                       </label>
                       <div className='mt-1 flex items-center'>
-                        <span className='inline-block h-12 w-12 overflow-hidden rounded-full bg-gray-100'>
-                          <svg
-                            className='h-full w-full text-gray-300'
-                            fill='currentColor'
-                            viewBox='0 0 24 24'
-                          >
-                            <path d='M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z' />
-                          </svg>
-                        </span>
-                        <button
-                          type='button'
-                          className='ml-5 rounded-md border border-gray-300 bg-white py-2 px-3 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
-                        >
-                          Change
-                        </button>
+                        <div className='flex h-12 p-2 gap-2  items-center gap-2' > 
+                       
+                            {<img
+                            style={{
+                                width: "40px",
+                                height: "40px",
+                                borderRadius: "50%",
+                                objectFit:"cover",
+                                border: "1px solid grey"
+                            }}
+                            src={url} alt=""/>}
+                       
+                          <InputText type = "file" 
+                          accept="*.jpg"
+                          onChange={(event)=>{
+                          const file = event.target.files[0];
+                          setimage(file)
+                          }}
+                          />
+     
+                        </div>
                       </div>
                     </div>
 

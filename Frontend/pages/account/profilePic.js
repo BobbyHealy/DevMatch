@@ -11,18 +11,17 @@ function profilePic() {
     const[image, setimage] = useState(null)
     const[url, setUrl] = useState(null)
     const { user, login, logout, userInfo } = useAuth();
-    const [imageRef, setRef] = useState(ref(storage, "image"));
     const redirectToProfile= () => {
  
         Router.push('./');
     }
     const handleSubmit=()=>{
         // update firebase
-        
+        var imageRef = ref(storage, "image")
         uploadBytes(imageRef, image)
         .then(() => {
             getDownloadURL(imageRef)
-            .then(async (url) => {
+            .then((url) => {
                 setUrl(url)
                 var raw = JSON.stringify({
                     userID: user.uid,

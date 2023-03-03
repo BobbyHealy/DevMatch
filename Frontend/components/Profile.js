@@ -91,7 +91,7 @@ function Profile() {
       skills: skillsArr,
       pOwned: user.pOwned !== undefined ? user.pOwned : undefined,
       pJoined: user.pJoined !== undefined ? user.pJoined : undefined,
-      profilePic: user.profilePic !== undefined ? user.profilePic : undefined,
+      profilePic: userInfo.profilePic !== undefined ? userInfo.profilePic : undefined,
     });
 
     var myHeaders = new Headers();
