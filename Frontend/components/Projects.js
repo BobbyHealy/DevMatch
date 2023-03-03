@@ -117,7 +117,7 @@ export default function Projects() {
 
   const redirectToProject = (id) => {
     // Router.push("./projctSpace"+id);
-    Router.push("/projectSpace");
+    Router.push(`/projectSpace?pid=${id}`);
   };
   const dragOverItem = useRef();
   const dragItem = useRef();
@@ -146,7 +146,7 @@ export default function Projects() {
         return (
           <div
             className='flex p-2 items-center gap-2 hover:bg-gray-200'
-            onClick={redirectToProject}
+            onClick={() => redirectToProject(project.pid)}
             onDragStart={(e) => dragStart(e, index)}
             onDragEnter={(e) => dragEnter(e, index)}
             onDragEnd={drop}

@@ -184,7 +184,7 @@ func postUsers(c *gin.Context) {
 	id := newUser.UserID
 	f := firego.New("https://devmatch-4d490-default-rtdb.firebaseio.com/Users/", nil)
 	if newUser.ProfilePic == "" {
-		newUser.ProfilePic = "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/1200px-Default_pfp.svg.png"
+		newUser.ProfilePic = "https://www.nicepng.com/png/detail/73-730154_open-default-profile-picture-png.png"
 	}
 
 	v := map[string]user{id: newUser}
