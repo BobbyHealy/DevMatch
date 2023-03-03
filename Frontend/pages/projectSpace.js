@@ -6,6 +6,7 @@ import Scrumboard from "@/components/Scrumboard";
 import { useRouter } from "next/router";
 import { storage } from "@/config/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { useAuth } from "@/context/AuthContext";
 
 import {
   Bars3Icon,
@@ -26,6 +27,7 @@ function classNames(...classes) {
 }
 
 export default function projectSpace() {
+  const {userInfo} = useAuth();
   const[icon, setIcon] = useState(null)
   const[iconURL, setIconUrl] = useState(null)
   const[banner, setBanner] = useState(null)
@@ -110,6 +112,7 @@ useEffect(() => {
 }, [banner])
 
   const handleSubmit = async (e) => {
+
     if(!icon&&!banner)
     {
       const skillsArr = newSkills.split(",");
@@ -148,9 +151,12 @@ useEffect(() => {
     }
     else if(!banner)
     {
+      var imageRef = ref(storage, name+"Icon")
 
 
-    }else if (!icon)
+
+    }
+    else if(!icon)
     {
 
     }
@@ -272,13 +278,13 @@ useEffect(() => {
                         <div>
                           <img
                             className='inline-block h-10 w-10 rounded-full'
-                            src={user.imageUrl}
+                            src={userInfo.profilePic}
                             alt=''
                           />
                         </div>
                         <div className='ml-3'>
                           <p className='text-base font-medium text-gray-700 group-hover:text-gray-900'>
-                            {user.name}
+                            {userInfo.name}
                           </p>
                           <p
                             className='text-sm font-medium text-gray-500 group-hover:text-gray-700'
@@ -342,13 +348,13 @@ useEffect(() => {
                   <div>
                     <img
                       className='inline-block h-9 w-9 rounded-full'
-                      src={user.imageUrl}
+                      src={userInfo.profilePic}
                       alt=''
                     />
                   </div>
                   <div className='ml-3'>
                     <p className='text-sm font-medium text-gray-700 group-hover:text-gray-900'>
-                      {user.name}
+                      {userInfo.name}
                     </p>
                     <p
                       className='text-xs font-medium text-gray-500 group-hover:text-gray-700'
