@@ -231,44 +231,43 @@ useEffect(() => {
       var imageRef = ref(storage, name+"Icon")
       var imageRef2 = ref(storage, name+"Banner")
       uploadBytes(imageRef, icon).then(()=>{
-        uploadBytes(imageRef2, banner)
-        getDownloadURL(imageRef).then((url1)=>{
+        uploadBytes(imageRef2, banner).then(()=>{
+          getDownloadURL(imageRef).then((url1)=>{
           
-          getDownloadURL(imageRef2).then((url2)=>{
-          const skillsArr = newSkills.split(",");
-          var raw = JSON.stringify({
-            pid: pid,
-            name: name,
-            skills: skillsArr,
-            tmembers: projectD.tmembers !== undefined ? projectD.tmembers : undefined,
-            owners: projectD.owners !== undefined ? projectD.owners : undefined,
-            projectProfile: url1,
-            projectBannerPic: url2,
-          });
-
-          var myHeaders = new Headers();
-          myHeaders.append("Content-Type", "application/json");
-    
-          var requestOptions = {
-            method: "POST",
-            headers: myHeaders,
-            body: raw,
-          };
-
-          fetch("http://localhost:3000/api/addProject", requestOptions)
-          .then((response) => response.text())
-          .then((result) => {
-            console.log(result);
-            setEdit(false);
+            getDownloadURL(imageRef2).then((url2)=>{
+            const skillsArr = newSkills.split(",");
+            var raw = JSON.stringify({
+              pid: pid,
+              name: name,
+              skills: skillsArr,
+              tmembers: projectD.tmembers !== undefined ? projectD.tmembers : undefined,
+              owners: projectD.owners !== undefined ? projectD.owners : undefined,
+              projectProfile: url1,
+              projectBannerPic: url2,
+            });
+  
+            var myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+      
+            var requestOptions = {
+              method: "POST",
+              headers: myHeaders,
+              body: raw,
+            };
+  
+            fetch("http://localhost:3000/api/addProject", requestOptions)
+            .then((response) => response.text())
+            .then((result) => {
+              console.log(result);
+              setEdit(false);
+            })
+            .catch((error) => console.log("error", error));
+            })
           })
-          .catch((error) => console.log("error", error));
-          })
+          
+        }
+        )
 
-    
-
-
-
-        })
       })
 
 

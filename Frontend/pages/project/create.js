@@ -4,19 +4,50 @@ import { useAuth } from "@/context/AuthContext";
 import { getAuth } from "firebase/auth";
 import Head from "next/head";
 import Router from "next/router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { InputText } from "primereact/inputtext";
+import { storage } from "@/config/firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export default function Create() {
   const { user, login, logout, userInfo } = useAuth();
   const [projectName, setName] = useState("");
   const [skills, setSkills] = useState("");
-  const [profileLink, setProfileLink] = useState("");
-  const [bannerLink, setBannerLink] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const[icon, setIcon] = useState(null)
+  const[iconURL, setIconUrl] = useState(null)
+  const[banner, setBanner] = useState(null)
+  const[bannerURL, setBannerURL] = useState(null)
+
+  useEffect(() => {
+    if (!icon) {
+        setIconUrl(undefined)
+        return
+    }
+
+    const objectUrl = URL.createObjectURL(icon)
+    setIconUrl(objectUrl)
+
+    // free memory when ever this component is unmounted
+    return () => URL.revokeObjectURL(objectUrl)
+}, [icon])
+useEffect(() => {
+  if (!banner) {
+      setBannerURL(undefined)
+      return
+  }
+
+  const objectUrl = URL.createObjectURL(banner)
+  setBannerURL(objectUrl)
+
+  // free memory when ever this component is unmounted
+  return () => URL.revokeObjectURL(objectUrl)
+}, [banner])
 
   const handleSumbit = async (e) => {
     e.preventDefault();
+    if (!icon&&!banner){
     const projectID = uuidv4();
     const skillsArr = skills.split(",");
     var raw = JSON.stringify({
@@ -26,8 +57,6 @@ export default function Create() {
       name: projectName,
       tmembers: [user.uid],
       skills: skillsArr,
-      projectProfile: profileLink,
-      projectBannerPic: bannerLink,
     });
 
     var myHeaders = new Headers();
@@ -77,6 +106,221 @@ export default function Create() {
           .catch((error) => console.log("error", error));
       })
       .catch((error) => console.log("error", error));
+    }
+
+      else if(!banner)
+      {
+        var imageRef = ref(storage, projectName+"Icon")
+        uploadBytes(imageRef, icon).then(()=>{
+          getDownloadURL(imageRef).then((url)=>{
+            const projectID = uuidv4();
+            const skillsArr = skills.split(",");
+            var raw = JSON.stringify({
+              a: "a",
+              pid: projectID,
+              owners: [user.uid],
+              name: projectName,
+              tmembers: [user.uid],
+              skills: skillsArr,
+              projectProfile: url,
+            });
+        
+            var myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+        
+            var requestOptions = {
+              method: "POST",
+              headers: myHeaders,
+              body: raw,
+            };
+        
+            const getName = userInfo.name !== undefined ? userInfo.name : "Foo Bar";
+            var raw2 = JSON.stringify({
+              userID: user.uid,
+              name: getName,
+              rating: 100,
+              profilePic: userInfo.profilePic,
+              pOwned:
+                userInfo.pOwned !== null
+                  ? userInfo.pOwned !== undefined
+                    ? userInfo.pOwned.length > 0
+                      ? [...userInfo.pOwned, projectID]
+                      : [projectID]
+                    : [projectID]
+                  : [projectID],
+              pJoined: userInfo.pJoined !== null ? userInfo.pJoined : undefined,
+              skills: userInfo.skills !== null ? userInfo.skills : undefined,
+            });
+        
+            var requestOptions2 = {
+              method: "POST",
+              headers: myHeaders,
+              body: raw2,
+            };
+
+            fetch("http://localhost:3000/api/addProject", requestOptions)
+            .then((response) => response.text())
+            .then((result) => {
+              console.log(result);
+              fetch("http://localhost:3000/api/addUser", requestOptions2)
+                .then((response) => response.text())
+                .then((result) => {
+                  console.log(result);
+      
+                  Router.push("../feed");
+                })
+                .catch((error) => console.log("error", error));
+            })
+            .catch((error) => console.log("error", error));
+          })
+        })
+  
+  
+      }
+      else if(!icon)
+      {
+        var imageRef = ref(storage, projectName+"Banner")
+        uploadBytes(imageRef, banner).then(()=>{
+          getDownloadURL(imageRef).then((url)=>{
+            const projectID = uuidv4();
+            const skillsArr = skills.split(",");
+            var raw = JSON.stringify({
+              a: "a",
+              pid: projectID,
+              owners: [user.uid],
+              name: projectName,
+              tmembers: [user.uid],
+              skills: skillsArr,
+              projectBannerPic:url,
+            });
+        
+            var myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+        
+            var requestOptions = {
+              method: "POST",
+              headers: myHeaders,
+              body: raw,
+            };
+        
+            const getName = userInfo.name !== undefined ? userInfo.name : "Foo Bar";
+            var raw2 = JSON.stringify({
+              userID: user.uid,
+              name: getName,
+              rating: 100,
+              profilePic: userInfo.profilePic,
+              pOwned:
+                userInfo.pOwned !== null
+                  ? userInfo.pOwned !== undefined
+                    ? userInfo.pOwned.length > 0
+                      ? [...userInfo.pOwned, projectID]
+                      : [projectID]
+                    : [projectID]
+                  : [projectID],
+              pJoined: userInfo.pJoined !== null ? userInfo.pJoined : undefined,
+              skills: userInfo.skills !== null ? userInfo.skills : undefined,
+            });
+            var requestOptions2 = {
+              method: "POST",
+              headers: myHeaders,
+              body: raw2,
+            };
+
+            fetch("http://localhost:3000/api/addProject", requestOptions)
+            .then((response) => response.text())
+            .then((result) => {
+              console.log(result);
+              fetch("http://localhost:3000/api/addUser", requestOptions2)
+                .then((response) => response.text())
+                .then((result) => {
+                  console.log(result);
+      
+                  Router.push("../feed");
+                })
+                .catch((error) => console.log("error", error));
+            })
+            .catch((error) => console.log("error", error));
+          })
+        })
+
+      }
+      else{
+        var imageRef = ref(storage, projectName+"Icon")
+        var imageRef2 = ref(storage, projectName+"Banner")
+        uploadBytes(imageRef, icon).then(()=>{
+          uploadBytes(imageRef2, banner).then(()=>{
+            getDownloadURL(imageRef).then((url1)=>{
+              getDownloadURL(imageRef2).then((url2)=>{
+                const projectID = uuidv4();
+                const skillsArr = skills.split(",");
+                var raw = JSON.stringify({
+                  a: "a",
+                  pid: projectID,
+                  owners: [user.uid],
+                  name: projectName,
+                  tmembers: [user.uid],
+                  skills: skillsArr,
+                  projectProfile: url1,
+                  projectBannerPic: url2,
+                });
+            
+                var myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+          
+                var requestOptions = {
+                  method: "POST",
+                  headers: myHeaders,
+                  body: raw,
+                };
+            
+                const getName = userInfo.name !== undefined ? userInfo.name : "Foo Bar";
+                var raw2 = JSON.stringify({
+                  userID: user.uid,
+                  name: getName,
+                  rating: 100,
+                  profilePic: userInfo.profilePic,
+                  pOwned:
+                    userInfo.pOwned !== null
+                      ? userInfo.pOwned !== undefined
+                        ? userInfo.pOwned.length > 0
+                          ? [...userInfo.pOwned, projectID]
+                          : [projectID]
+                        : [projectID]
+                      : [projectID],
+                  pJoined: userInfo.pJoined !== null ? userInfo.pJoined : undefined,
+                  skills: userInfo.skills !== null ? userInfo.skills : undefined,
+                });
+            
+                var requestOptions2 = {
+                  method: "POST",
+                  headers: myHeaders,
+                  body: raw2,
+                };
+            
+                fetch("http://localhost:3000/api/addProject", requestOptions)
+                  .then((response) => response.text())
+                  .then((result) => {
+                    console.log(result);
+                    fetch("http://localhost:3000/api/addUser", requestOptions2)
+                      .then((response) => response.text())
+                      .then((result) => {
+                        console.log(result);
+            
+                        Router.push("../feed");
+                      })
+                      .catch((error) => console.log("error", error));
+                  })
+                  .catch((error) => console.log("error", error));
+
+              })
+    
+            })
+          })
+        })
+          
+            
+  
+      }
   };
 
   return (
@@ -147,17 +391,29 @@ export default function Create() {
                         htmlFor='first-name'
                         className='block text-sm font-medium text-gray-700'
                       >
-                        {"Profile Picture Link (Temporary Upload Issue)"}
+                        {"Project Icon"}
                       </label>
-                      <input
-                        type='text'
-                        name='first-name'
-                        id='first-name'
-                        value={profileLink}
-                        onChange={(e) => setProfileLink(e.target.value)}
-                        autoComplete='given-name'
-                        className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm'
-                      />
+                      <div className='flex h-12 p-2 gap-2  items-center gap-2' >
+                      {icon&&<img
+                            style={{
+                                width: "40px",
+                                height: "40px",
+                                borderRadius: "50%",
+                                objectFit:"cover",
+                                border: "1px solid grey"
+                            }}
+                            src={iconURL} alt=""/>}
+                      <InputText
+                          type='file'
+                          accept='*.jpg'
+                          onChange={(event) => {
+                            const file = event.target.files[0];
+                            setIcon(file)
+                          }}
+                        />
+                      </div>
+        
+        
                     </div>
 
                     <div className='col-span-6 sm:col-span-3'>
@@ -165,40 +421,26 @@ export default function Create() {
                         htmlFor='first-name'
                         className='block text-sm font-medium text-gray-700'
                       >
-                        {"Banner Picture Link (Temporary Upload Issue)"}
+                        {"Banner"}
                       </label>
-                      <input
-                        type='text'
-                        name='first-name'
-                        id='first-name'
-                        value={bannerLink}
-                        onChange={(e) => setBannerLink(e.target.value)}
-                        autoComplete='given-name'
-                        className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm'
-                      />
-                    </div>
+                      {banner&& <img
+                            style={{
+                                width: "100px",
+                                height: "40px",
+            
+                                objectFit:"cover",
+                                border: "1px solid grey"
+                            }}
+                            src={bannerURL} alt=""/>}
+                      <InputText
+                            type='file'
+                            onChange={(event) => {
+                              const file = event.target.files[0];
+                              setBanner(file)
+                              
+                            }}
+                        />
 
-                    <div className='col-span-6 sm:col-span-3 lg:col-span-2'>
-                      <label className='block text-sm font-medium text-gray-700'>
-                        Profile photo
-                      </label>
-                      <div className='mt-1 flex items-center'>
-                        <span className='inline-block h-12 w-12 overflow-hidden rounded-full bg-gray-100'>
-                          <svg
-                            className='h-full w-full text-gray-300'
-                            fill='currentColor'
-                            viewBox='0 0 24 24'
-                          >
-                            <path d='M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z' />
-                          </svg>
-                        </span>
-                        <button
-                          type='button'
-                          className='ml-5 rounded-md border border-gray-300 bg-white py-2 px-3 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
-                        >
-                          Change
-                        </button>
-                      </div>
                     </div>
 
                     {/* <div className='col-span-6 sm:col-span-3 lg:col-span-2'>

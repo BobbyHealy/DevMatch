@@ -199,6 +199,13 @@ func postProject(c *gin.Context) {
 
 	var newProj project
 
+	if newProj.ProjectProfilePic == "" {
+		newProj.ProjectProfilePic = "https://climate.onep.go.th/wp-content/uploads/2020/01/default-image.jpg"
+	}
+	if newProj.ProjectBannerPic == "" {
+		newProj.ProjectBannerPic = "https://image-assets.eu-2.volcanic.cloud/api/v1/assets/images/28728ddd294b901834ed795e605dfa98?t=1674127305&webp_fallback=png"
+	}
+
 	// Call BindJSON to bind the received JSON to
 	// newUser.
 	if err := c.BindJSON(&newProj); err != nil {
