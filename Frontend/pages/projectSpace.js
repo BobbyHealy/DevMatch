@@ -196,11 +196,9 @@ export default function projectSpace() {
                   </Transition.Child>
                   <div className='h-0 flex-1 overflow-y-auto pt-5 pb-4'>
                     <div className='flex flex-shrink-0 items-center px-4'>
-                      <img
-                        className='h-8 w-auto'
-                        src='https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600'
-                        alt='Your Company'
-                      />
+                      <h2 className='text-3xl font-bold tracking-tight text-orange-400 xl:-ml-24'>
+                        DevMatch
+                      </h2>
                     </div>
                     <nav className='mt-5 space-y-1 px-2'>
                       {navigation.map((item) => (
@@ -268,11 +266,9 @@ export default function projectSpace() {
           <div className='flex min-h-0 flex-1 flex-col border-r border-gray-200 bg-white'>
             <div className='flex flex-1 flex-col overflow-y-auto pt-5 pb-4'>
               <div className='flex flex-shrink-0 items-center px-4'>
-                <img
-                  className='h-8 w-auto'
-                  src='https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600'
-                  alt='Your Company'
-                />
+                <h2 className='text-3xl font-bold tracking-tight text-orange-400'>
+                    DevMatch
+                </h2>
               </div>
               <nav className='mt-5 flex-1 space-y-1 bg-white px-2'>
                 {navigation.map((item) => (
