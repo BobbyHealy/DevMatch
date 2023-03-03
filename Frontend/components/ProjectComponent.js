@@ -2,6 +2,7 @@ import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { EnvelopeIcon } from "@heroicons/react/20/solid";
 import { UserGroupIcon } from "@heroicons/react/24/outline";
+import { useAuth } from "@/context/AuthContext";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -21,6 +22,31 @@ const default_project = {
 
 export default function ProjComponent(props) {
   const { project = default_project, ...restProps } = props;
+  const { user } = useAuth();
+
+  const handleJoinProject = async () => {
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    var raw = JSON.stringify({
+      uid: user.uid,
+      pid: project.pid,
+      isOwner: false,
+    });
+
+    var requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+    };
+
+    fetch("http://localhost:3000/api/joinProject", requestOptions)
+      .then((response) => response.text())
+      .then((result) => {
+        setUserInfo(JSON.parse(result));
+      })
+      .catch((error) => console.log("error", error));
+  };
   return (
     <div className='bg-grey rounded-lg'>
       <h1>
@@ -71,6 +97,7 @@ export default function ProjComponent(props) {
           <div className='flex flex-shrink-0 self-center'>
             <button
               type='button'
+              onClick={() => handleJoinProject()}
               className='inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
             >
               Join

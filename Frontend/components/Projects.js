@@ -30,7 +30,9 @@ export default function Projects() {
   //   const [projects, setProjects] = useState([proj1, proj2]);
   const [completeUser, setCompleteUser] = useState({});
   const [currProj, setCurrProj] = useState([]);
+  const [joinedProj, setJoinedProj] = useState([]);
   const [timesChanged, setTimesChanged] = useState(0);
+  const [timesChangedJ, setTimesChangedJ] = useState(0);
 
   useEffect(() => {
     if (user === null && userInfo === null) {
@@ -109,6 +111,41 @@ export default function Projects() {
         });
       }
     }
+
+    if (completeUser.pJoined !== null && timesChangedJ < 3) {
+      if (completeUser.pJoined !== undefined) {
+        const cmdPromises = completeUser.pJoined.map((projectId) => {
+          var myHeaders = new Headers();
+          myHeaders.append("Content-Type", "application/json");
+          var raw = JSON.stringify({
+            pid: projectId,
+          });
+          var requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: raw,
+          };
+
+          return new Promise((resolve, reject) => {
+            fetch("http://localhost:3000/api/getProject", requestOptions)
+              .then((response) => response.text())
+              .then((result) => resolve(JSON.parse(result)))
+              .catch((err) => {
+                reject(err);
+              });
+          });
+        });
+
+        Promise.allSettled(cmdPromises).then((results) => {
+          setJoinedProj(
+            results.map((e) => {
+              return e.value;
+            })
+          );
+          setTimesChangedJ(timesChangedJ + 1);
+        });
+      }
+    }
   }, [completeUser, userInfo]);
 
   useEffect(() => {
@@ -141,6 +178,49 @@ export default function Projects() {
   return (
     <div className='bg-white'>
       {currProj.map((project, index) => {
+        // console.log("PRoject:");
+        // console.log(currProj.projects);
+        return (
+          <div
+            className='flex p-2 items-center gap-2 hover:bg-gray-200'
+            onClick={() => redirectToProject(project.pid)}
+            onDragStart={(e) => dragStart(e, index)}
+            onDragEnter={(e) => dragEnter(e, index)}
+            onDragEnd={drop}
+            key={index}
+            draggable
+          >
+            <div className='flex-shrink-0'>
+              <img
+                className='h-10 w-10 rounded-full'
+                src={
+                  project.projectProfile !== ""
+                    ? project.projectProfile
+                    : "https://cvhrma.org/wp-content/uploads/2015/07/default-profile-photo.jpg"
+                }
+                alt=''
+              />
+            </div>
+            <div className='min-w-0 flex-1'>
+              <p className='text-sm font-semibold text-gray-900'>
+                <a href='#' className='hover:underline'>
+                  {project.name}
+                </a>
+              </p>
+              <div className='text-sm text-gray-500'>
+                <a href='#' className='hover:underline'>
+                  Skills Needed:{" "}
+                  {project.skills != undefined
+                    ? project.skills.map((e, i) => <p key={i}>{e + " "}</p>)
+                    : "N/a"}
+                </a>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+
+      {joinedProj.map((project, index) => {
         // console.log("PRoject:");
         // console.log(currProj.projects);
         return (
