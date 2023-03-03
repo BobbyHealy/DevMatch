@@ -2,6 +2,9 @@ import React, { Component, useState } from "react";
 import { InputText } from "primereact/inputtext";
 import Router from "next/router";
 import { useEffect } from "react";
+import { storage } from "@/config/firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
 
 function profilePic() {
     const[image, setimage] = useState(null)
@@ -11,6 +14,21 @@ function profilePic() {
     }
     const handleSubmit=()=>{
         // update firebase
+        const imageRef = ref(storage, "image");
+        uploadBytes(imageRef, image)
+        .then(() => {
+            getDownloadURL(imageRef)
+            .then((url) => {
+                setUrl(url);
+            })
+            .catch((error) => {
+                console.log(error.message, "error getting the image url");
+            });
+            setimage(null);
+        })
+        .catch((error) => {
+            console.log(error.message);
+        });
         console.log(url)
         redirectToProfile()
     }
