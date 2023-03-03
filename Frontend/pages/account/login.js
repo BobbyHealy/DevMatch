@@ -6,6 +6,7 @@ export default function Login() {
   const { user, login, logout, updateCurrentUserInfo } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
     if (user !== null) {
@@ -18,11 +19,12 @@ export default function Login() {
     let success = false;
     try {
       await login(email, password);
+      setIsError(false);
       // await updateCurrentUserInfo();
       success = true;
     } catch (err) {
       console.log(err);
-      console.log("HERE IS WHERE YOU CAN POP");
+      setIsError(true);
     }
   };
 
@@ -101,6 +103,11 @@ export default function Login() {
                   />
                 </div>
               </div>
+              {isError && (
+                <div className='flex items-center'>
+                  <p className='text-red-500'>Error during login. Try again.</p>
+                </div>
+              )}
 
               <div className='flex items-center justify-between'>
                 <div className='flex items-center'>
