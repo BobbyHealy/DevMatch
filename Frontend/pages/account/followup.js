@@ -42,7 +42,7 @@ export default function FollowUp() {
     e.preventDefault();
     if(image)
     {
-    var imageRef = ref(storage, "image")
+    var imageRef = ref(storage, name +"ProfilePic")
     uploadBytes(imageRef, image)
     .then(() => {
         getDownloadURL(imageRef)

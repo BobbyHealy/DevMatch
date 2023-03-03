@@ -17,7 +17,7 @@ function profilePic() {
     }
     const handleSubmit=()=>{
         // update firebase
-        var imageRef = ref(storage, "image")
+        var imageRef = ref(storage, userInfo.name+"ProfilePic")
         uploadBytes(imageRef, image)
         .then(() => {
             getDownloadURL(imageRef)
