@@ -47,7 +47,11 @@ export default function Create() {
       profilePic: userInfo.profilePic,
       pOwned:
         userInfo.pOwned !== null
-          ? [...userInfo.pOwned, projectID]
+          ? userInfo.pOwned !== undefined
+            ? userInfo.pOwned.length > 0
+              ? [...userInfo.pOwned, projectID]
+              : [projectID]
+            : [projectID]
           : [projectID],
       pJoined: userInfo.pJoined !== null ? userInfo.pJoined : undefined,
       skills: userInfo.skills !== null ? userInfo.skills : undefined,
