@@ -1,37 +1,134 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Input from "./Input";
 import Router from "next/router";
-// import {Routes, Route, useNavigate} from 'react-router-dom';
+import { useAuth } from "@/context/AuthContext";
+import { resolve } from "styled-jsx/css";
 
 
-const projectObj = {
-  id: 1,
-  name: 'ATestProject1',
-  owner: 'Auden',
-  members:['Auden',],
-  skills:['skill1','skill2'],
-  description:"This is a test project",
-  avatar:
-    'https://cdn-icons-png.flaticon.com/512/1087/1087815.png'
-}
-const projectObj2= {
-    id:2,
-    name: 'DevMatch',
-    owner: 'John',
-    members: ['John','Auden'],
-    skills:['skill1','skill2'],
-    description: "Description",
-    avatar:'https://logopond.com/avatar/257420/logopond.png',
-}
-const projets = [
-    projectObj,projectObj2
-    // More projects
-  ]
+
 
 export default function ManageProjects() {
-    const redirectToProject= () => {
-        Router.push('./projectSpace');
+
+    const { user, userInfo } = useAuth();
+    const [completeUser, setCompleteUser] = useState({});
+    const [currProj, setCurrProj] = useState([]);
+    const [timesChanged, setTimesChanged] = useState(0);
+  
+    useEffect(() => {
+        if (user === null && userInfo === null) {
+        } else if (userInfo === null) {
+            setCompleteUser({
+            userID: user.userID !== undefined ? user.userID : "",
+            name: "Foo Bar",
+            email: user.email !== undefined ? user.email : "foo@bar.com",
+            rating: 100,
+            profilePic: "",
+            pOwned: [],
+            pJoined: [],
+            skills: [],
+            });
+        } else {
+            setCompleteUser({
+            userID: user.userID !== undefined ? user.userID : "",
+            name: userInfo.name !== undefined ? userInfo.name : "Foo Bar",
+            email: user.email !== undefined ? user.email : "foo@bar.com",
+            rating: userInfo.rating !== undefined ? userInfo.rating : 100,
+            profilePic:
+                userInfo.profilePic !== undefined ? userInfo.profilePic : "",
+            pOwned: userInfo.pOwned !== undefined ? userInfo.pOwned : [],
+            pJoined: userInfo.pJoined !== undefined ? userInfo.pJoined : [],
+            skills: userInfo.skills !== undefined ? userInfo.skills : [],
+            });
+        }
+    }, [user, userInfo]);
+
+    function getMembers(project){
+        const cmdPromises =project.owners.map((owner)=>{
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        var raw = JSON.stringify({
+            userID: owner.userID,
+        });
+        var requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+        };
+
+        return new Promise((resolve, reject) => {
+        fetch("http://localhost:3000/api/getUsers", requestOptions)
+            .then((response) => response.text())
+            .then((result) => resolve(JSON.parse(result)))
+            .catch((err) => {
+            reject(err);
+            });
+        });
+        }
+    
+    )}
+
+    const exec = async (projectId) => {
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    var raw = JSON.stringify({
+        pid: projectId,
+    });
+    var requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+    };
+    fetch("http://localhost:3000/api/getProject", requestOptions);
+    };
+
+    useEffect(() => {
+    if (completeUser.pOwned !== null && timesChanged < 3) {
+        if (completeUser.pOwned !== undefined) {
+        const cmdPromises = completeUser.pOwned.map((projectId) => {
+            var myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+            var raw = JSON.stringify({
+            pid: projectId,
+            });
+            var requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: raw,
+            };
+
+            return new Promise((resolve, reject) => {
+            fetch("http://localhost:3000/api/getProject", requestOptions)
+                .then((response) => response.text())
+                .then((result) => resolve(JSON.parse(result)))
+                .catch((err) => {
+                reject(err);
+                });
+            });
+        });
+
+        Promise.allSettled(cmdPromises).then((results) => {
+            setCurrProj(
+            results.map((e) => {
+                return e.value;
+            })
+            );
+            setTimesChanged(timesChanged + 1);
+        });
+        }
     }
+    }, [completeUser, userInfo]);
+        
+
+    useEffect(() => {
+    console.log(currProj);
+    }, [currProj]);
+    
+    const redirectToProject = (id) => {
+    // Router.push("./projctSpace"+id);
+    Router.push(`/projectSpace?pid=${id}`);
+    };
+
+    
     return (
         <div className="px-4 sm:px-6 lg:px-8">
         <div className="sm:flex sm:items-center">
@@ -45,6 +142,7 @@ export default function ManageProjects() {
             <button
                 type="button"
                 className="block rounded-md bg-indigo-600 py-1.5 px-3 text-center text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                onClick={()=>{Router.push("../../project/create")}}
             >
                 Add Projects
             </button>
@@ -58,10 +156,10 @@ export default function ManageProjects() {
                     <tr>
                     <th
                         scope="col"
-                        className="py-3 pl-4 pr-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 sm:pl-0"
+                        className="py-3 pl-4 pr-12 text-left text-xs font-medium uppercase tracking-wide text-gray-500 sm:pl-0"
                     >
-   
                     </th>
+   
                     <th
                         scope="col"
                         className="py-3 pl-4 pr-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 sm:pl-0"
@@ -99,17 +197,23 @@ export default function ManageProjects() {
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                    {projets.map((project) => (
-                    <tr key={project.id}>
+                    {currProj.map((project) => (
+                    <tr >
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 sm:pl-0">
-                        <img className = "bg-white h-8 w-8 rounded-full object-cover"src={project.avatar}/>
+                        <img className = "bg-white h-8 w-8 rounded-full object-cover"src={project.projectProfile}/>
                         </td>
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
                         {project.name}
                         </td>
-                        <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{project.owner}</td>
                         <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
-                        {project.members.map((member)=>
+                        {project.owners}
+                       </td>
+                        <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
+                        {project.tmembers.map((
+                        
+                            
+                            
+                            member)=>
                         (<li key={member}>{member}</li>))}
                         </td>
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-500 sm:pl-0">
@@ -122,7 +226,7 @@ export default function ManageProjects() {
 
                         <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0 ">
                         <a href="#" className="text-indigo-600 hover:text-indigo-900"
-                        onClick={redirectToProject}>
+                        onClick={() => redirectToProject(project.pid)}>
                             Edit<span className="sr-only">, {project.name}</span>
                         </a>
                         <a href="#" className="text-red-600 hover:text-indigo-900 p-2">
@@ -140,3 +244,23 @@ export default function ManageProjects() {
     )   
 }
 
+
+ 
+//   const dragOverItem = useRef();
+//   const dragItem = useRef();
+//   const dragStart = (e, position) => {
+//     dragItem.current = position;
+//     // console.log(e.target.innerHTML);
+//   };
+//   const dragEnter = (e, position) => {
+//     dragOverItem.current = position;
+//     // console.log(e.target.innerHTML);
+//   };
+//   const drop = (e) => {
+//     const copyProjects = [...currProj];
+//     const dragItemContent = copyProjects[dragItem.current];
+//     copyProjects.splice(dragItem.current, 1);
+//     copyProjects.splice(dragOverItem.current, 0, dragItemContent);
+//     dragItem.current = null;
+//     dragOverItem.current = null;
+//     setCurrProj(copyProjects)}
