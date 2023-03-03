@@ -4,6 +4,9 @@ import Router from "next/router";
 import { InputText } from "primereact/inputtext";
 import Scrumboard from "@/components/Scrumboard";
 import { useRouter } from "next/router";
+import { storage } from "@/config/firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { useAuth } from "@/context/AuthContext";
 
 import {
   Bars3Icon,
@@ -18,17 +21,17 @@ const navigation = [
   { name: "Overview", href: "#", icon: HomeIcon, current: false },
   { name: "ScrumBoard", href: "#Scrum", icon: ClipboardIcon, current: false },
 ];
-const user = {
-  name: "Auden Huang",
-  imageUrl:
-    "https://media.licdn.com/dms/image/C4D03AQHHZKUrMMhCsQ/profile-displayphoto-shrink_800_800/0/1610704750210?e=2147483647&v=beta&t=OHuErweO0MQ3CeXJlSKkBpu-FOxPQh1sjcuVOQVTZb8",
-};
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function projectSpace() {
+  const {userInfo} = useAuth();
+  const[icon, setIcon] = useState(null)
+  const[iconURL, setIconUrl] = useState(null)
+  const[banner, setBanner] = useState(null)
+  const[bannerURL, setBannerURL] = useState(null)
   const [newSkills, setNewSkills] = useState();
   const [edit, setEdit] = useState(false);
   const [members, setMembers] = useState(["Auden Huang", "Jerry Martin"]);
@@ -83,41 +86,194 @@ export default function projectSpace() {
   const handleEdit = () => {
     setEdit(true);
   };
+  useEffect(() => {
+    if (!icon) {
+        setIconUrl(undefined)
+        return
+    }
+
+    const objectUrl = URL.createObjectURL(icon)
+    setIconUrl(objectUrl)
+
+    // free memory when ever this component is unmounted
+    return () => URL.revokeObjectURL(objectUrl)
+}, [icon])
+useEffect(() => {
+  if (!banner) {
+      setBannerURL(undefined)
+      return
+  }
+
+  const objectUrl = URL.createObjectURL(banner)
+  setBannerURL(objectUrl)
+
+  // free memory when ever this component is unmounted
+  return () => URL.revokeObjectURL(objectUrl)
+}, [banner])
 
   const handleSubmit = async (e) => {
-    const skillsArr = newSkills.split(",");
-    var raw = JSON.stringify({
-      pid: pid,
-      name: name,
-      skills: skillsArr,
-      tmembers: projectD.tmembers !== undefined ? projectD.tmembers : undefined,
-      owners: projectD.owners !== undefined ? projectD.owners : undefined,
-      projectProfile:
-        projectD.projectProfile !== undefined
-          ? projectD.projectProfile
-          : undefined,
-      projectBannerPic:
-        projectD.projectBannerPic !== undefined
-          ? projectD.projectBannerPic
-          : undefined,
-    });
 
-    var myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
+    if(!icon&&!banner)
+    {
+      const skillsArr = newSkills.split(",");
+      var raw = JSON.stringify({
+        pid: pid,
+        name: name,
+        skills: skillsArr,
+        tmembers: projectD.tmembers !== undefined ? projectD.tmembers : undefined,
+        owners: projectD.owners !== undefined ? projectD.owners : undefined,
+        projectProfile:
+          projectD.projectProfile !== undefined
+            ? projectD.projectProfile
+            : undefined,
+        projectBannerPic:
+          projectD.projectBannerPic !== undefined
+            ? projectD.projectBannerPic
+            : undefined,
+      });
 
-    var requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-    };
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
 
-    fetch("http://localhost:3000/api/addProject", requestOptions)
-      .then((response) => response.text())
-      .then((result) => {
-        console.log(result);
-        setEdit(false);
+      var requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+      };
+
+      fetch("http://localhost:3000/api/addProject", requestOptions)
+        .then((response) => response.text())
+        .then((result) => {
+          console.log(result);
+          setEdit(false);
+        })
+        .catch((error) => console.log("error", error));
+    }
+    else if(!banner)
+    {
+      var imageRef = ref(storage, name+"Icon")
+      uploadBytes(imageRef, icon).then(()=>{
+        getDownloadURL(imageRef).then((url)=>{
+          const skillsArr = newSkills.split(",");
+      var raw = JSON.stringify({
+        pid: pid,
+        name: name,
+        skills: skillsArr,
+        tmembers: projectD.tmembers !== undefined ? projectD.tmembers : undefined,
+        owners: projectD.owners !== undefined ? projectD.owners : undefined,
+        projectProfile:
+          projectD.projectProfile !== url,
+        projectBannerPic: projectD.projectBannerPic !== undefined
+        ? projectD.projectBannerPic
+        : undefined,
+      });
+
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+      var requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+      };
+
+      fetch("http://localhost:3000/api/addProject", requestOptions)
+        .then((response) => response.text())
+        .then((result) => {
+          console.log(result);
+          setEdit(false);
+        })
+        .catch((error) => console.log("error", error));
+        })
       })
-      .catch((error) => console.log("error", error));
+
+
+    }
+    else if(!icon)
+    {
+      var imageRef = ref(storage, name+"Banner")
+      uploadBytes(imageRef, banner).then(()=>{
+        getDownloadURL(imageRef).then((url)=>{
+          const skillsArr = newSkills.split(",");
+          var raw = JSON.stringify({
+            pid: pid,
+            name: name,
+            skills: skillsArr,
+            tmembers: projectD.tmembers !== undefined ? projectD.tmembers : undefined,
+            owners: projectD.owners !== undefined ? projectD.owners : undefined,
+            projectProfile:
+              projectD.projectProfile !== undefined
+                ? projectD.projectProfile
+                : undefined,
+            projectBannerPic: url,
+          });
+
+          var myHeaders = new Headers();
+          myHeaders.append("Content-Type", "application/json");
+
+          var requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: raw,
+          };
+
+          fetch("http://localhost:3000/api/addProject", requestOptions)
+            .then((response) => response.text())
+            .then((result) => {
+              console.log(result);
+              setEdit(false);
+            })
+        .catch((error) => console.log("error", error));
+        })
+      })
+    }
+    else{
+      var imageRef = ref(storage, name+"Icon")
+      var imageRef2 = ref(storage, name+"Banner")
+      uploadBytes(imageRef, icon).then(()=>{
+        uploadBytes(imageRef2, banner)
+        getDownloadURL(imageRef).then((url1)=>{
+          
+          getDownloadURL(imageRef2).then((url2)=>{
+          const skillsArr = newSkills.split(",");
+          var raw = JSON.stringify({
+            pid: pid,
+            name: name,
+            skills: skillsArr,
+            tmembers: projectD.tmembers !== undefined ? projectD.tmembers : undefined,
+            owners: projectD.owners !== undefined ? projectD.owners : undefined,
+            projectProfile: url1,
+            projectBannerPic: url2,
+          });
+
+          var myHeaders = new Headers();
+          myHeaders.append("Content-Type", "application/json");
+    
+          var requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: raw,
+          };
+
+          fetch("http://localhost:3000/api/addProject", requestOptions)
+          .then((response) => response.text())
+          .then((result) => {
+            console.log(result);
+            setEdit(false);
+          })
+          .catch((error) => console.log("error", error));
+          })
+
+    
+
+
+
+        })
+      })
+
+
+
+    }
   };
 
   const handleCancel = () => {
@@ -233,13 +389,13 @@ export default function projectSpace() {
                         <div>
                           <img
                             className='inline-block h-10 w-10 rounded-full'
-                            src={user.imageUrl}
+                            src={userInfo.profilePic}
                             alt=''
                           />
                         </div>
                         <div className='ml-3'>
                           <p className='text-base font-medium text-gray-700 group-hover:text-gray-900'>
-                            {user.name}
+                            {userInfo.name}
                           </p>
                           <p
                             className='text-sm font-medium text-gray-500 group-hover:text-gray-700'
@@ -303,13 +459,13 @@ export default function projectSpace() {
                   <div>
                     <img
                       className='inline-block h-9 w-9 rounded-full'
-                      src={user.imageUrl}
+                      src={userInfo.profilePic}
                       alt=''
                     />
                   </div>
                   <div className='ml-3'>
                     <p className='text-sm font-medium text-gray-700 group-hover:text-gray-900'>
-                      {user.name}
+                      {userInfo.name}
                     </p>
                     <p
                       className='text-xs font-medium text-gray-500 group-hover:text-gray-700'
@@ -341,27 +497,38 @@ export default function projectSpace() {
               <div className='py-6'>
                 <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
                   <div className=''>
-                    <img
+                    {!edit&&<img
                       className='h-32 w-full object-cover lg:h-48'
                       src={projectD.projectBannerPic}
                       alt=''
-                    />
+                    />}
+                    {edit&&<img
+                      className='h-32 w-full object-cover lg:h-48'
+                      src={bannerURL}
+                      alt=''
+                    />}
+
                   </div>
                   <div className='mx-auto max-w-5xl px-4 sm:px-6 lg:px-8'>
                     <div className='-mt-12 sm:-mt-16 sm:flex sm:items-end sm:space-x-5'>
                       <div className='flex'>
-                        <img
+                        {!edit&&<img
                           className='h-24 w-24 rounded-full ring-4 ring-white sm:h-32 sm:w-32'
                           src={projectD.projectProfile}
                           alt=''
-                        />
+                        />}
+                        {edit&&<img
+                          className='h-24 w-24 rounded-full ring-4 ring-white sm:h-32 sm:w-32'
+                          src={iconURL}
+                          alt=''
+                        />}
                         {edit && (
                           <InputText
                             type='file'
-                            accept='*.jpg'
                             onChange={(event) => {
                               const file = event.target.files[0];
-                              // setimage(file)
+                              setBanner(file)
+                              
                             }}
                           />
                         )}
@@ -401,7 +568,7 @@ export default function projectSpace() {
                           accept='*.jpg'
                           onChange={(event) => {
                             const file = event.target.files[0];
-                            // setimage(file)
+                            setIcon(file)
                           }}
                         />
                         <input
