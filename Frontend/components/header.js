@@ -12,8 +12,8 @@ const navigation = [
   { name: "Directory", href: "#", current: false },
 ];
 const userNavigation = [
-  { name: "Your Profile", href: "account" },
-  { name: "Settings", href: "account" },
+  { name: "Your Profile", href: "../account" },
+  { name: "Settings", href: "../account" },
   { name: "Sign out", href: "#" },
 ];
 
