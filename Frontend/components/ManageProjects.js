@@ -12,9 +12,7 @@ export default function ManageProjects() {
     const { user, userInfo } = useAuth();
     const [completeUser, setCompleteUser] = useState({});
     const [currProj, setCurrProj] = useState([]);
-    const [joinedProj, setJoinedProj] = useState([]);
     const [timesChanged, setTimesChanged] = useState(0);
-    const [timesChangedJ, setTimesChangedJ] = useState(0);
   
     useEffect(() => {
         if (user === null && userInfo === null) {
@@ -43,6 +41,31 @@ export default function ManageProjects() {
             });
         }
     }, [user, userInfo]);
+
+    function getMembers(project){
+        const cmdPromises =project.owners.map((owner)=>{
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        var raw = JSON.stringify({
+            userID: owner.userID,
+        });
+        var requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+        };
+
+        return new Promise((resolve, reject) => {
+        fetch("http://localhost:3000/api/getUsers", requestOptions)
+            .then((response) => response.text())
+            .then((result) => resolve(JSON.parse(result)))
+            .catch((err) => {
+            reject(err);
+            });
+        });
+        }
+    
+    )}
 
     const exec = async (projectId) => {
     var myHeaders = new Headers();
@@ -93,8 +116,8 @@ export default function ManageProjects() {
         });
         }
     }
-
     }, [completeUser, userInfo]);
+        
 
     useEffect(() => {
     console.log(currProj);
@@ -119,6 +142,7 @@ export default function ManageProjects() {
             <button
                 type="button"
                 className="block rounded-md bg-indigo-600 py-1.5 px-3 text-center text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                onClick={()=>{Router.push("../../project/create")}}
             >
                 Add Projects
             </button>
@@ -132,10 +156,10 @@ export default function ManageProjects() {
                     <tr>
                     <th
                         scope="col"
-                        className="py-3 pl-4 pr-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 sm:pl-0"
+                        className="py-3 pl-4 pr-12 text-left text-xs font-medium uppercase tracking-wide text-gray-500 sm:pl-0"
                     >
-   
                     </th>
+   
                     <th
                         scope="col"
                         className="py-3 pl-4 pr-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 sm:pl-0"
@@ -173,17 +197,23 @@ export default function ManageProjects() {
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                    {projets.map((project) => (
-                    <tr key={project.id}>
+                    {currProj.map((project) => (
+                    <tr >
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 sm:pl-0">
-                        <img className = "bg-white h-8 w-8 rounded-full object-cover"src={project.avatar}/>
+                        <img className = "bg-white h-8 w-8 rounded-full object-cover"src={project.projectProfile}/>
                         </td>
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
                         {project.name}
                         </td>
-                        <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{project.owner}</td>
                         <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
-                        {project.members.map((member)=>
+                        {project.owners}
+                       </td>
+                        <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
+                        {project.tmembers.map((
+                        
+                            
+                            
+                            member)=>
                         (<li key={member}>{member}</li>))}
                         </td>
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-500 sm:pl-0">
@@ -196,7 +226,7 @@ export default function ManageProjects() {
 
                         <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0 ">
                         <a href="#" className="text-indigo-600 hover:text-indigo-900"
-                        onClick={redirectToProject}>
+                        onClick={() => redirectToProject(project.pid)}>
                             Edit<span className="sr-only">, {project.name}</span>
                         </a>
                         <a href="#" className="text-red-600 hover:text-indigo-900 p-2">
