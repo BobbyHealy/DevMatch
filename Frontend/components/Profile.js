@@ -52,7 +52,9 @@ function Profile() {
         pJoined: userInfo.pJoined !== undefined ? userInfo.pJoined : [],
         skills: userInfo.skills !== undefined ? userInfo.skills : [],
       });
-      setNewSkills(userInfo.skills !== undefined ? userInfo.skills : []);
+      setNewSkills(
+        userInfo.skills !== undefined ? userInfo.skills.join(",") : []
+      );
     }
   }, [user, userInfo]);
 
