@@ -2,17 +2,67 @@ import React, { Component, useState } from "react";
 import { InputText } from "primereact/inputtext";
 import Router from "next/router";
 import { useEffect } from "react";
+import { storage } from "@/config/firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { useAuth } from "@/context/AuthContext";
+
 
 function profilePic() {
     const[image, setimage] = useState(null)
     const[url, setUrl] = useState(null)
+    const { user, login, logout, userInfo } = useAuth();
+    const [imageRef, setRef] = useState(ref(storage, "image"));
     const redirectToProfile= () => {
+ 
         Router.push('./');
     }
     const handleSubmit=()=>{
         // update firebase
-        console.log(url)
-        redirectToProfile()
+        
+        uploadBytes(imageRef, image)
+        .then(() => {
+            getDownloadURL(imageRef)
+            .then(async (url) => {
+                setUrl(url)
+                var raw = JSON.stringify({
+                    userID: user.uid,
+                    name: userInfo.name,
+                    rating: 100,
+                    skills: userInfo.skills!== undefined ? userInfo.skills: undefined,
+                    pOwned: userInfo.pOwned !== undefined ?  userInfo.pOwned : undefined,
+                    pJoined: userInfo.pJoined !== undefined ?  userInfo.pOwned : undefined,
+                    profilePic: url,
+                  });
+                  
+                  var myHeaders = new Headers();
+                  myHeaders.append("Content-Type", "application/json");
+              
+                  var requestOptions = {
+                    method: "POST",
+                    headers: myHeaders,
+                    body: raw,
+                  };
+              
+                  fetch("http://localhost:3000/api/addUser", requestOptions)
+                    .then((response) => response.text())
+                    .then((result) => {
+                      console.log(result);
+                    })
+                    .catch((error) => console.log("error", error));
+                redirectToProfile()
+               
+            })
+            .catch((error) => {
+                console.log(error.message, "error getting the image url");
+            });
+            setimage(null);
+    
+        })
+        .catch((error) => {
+            console.log(error.message);
+        });
+        
+
     }
     useEffect(() => {
         if (!image) {
