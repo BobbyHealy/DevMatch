@@ -5,29 +5,6 @@ import { resolve } from "styled-jsx/css";
 
 export default function Projects() {
   const { user, userInfo } = useAuth();
-  const proj1 = {
-    index: 1,
-    name: "DevMatch1",
-    owner: "John Doe",
-    description: "Description",
-    avatar: "https://logopond.com/avatar/257420/logopond.png",
-    banner:
-      "https://cdn.pixabay.com/photo/2015/11/19/08/52/banner-1050629__340.jpg",
-    banner2:
-      "https://images.unsplash.com/photo-1444628838545-ac4016a5418a?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80",
-  };
-  const proj2 = {
-    index: 2,
-    name: "DevMatch2",
-    owner: "John Doe",
-    description: "Description",
-    avatar: "https://logopond.com/avatar/257420/logopond.png",
-    banner:
-      "https://cdn.pixabay.com/photo/2015/11/19/08/52/banner-1050629__340.jpg",
-    banner2:
-      "https://images.unsplash.com/photo-1444628838545-ac4016a5418a?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80",
-  };
-  //   const [projects, setProjects] = useState([proj1, proj2]);
   const [completeUser, setCompleteUser] = useState({});
   const [currProj, setCurrProj] = useState([]);
   const [joinedProj, setJoinedProj] = useState([]);
@@ -167,13 +144,13 @@ export default function Projects() {
     // console.log(e.target.innerHTML);
   };
   const drop = (e) => {
-    const copyProjects = [...projects];
+    const copyProjects = [...currProj];
     const dragItemContent = copyProjects[dragItem.current];
     copyProjects.splice(dragItem.current, 1);
     copyProjects.splice(dragOverItem.current, 0, dragItemContent);
     dragItem.current = null;
     dragOverItem.current = null;
-    setProjects(copyProjects);
+    setCurrProj(copyProjects)
   };
   return (
     <div className='bg-white'>
