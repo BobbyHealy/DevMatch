@@ -69,7 +69,7 @@ func main() {
 	router.GET("/search", search)
 	router.GET("/prettyProject", getPrettyProject)
 	router.GET("/prettyUser", getPrettyUser)
-
+	router.POST("/userToProject", userToProject)
 	router.DELETE("/removeUser", removeUser)
 	router.DELETE("/removeProject", removeProject)
 	router.Run("localhost:8080")
@@ -422,11 +422,88 @@ func updateProject(c *gin.Context) {
 	if err := c.BindJSON(&newProj); err != nil {
 		return
 	}
-	id := newProj.ProjectID
+	updateProjectHelp(newProj)
+	c.IndentedJSON(http.StatusCreated, newProj)
+}
+
+/*
+ * Use the key "uid" to get user by user id.
+ */
+func userToProject(c *gin.Context) {
+	uid, exists := c.GetQuery("uid")
+	if !exists {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	} else {
+		fmt.Println(uid)
+	}
+
+	pid, exists2 := c.GetQuery("pid")
+	if !exists2 {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	} else {
+		fmt.Println(pid)
+	}
+
+	owner, exists3 := c.GetQuery("isOwner")
+	if !exists3 {
+		owner = "false"
+	}
+	//path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
+
+	var v user
+	v = getUserFromID(uid)
+
+	if v.UserID == "" {
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	}
+
+	var proj project
+	proj = getProjectFromID(pid)
+	if proj.ProjectID == "" {
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	}
+
+	v.ProjectJoined = append(v.ProjectJoined, pid)
+	proj.MembersID = append(proj.MembersID, uid)
+	if owner == "true" {
+		v.ProjectOwned = append(v.ProjectOwned, pid)
+		proj.OwnersID = append(proj.OwnersID, uid)
+	}
+	updateProjectHelp(proj)
+	updateUserHelp(v)
+
+}
+
+func updateProjectHelp(proj project) {
+
+	// Call BindJSON to bind the received JSON to
+	// newUser.
+
+	id := proj.ProjectID
 	f := firego.New("https://devmatch-4d490-default-rtdb.firebaseio.com/Projects/", nil)
-	v := map[string]project{id: newProj}
+	v := map[string]project{id: proj}
 	if err := f.Update(v); err != nil {
 		log.Fatal(err)
 	}
-	c.IndentedJSON(http.StatusCreated, newProj)
+
+}
+
+func updateUserHelp(us user) {
+
+	// Call BindJSON to bind the received JSON to
+	// newUser.
+
+	id := us.UserID
+	f := firego.New("https://devmatch-4d490-default-rtdb.firebaseio.com/Users/", nil)
+	v := map[string]user{id: us}
+	if err := f.Update(v); err != nil {
+		log.Fatal(err)
+	}
+
 }
