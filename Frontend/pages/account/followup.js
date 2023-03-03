@@ -37,9 +37,6 @@ export default function FollowUp() {
     // free memory when ever this component is unmounted
     return () => URL.revokeObjectURL(objectUrl)
 }, [image])
-  const redirectToFeed =()=>{
-    Router.push("../../Feed")
-  } 
 
   const handleSumbit = async (e) => {
     e.preventDefault();
@@ -82,7 +79,6 @@ export default function FollowUp() {
         .catch((error) => {
             console.log(error.message, "error getting the image url");
         })
-        redirectToFeed()
         setimage(null);
     
       })}
@@ -113,8 +109,7 @@ export default function FollowUp() {
             console.log(result);
             Router.push("../feed");
           })
-          .catch((error) => console.log("error", error));
-        redirectToFeed}
+          .catch((error) => console.log("error", error));}
   };
 
   return (
