@@ -152,15 +152,126 @@ useEffect(() => {
     else if(!banner)
     {
       var imageRef = ref(storage, name+"Icon")
+      uploadBytes(imageRef, icon).then(()=>{
+        getDownloadURL(imageRef).then((url)=>{
+          const skillsArr = newSkills.split(",");
+      var raw = JSON.stringify({
+        pid: pid,
+        name: name,
+        skills: skillsArr,
+        tmembers: projectD.tmembers !== undefined ? projectD.tmembers : undefined,
+        owners: projectD.owners !== undefined ? projectD.owners : undefined,
+        projectProfile:
+          projectD.projectProfile !== url,
+        projectBannerPic: projectD.projectBannerPic !== undefined
+        ? projectD.projectBannerPic
+        : undefined,
+      });
 
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+      var requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+      };
+
+      fetch("http://localhost:3000/api/addProject", requestOptions)
+        .then((response) => response.text())
+        .then((result) => {
+          console.log(result);
+          setEdit(false);
+        })
+        .catch((error) => console.log("error", error));
+        })
+      })
 
 
     }
     else if(!icon)
     {
+      var imageRef = ref(storage, name+"Banner")
+      uploadBytes(imageRef, banner).then(()=>{
+        getDownloadURL(imageRef).then((url)=>{
+          const skillsArr = newSkills.split(",");
+          var raw = JSON.stringify({
+            pid: pid,
+            name: name,
+            skills: skillsArr,
+            tmembers: projectD.tmembers !== undefined ? projectD.tmembers : undefined,
+            owners: projectD.owners !== undefined ? projectD.owners : undefined,
+            projectProfile:
+              projectD.projectProfile !== undefined
+                ? projectD.projectProfile
+                : undefined,
+            projectBannerPic: url,
+          });
 
+          var myHeaders = new Headers();
+          myHeaders.append("Content-Type", "application/json");
+
+          var requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: raw,
+          };
+
+          fetch("http://localhost:3000/api/addProject", requestOptions)
+            .then((response) => response.text())
+            .then((result) => {
+              console.log(result);
+              setEdit(false);
+            })
+        .catch((error) => console.log("error", error));
+        })
+      })
     }
     else{
+      var imageRef = ref(storage, name+"Icon")
+      var imageRef2 = ref(storage, name+"Banner")
+      uploadBytes(imageRef, icon).then(()=>{
+        uploadBytes(imageRef2, banner)
+        getDownloadURL(imageRef).then((url1)=>{
+          
+          getDownloadURL(imageRef2).then((url2)=>{
+          const skillsArr = newSkills.split(",");
+          var raw = JSON.stringify({
+            pid: pid,
+            name: name,
+            skills: skillsArr,
+            tmembers: projectD.tmembers !== undefined ? projectD.tmembers : undefined,
+            owners: projectD.owners !== undefined ? projectD.owners : undefined,
+            projectProfile: url1,
+            projectBannerPic: url2,
+          });
+
+          var myHeaders = new Headers();
+          myHeaders.append("Content-Type", "application/json");
+    
+          var requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: raw,
+          };
+
+          fetch("http://localhost:3000/api/addProject", requestOptions)
+          .then((response) => response.text())
+          .then((result) => {
+            console.log(result);
+            setEdit(false);
+          })
+          .catch((error) => console.log("error", error));
+          })
+
+    
+
+
+
+        })
+      })
+
+
 
     }
   };
@@ -386,20 +497,31 @@ useEffect(() => {
               <div className='py-6'>
                 <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
                   <div className=''>
-                    <img
+                    {!edit&&<img
                       className='h-32 w-full object-cover lg:h-48'
                       src={projectD.projectBannerPic}
                       alt=''
-                    />
+                    />}
+                    {edit&&<img
+                      className='h-32 w-full object-cover lg:h-48'
+                      src={bannerURL}
+                      alt=''
+                    />}
+
                   </div>
                   <div className='mx-auto max-w-5xl px-4 sm:px-6 lg:px-8'>
                     <div className='-mt-12 sm:-mt-16 sm:flex sm:items-end sm:space-x-5'>
                       <div className='flex'>
-                        <img
+                        {!edit&&<img
                           className='h-24 w-24 rounded-full ring-4 ring-white sm:h-32 sm:w-32'
                           src={projectD.projectProfile}
                           alt=''
-                        />
+                        />}
+                        {edit&&<img
+                          className='h-24 w-24 rounded-full ring-4 ring-white sm:h-32 sm:w-32'
+                          src={iconURL}
+                          alt=''
+                        />}
                         {edit && (
                           <InputText
                             type='file'
