@@ -1,8 +1,9 @@
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { EnvelopeIcon } from "@heroicons/react/20/solid";
 import { UserGroupIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "@/context/AuthContext";
+import ProjectModal from "./ProjectModal";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -23,6 +24,8 @@ const default_project = {
 export default function ProjComponent(props) {
   const { project = default_project, ...restProps } = props;
   const { user } = useAuth();
+
+  const [showModal, setShowModal] = useState(false);
 
   const handleJoinProject = async () => {
     var myHeaders = new Headers();
@@ -67,7 +70,7 @@ export default function ProjComponent(props) {
           </div>
           <div className='min-w-0 flex-1'>
             <p className='text-sm font-semibold text-gray-900'>
-              <a href='#' className='hover:underline'>
+              <a href='#' className='hover:underline'onClick={() => setShowModal(true)}>
                 {project.name}
               </a>
             </p>
@@ -118,6 +121,55 @@ export default function ProjComponent(props) {
           </div>
         </div>
       </div>
+      <ProjectModal isVisible={showModal} onClose={() => setShowModal(false)}>
+            <div className="overflow-hidden bg-white shadow sm:rounded-lg">
+              <h1>
+                <img
+                  className='h-18 w-full object-cover lg:h-24 rounded-t-lg'
+                  src={project.projectBannerPic}
+                  alt=''
+                />
+              </h1>
+              <div className="px-4 py-5 sm:px-6">
+                <h3 className="text-base font-semibold leading-6 text-gray-900">{project.name}</h3>
+              </div>
+              <div className="border-t border-gray-200 px-4 py-5 sm:p-0">
+                <dl className="sm:divide-y sm:divide-gray-200">
+                  <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
+                    <dt className="text-sm font-medium text-gray-500">Project Owner</dt>
+                    <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{" "}
+                        {project.owners !== undefined ? project.owners[0] : "N/a"}</dd>
+                  </div>
+                  <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
+                    <dt className="text-sm font-medium text-gray-500">Looking for</dt>
+                    <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{" "}
+                      {project.skills !== undefined
+                        ? project.skills.map((e, i) => <p key={i}>{e + " "}</p>)
+                        : "N/a"}</dd>
+                  </div>
+                  <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
+                    <dt className="text-sm font-medium text-gray-500">Other members</dt>
+                    <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{" "}
+                      {project.members !== undefined
+                        ? project.members.map((e, i) => <p key={i}>{e + " "}</p>)
+                        : "N/a"}</dd>
+                  </div>
+                  <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
+                    <dt className="text-sm font-medium text-gray-500">Expected hours per week</dt>
+                    <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">30</dd>
+                  </div>
+                  <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
+                    <dt className="text-sm font-medium text-gray-500">Project Description</dt>
+                    <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                      This is a project created throught the DevMatch platform. This is a default description provided by the
+                      developers since the project owner left this field blank. If you would like to learn more about the project,
+                      message the owner and start a conversation.
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+            </div>
+      </ProjectModal>
     </div>
   );
 }
