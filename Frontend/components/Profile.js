@@ -20,14 +20,18 @@ function Profile() {
     pOwned: [""],
     pJoined: [""],
     skills: [""],
+    description:""
   });
 
-  const [newSkills, setNewSkills] = useState([]);
-  const [newName, setNewName] = useState([]);
+  const [newSkills, setNewSkills] = useState(undefined);
+  const [newName, setNewName] = useState(undefined);
   const [phone, setPhone] = useState("");
-  const [des, setDes] = useState("");
+  const [des, setDes] = useState(undefined);
   const [edit, setEdit] = useState(false);
   const [projects, setProject] = useState(["Project", "Project2"]);
+  function refreshPage() {
+    window.location.reload(false);
+  }
 
   useEffect(() => {
     if (user === null && userInfo === null) {
@@ -42,10 +46,11 @@ function Profile() {
         pOwned: [],
         pJoined: [],
         skills: [],
+        description: ""
       });
     } else {
       setCompleteUser({
-        userID: user.userID !== undefined ? user.userID : "",
+        userID: user.userID !== undefined ? userInfo.userID : "",
         name: userInfo.name !== undefined ? userInfo.name : "Foo Bar",
         email: user.email !== undefined ? user.email : "foo@bar.com",
         rating: userInfo.rating !== undefined ? userInfo.rating : 100,
@@ -54,6 +59,7 @@ function Profile() {
         pOwned: userInfo.pOwned !== undefined ? userInfo.pOwned : [],
         pJoined: userInfo.pJoined !== undefined ? userInfo.pJoined : [],
         skills: userInfo.skills !== undefined ? userInfo.skills : [],
+        description: userInfo.description !== undefined ? userInfo.description : ""
       });
       setNewSkills(
         userInfo.skills !== undefined ? userInfo.skills.join(",") : []
@@ -83,15 +89,16 @@ function Profile() {
   };
 
   const handleSubmit = async (e) => {
-    const skillsArr = newSkills.split(",");
+    const skillsArr = newSkills!== undefined? newSkills.split(","): undefined
     var raw = JSON.stringify({
       userID: user.uid,
-      name: newName,
+      name: newName !== undefined ? newName : userInfo.name,
       rating: 100,
-      skills: skillsArr,
-      pOwned: user.pOwned !== undefined ? user.pOwned : undefined,
-      pJoined: user.pJoined !== undefined ? user.pJoined : undefined,
+      skills: skillsArr!== undefined ? skillsArr : userInfo.name,
+      pOwned: userInfo.pOwned !== undefined ? userInfo.pOwned : undefined,
+      pJoined: userInfo.pJoined !== undefined ? userInfo.pJoined : undefined,
       profilePic: userInfo.profilePic !== undefined ? userInfo.profilePic : undefined,
+      description: des !== undefined ? des: userInfo.description
     });
 
     var myHeaders = new Headers();
@@ -110,6 +117,10 @@ function Profile() {
         setEdit(false);
       })
       .catch((error) => console.log("error", error));
+      setNewName(undefined)
+      setDes(undefined)
+      setNewSkills(undefined)
+      refreshPage()
   };
 
   // const handleSubmit = () => {
@@ -267,7 +278,7 @@ function Profile() {
               <dt className='text-sm font-medium text-gray-500'>About</dt>
               <dd
                 className='mt-1 max-w-prose space-y-5 text-sm text-gray-900'
-                dangerouslySetInnerHTML={{ __html: fake.description }}
+                dangerouslySetInnerHTML={{ __html: userInfo.description }}
               />
             </div>
           </dl>
@@ -280,7 +291,7 @@ function Profile() {
                 <input
                   type='text'
                   className='bg-transparent border-none outline-none text-black placeholder-gray-300'
-                  placeholder={newName}
+                  placeholder={completeUser.name}
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                 />
@@ -322,7 +333,8 @@ function Profile() {
                 <input
                   type='text'
                   className='bg-transparent border-none outline-none text-black placeholder-gray-300'
-                  placeholder={user.description}
+                  placeholder={userInfo.description}
+                  value={des}
                   onChange={(e) => setDes(e.target.value)}
                 />
               </dd>
