@@ -10,6 +10,7 @@ import (
 )
 
 type Message struct {
+	MID    string `json:"mid"`
 	Sender string `json:"sender"`
 	Text   string `json:"text"`
 	Time   string `json:"time"`
