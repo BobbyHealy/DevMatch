@@ -9,15 +9,16 @@ import (
 	"gopkg.in/zabawaba99/firego.v1"
 )
 
-
-type directmessage struct {
-	DMID  		  string `json:"dmID"`
-	UserOne 	  string `json:"userOne"`
-	UserTwo 	  string `json:"userTwo"`
-	Messages    []string `json:"messages"`
+type Message struct {
+	Sender string `json:"sender"`
+	Text   string `json:"text"`
+	Time   string `json:"time"`
 }
 
-
+type directmessage struct {
+	DMID     string    `json:"dmID"`
+	Messages []Message `json:"messages"`
+}
 
 func getDirectMessage(c *gin.Context) {
 	id, exists := c.GetQuery("id")
@@ -46,7 +47,6 @@ func getDirectMessage(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, v)
 }
 
-
 // postDirectMessage adds a new DM
 func postDirectMessage(c *gin.Context) {
 
@@ -68,9 +68,6 @@ func postDirectMessage(c *gin.Context) {
 	c.IndentedJSON(http.StatusCreated, newDM)
 }
 
-
-
-
 func updateDirectMessage(c *gin.Context) {
 	var updatedDM directmessage
 	if err := c.BindJSON(&updatedDM); err != nil {
@@ -85,4 +82,3 @@ func updateDirectMessage(c *gin.Context) {
 	}
 	c.IndentedJSON(http.StatusOK, updatedDM)
 }
-
