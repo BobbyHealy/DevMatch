@@ -131,7 +131,7 @@ export default function Projects() {
 
   const redirectToProject = (id) => {
     // Router.push("./projctSpace"+id);
-    Router.push(`/projectSpace?pid=${id}`);
+    Router.push(`/project?pid=${id}`);
   };
   const dragOverItem = useRef();
   const dragItem = useRef();

@@ -1,11 +1,10 @@
 import React from "react";
-import Chat from "@/components/Chat";
+import GC from "./GC";
 
 export default function GroupChat() {
   return (
     <div>
-
-        <Chat/>
+        <GC/>
     </div>
   )
 }
