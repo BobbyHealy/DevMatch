@@ -125,7 +125,7 @@ export default function ManageProjects() {
     
     const redirectToProject = (id) => {
     // Router.push("./projctSpace"+id);
-    Router.push(`/projectSpace?pid=${id}`);
+    Router.push(`/project?pid=${id}`);
     };
 
     
