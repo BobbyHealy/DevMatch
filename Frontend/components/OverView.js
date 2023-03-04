@@ -22,11 +22,15 @@ export default function Overview() {
   const[bannerURL, setBannerURL] = useState(null)
   const [newSkills, setNewSkills] = useState();
   const [edit, setEdit] = useState(false);
-  const [des, setDes] = useState("");
+  
   const [name, setName] = useState("");
   const [projectD, setProject] = useState("");
   const router = useRouter();
   const { pid } = router.query;
+
+  function refreshPage() {
+    window.location.reload(false);
+  }
 
   useEffect(() => {
     var myHeaders = new Headers();
@@ -54,6 +58,7 @@ export default function Overview() {
     setName(projectD.name);
   }, [projectD]);
 
+  const [des, setDes] = useState(projectD.projectDes);
   const handleEdit = () => {
     setEdit(true);
   };
@@ -101,8 +106,11 @@ useEffect(() => {
           projectD.projectBannerPic !== undefined
             ? projectD.projectBannerPic
             : undefined,
+        projectDes: des !==undefined? des: projectD.projectDes
         
       });
+      console.log(des!==undefined)
+      console.log(raw)
 
       var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
@@ -138,6 +146,7 @@ useEffect(() => {
         projectBannerPic: projectD.projectBannerPic !== undefined
         ? projectD.projectBannerPic
         : undefined,
+        projectDes: des !==undefined? des: projectD.projectDes
       });
 
       var myHeaders = new Headers();
@@ -178,7 +187,9 @@ useEffect(() => {
                 ? projectD.projectProfile
                 : undefined,
             projectBannerPic: url,
+            projectDes: des !==undefined? des: projectD.projectDes
           });
+          console.log(2)
 
           var myHeaders = new Headers();
           myHeaders.append("Content-Type", "application/json");
@@ -196,6 +207,7 @@ useEffect(() => {
               setEdit(false);
             })
         .catch((error) => console.log("error", error));
+
         })
       })
     }
@@ -216,7 +228,11 @@ useEffect(() => {
               owners: projectD.owners !== undefined ? projectD.owners : undefined,
               projectProfile: url1,
               projectBannerPic: url2,
+              projectDes: des !==undefined? des: projectD.projectDes
             });
+            console.log(4)
+            console.log(projectD.des)
+            console.log(des)
   
             var myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
@@ -234,6 +250,7 @@ useEffect(() => {
               setEdit(false);
             })
             .catch((error) => console.log("error", error));
+
             })
           })
           
@@ -243,6 +260,10 @@ useEffect(() => {
       })
 
     }
+    setIcon(null)
+    setBanner(null)
+    setDes(undefined)
+    refreshPage()
   };
 
   const handleCancel = () => {
@@ -379,7 +400,7 @@ useEffect(() => {
                         <dd
                           className='mt-1 max-w-prose space-y-5 text-sm text-gray-900'
                           dangerouslySetInnerHTML={{
-                            __html: project.description,
+                            __html: projectD.projectDes,
                           }}
                         />
                       </div>
@@ -474,8 +495,6 @@ useEffect(() => {
                 )}
               </div>
             </main>
-        
-  
         </div>
     </>
   );
