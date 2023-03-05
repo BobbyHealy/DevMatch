@@ -10,6 +10,18 @@ function classNames(...classes) {
 }
 function Profile() {
   const { user, login, logout, userInfo } = useAuth();
+  const currentUser ={
+    userID: user.userID !== undefined ? userInfo.userID : "",
+    name: userInfo.name !== undefined ? userInfo.name : "Foo Bar",
+    email: user.email !== undefined ? user.email : "foo@bar.com",
+    rating: userInfo.rating !== undefined ? userInfo.rating : 100,
+    profilePic:
+          userInfo.profilePic !== undefined ? userInfo.profilePic : "",
+    pOwned: userInfo.pOwned !== undefined ? userInfo.pOwned : [],
+    pJoined: userInfo.pJoined !== undefined ? userInfo.pJoined : [],
+    skills: userInfo.skills !== undefined ? userInfo.skills : [],
+    description: userInfo.description !== undefined ? userInfo.description : ""
+  }
   const [showModal, setShowModal] = useState(false);
   const [completeUser, setCompleteUser] = useState({
     userId: "",
@@ -22,18 +34,19 @@ function Profile() {
     skills: [""],
     description:""
   });
-
   const [newSkills, setNewSkills] = useState(undefined);
   const [newName, setNewName] = useState(undefined);
   const [phone, setPhone] = useState("");
   const [des, setDes] = useState(undefined);
   const [edit, setEdit] = useState(false);
-  const [projects, setProject] = useState(["Project", "Project2"]);
+  const [projectsO, setProjectsO] = useState([]);
+  const [projectsJ, setProjectsJ] = useState([]);
   function refreshPage() {
     window.location.reload(false);
   }
 
   useEffect(() => {
+  
     if (user === null && userInfo === null) {
       Router.push("/account/login");
     } else if (userInfo === null) {
@@ -49,41 +62,107 @@ function Profile() {
         description: ""
       });
     } else {
-      setCompleteUser({
-        userID: user.userID !== undefined ? userInfo.userID : "",
-        name: userInfo.name !== undefined ? userInfo.name : "Foo Bar",
-        email: user.email !== undefined ? user.email : "foo@bar.com",
-        rating: userInfo.rating !== undefined ? userInfo.rating : 100,
-        profilePic:
-          userInfo.profilePic !== undefined ? userInfo.profilePic : "",
-        pOwned: userInfo.pOwned !== undefined ? userInfo.pOwned : [],
-        pJoined: userInfo.pJoined !== undefined ? userInfo.pJoined : [],
-        skills: userInfo.skills !== undefined ? userInfo.skills : [],
-        description: userInfo.description !== undefined ? userInfo.description : ""
-      });
+      setCompleteUser(currentUser);
       setNewSkills(
         userInfo.skills !== undefined ? userInfo.skills.join(",") : []
       );
     }
   }, [user, userInfo]);
 
-  const projectList = projects.map((p) => <li>{p}</li>);
+
+
   const tabs = [{ name: "Profile", href: "#", current: true }];
   const profileImageURL =
     "https://cdn.britannica.com/79/114979-050-EA390E84/ruins-St-Andrews-Castle-Scotland.jpg";
-  const fake = {
-    name: "Auden Huang",
-    imageUrl:
-      "https://media.licdn.com/dms/image/C4D03AQHHZKUrMMhCsQ/profile-displayphoto-shrink_800_800/0/1610704750210?e=2147483647&v=beta&t=OHuErweO0MQ3CeXJlSKkBpu-FOxPQh1sjcuVOQVTZb8",
-    description:
-      "A third year CS student looking fro projectmate for CS307 Project",
-    infos: {
-      Phone: "(765) 418-0737",
-      Email: "dnaidsu",
-      Rating: 5,
-      Project: projectList,
-    },
-  };
+
+  function addPO(project){
+    console.log(project)
+    console.log(...projectsO)
+    console.log(projectsO!==[]) 
+
+    if(projectsO!==null)
+    {
+      var newList = [...projectsO,project]
+      setProjectsO(newList)
+    }else
+    {
+      setProjectsO([project])
+    }
+  }
+  useEffect(() => {
+
+    var pOwned = userInfo.pOwned !==undefined? userInfo.pOwned : []
+      if(pOwned!==null)
+      {
+        pOwned.map((project)=>{
+          console.log(project)
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        var raw = JSON.stringify({
+          pid: project,
+        });
+        var requestOptions = {
+          method: "POST",
+          headers: myHeaders,
+          body: raw,
+        };
+        fetch("http://localhost:3000/api/getProject", requestOptions)
+          .then((response) => response.text())
+          .then((result) => 
+          {
+          addPO(JSON.parse(result))
+        }
+          )
+          .catch((err) => {
+            console.log(err);
+          });
+          
+      })
+      }
+
+   
+  }, [userInfo]);
+
+  function addPJ(project){
+    if(projectsJ!==null)
+    {
+      var newList = [...projectsJ,project]
+      setProjectsJ(newList)
+    }else
+    {
+      setProjectsJ[project]
+    }
+  }
+  useEffect(() => {
+    var pJoined = userInfo.pJoined !==undefined? userInfo.pJoined : []
+    console.log(userInfo)
+    console.log(pJoined)
+    if (pJoined!==null)
+    {
+      console.log(pJoined)
+      pJoined.map((project)=>{
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+      var raw = JSON.stringify({
+        pid: project,
+      });
+      var requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+      };
+      fetch("http://localhost:3000/api/getProject", requestOptions)
+        .then((response) => response.text())
+        .then((result) => addPJ(JSON.parse(result)))
+        .catch((err) => {
+          console.log(err);
+        });
+        console.log(...projectsJ)
+    })
+    }
+    
+   
+  }, [userInfo]);
   const handleEdit = () => {
     setEdit(true);
   };
@@ -113,7 +192,6 @@ function Profile() {
     fetch("http://localhost:3000/api/addUser", requestOptions)
       .then((response) => response.text())
       .then((result) => {
-        console.log(result);
         setEdit(false);
       })
       .catch((error) => console.log("error", error));
@@ -250,20 +328,18 @@ function Profile() {
                 {"Owned Projects"}
               </dt>
               <dd className='mt-1 text-sm text-gray-900'>
-                {completeUser.pOwned !== null
-                  ? completeUser.pOwned.join(", ")
-                  : "N/a"}
+              {projectsO.map((project)=>
+                        (<li >{project.name}</li>))}
               </dd>
             </div>
 
-            <div className='sm:col-span-1'>
+            <div className='sm:col-span-1'>  
               <dt className='text-sm font-medium text-gray-500'>
                 {"Joined Projects"}
               </dt>
               <dd className='mt-1 text-sm text-gray-900'>
-                {completeUser.pJoined !== null
-                  ? completeUser.pJoined.join(", ")
-                  : "N/a"}
+              {projectsJ.map((project)=>
+                        (<li >{project.name}</li>))}
               </dd>
             </div>
 
@@ -319,12 +395,6 @@ function Profile() {
                   value={newSkills}
                   onChange={(e) => setNewSkills(e.target.value)}
                 />
-              </dd>
-            </div>
-            <div className='sm:col-span-1'>
-              <dt className='text-sm font-medium text-gray-500'>Projects</dt>
-              <dd className='mt-1 text-sm text-gray-900'>
-                {completeUser.pOwned}
               </dd>
             </div>
             <div className='sm:col-span-2'>
