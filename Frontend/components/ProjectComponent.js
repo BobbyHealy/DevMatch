@@ -68,7 +68,7 @@ export default function ProjComponent(props) {
               alt=''
             />
           </div>
-          <div className='min-w-0 flex-1'>
+          <div className='min-w-0 flex-1 space-y-1'>
             <p className='text-sm font-semibold text-gray-900'>
               <a href='#' className='hover:underline'onClick={() => setShowModal(true)}>
                 {project.name}
@@ -78,6 +78,12 @@ export default function ProjComponent(props) {
               <a href='#' className='hover:underline'>
                 Owner:{" "}
                 {project.owners !== undefined ? project.owners[0] : "N/a"}
+              </a>
+            </p>
+            <p className='text-sm text-gray-500'>
+              <a href='#' className='hover:underline'>
+                Project Type:{" "}
+                {"Research"}
               </a>
             </p>
             <div className='text-sm text-gray-500'>
@@ -157,6 +163,10 @@ export default function ProjComponent(props) {
                   <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
                     <dt className="text-sm font-medium text-gray-500">Expected hours per week</dt>
                     <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">30</dd>
+                  </div>
+                  <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
+                    <dt className="text-sm font-medium text-gray-500">Project Type</dt>
+                    <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">Research</dd>
                   </div>
                   <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
                     <dt className="text-sm font-medium text-gray-500">Project Description</dt>
