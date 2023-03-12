@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 import { InputText } from "primereact/inputtext";
 import { storage } from "@/config/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import ProjType from "@/components/ProjTypeComboBox";
 
 export default function Create() {
   const { user, login, logout, userInfo } = useAuth();
@@ -441,6 +442,10 @@ useEffect(() => {
                             }}
                         />
 
+                    </div>
+
+                    <div className='col-span-6 sm:col-span-3 pb-20'>
+                      <ProjType></ProjType>
                     </div>
 
                     {/* <div className='col-span-6 sm:col-span-3 lg:col-span-2'>
