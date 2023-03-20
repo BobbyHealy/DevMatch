@@ -10,7 +10,7 @@ import (
 	"gopkg.in/zabawaba99/firego.v1"
 )
 
-const URL = "https://devmatch-4d490-default-rtdb.firebaseio.com"
+const URL = "https://devmatch-8f074-default-rtdb.firebaseio.com"
 
 const authToken = "token"
 
@@ -88,7 +88,7 @@ func main() {
 }
 
 func pushValue(anything string) {
-	f := firego.New("https://devmatch-4d490-default-rtdb.firebaseio.com/Hold", nil)
+	f := firego.New("https://devmatch-8f074-default-rtdb.firebaseio.com/Hold", nil)
 	//f.Auth("my-token")
 	v := map[string]interface{}{"foo": anything}
 	firego.TimeoutDuration = time.Minute
@@ -113,7 +113,7 @@ func pushValue(anything string) {
  * Avoid using set. This overrides everything
  */
 func setValue(anything string) {
-	f := firego.New("https://devmatch-4d490-default-rtdb.firebaseio.com/Hold", nil)
+	f := firego.New("https://devmatch-8f074-default-rtdb.firebaseio.com/Hold", nil)
 
 	v := map[string]string{"foo": "bar"}
 	if err := f.Set(v); err != nil {
@@ -126,7 +126,7 @@ func setValue(anything string) {
  * Can only do update with JSON
  */
 func updateValue(anything string) {
-	f := firego.New("https://devmatch-4d490-default-rtdb.firebaseio.com/Hold", nil)
+	f := firego.New("https://devmatch-8f074-default-rtdb.firebaseio.com/Hold", nil)
 	v := map[string]map[string]string{"l": {"hello": "123"}}
 	if err := f.Update(v); err != nil {
 		log.Fatal(err)
@@ -134,7 +134,7 @@ func updateValue(anything string) {
 }
 
 func queryValue(anything string) {
-	f := firego.New("https://devmatch-4d490-default-rtdb.firebaseio.com/Users", nil)
+	f := firego.New("https://devmatch-8f074-default-rtdb.firebaseio.com/Users", nil)
 	var v map[string]interface{}
 	if err := f.OrderBy("$key").LimitToFirst(1).Value(&v); err != nil {
 		log.Fatal(err)
@@ -143,7 +143,7 @@ func queryValue(anything string) {
 }
 
 func getValue(anything string) {
-	f := firego.New("https://devmatch-4d490-default-rtdb.firebaseio.com/Users", nil)
+	f := firego.New("https://devmatch-8f074-default-rtdb.firebaseio.com/Users", nil)
 	var v map[string]interface{}
 	if err := f.Value(&v); err != nil {
 		log.Fatal(err)
@@ -162,8 +162,8 @@ func getUsers(c *gin.Context) {
 	} else {
 		fmt.Println(uid)
 	}
-	//path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
-	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Users/" + uid
+	//path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
+	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Users/" + uid
 	f := firego.New(path, nil)
 	var v user
 	if err := f.Value(&v); err != nil {
@@ -184,7 +184,7 @@ func postUsers(c *gin.Context) {
 		return
 	}
 	id := newUser.UserID
-	f := firego.New("https://devmatch-4d490-default-rtdb.firebaseio.com/Users/", nil)
+	f := firego.New("https://devmatch-8f074-default-rtdb.firebaseio.com/Users/", nil)
 	if newUser.ProfilePic == "" {
 		newUser.ProfilePic = "https://www.nicepng.com/png/detail/73-730154_open-default-profile-picture-png.png"
 	}
@@ -214,7 +214,7 @@ func postProject(c *gin.Context) {
 		return
 	}
 	id := newProj.ProjectID
-	f := firego.New("https://devmatch-4d490-default-rtdb.firebaseio.com/Projects/", nil)
+	f := firego.New("https://devmatch-8f074-default-rtdb.firebaseio.com/Projects/", nil)
 	v := map[string]project{id: newProj}
 	if err := f.Update(v); err != nil {
 		log.Fatal(err)
@@ -233,8 +233,8 @@ func getProject(c *gin.Context) {
 	} else {
 		fmt.Println(pid)
 	}
-	//path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
-	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Projects/" + pid
+	//path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
+	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Projects/" + pid
 	f := firego.New(path, nil)
 	var v project
 	if err := f.Value(&v); err != nil {
@@ -250,7 +250,7 @@ func updateUser(c *gin.Context) {
 		return
 	}
 	uid := updatedUser.UserID
-	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Users/"
+	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Users/"
 	f := firego.New(path, nil)
 	v := map[string]user{uid: updatedUser}
 	if err := f.Update(v); err != nil {
@@ -269,7 +269,7 @@ func search(c *gin.Context) {
 	isProject := thisSearch.Project
 	limit := thisSearch.Limit
 	if isProject {
-		path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Projects/"
+		path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Projects/"
 		f := firego.New(path, nil)
 		var v map[string]interface{}
 		if err := f.OrderBy("$key").LimitToFirst(int64(limit)).Value(&v); err != nil {
@@ -279,7 +279,7 @@ func search(c *gin.Context) {
 		c.IndentedJSON(http.StatusOK, v)
 		return
 	}
-	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Users/"
+	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Users/"
 	f := firego.New(path, nil)
 	var d map[string]interface{}
 	if err := f.OrderBy("$key").LimitToFirst(int64(limit)).Value(&d); err != nil {
@@ -291,8 +291,8 @@ func search(c *gin.Context) {
 
 func getUserFromID(uid string) user {
 
-	//path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
-	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Users/" + uid
+	//path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
+	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Users/" + uid
 	f := firego.New(path, nil)
 	var v user
 
@@ -317,8 +317,8 @@ func removeUser(c *gin.Context) {
 	} else {
 		fmt.Println(uid)
 	}
-	//path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
-	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Users/" + uid
+	//path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
+	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Users/" + uid
 	f := firego.New(path, nil)
 	if err := f.Remove(); err != nil {
 		log.Fatal(err)
@@ -333,8 +333,8 @@ func removeProject(c *gin.Context) {
 	} else {
 		fmt.Println(pid)
 	}
-	//path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
-	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Projects/" + pid
+	//path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
+	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Projects/" + pid
 	f := firego.New(path, nil)
 	if err := f.Remove(); err != nil {
 		log.Fatal(err)
@@ -344,8 +344,8 @@ func removeProject(c *gin.Context) {
 
 func getProjectFromID(pid string) project {
 
-	//path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
-	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Projects/" + pid
+	//path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
+	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Projects/" + pid
 	f := firego.New(path, nil)
 	var v project
 
@@ -370,8 +370,8 @@ func getPrettyUser(c *gin.Context) {
 	} else {
 		fmt.Println(uid)
 	}
-	//path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
-	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Users/" + uid
+	//path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
+	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Users/" + uid
 	f := firego.New(path, nil)
 	var v user
 
@@ -415,8 +415,8 @@ func getPrettyProject(c *gin.Context) {
 	} else {
 		fmt.Println(pid)
 	}
-	//path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
-	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Projects/" + pid
+	//path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
+	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Projects/" + pid
 	f := firego.New(path, nil)
 	var v project
 	if err := f.Value(&v); err != nil {
@@ -475,7 +475,7 @@ func userToProject(c *gin.Context) {
 	if !exists3 {
 		owner = "false"
 	}
-	//path := "https://devmatch-4d490-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
+	//path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
 
 	var v user
 	v = getUserFromID(uid)
@@ -509,7 +509,7 @@ func updateProjectHelp(proj project) {
 	// newUser.
 
 	id := proj.ProjectID
-	f := firego.New("https://devmatch-4d490-default-rtdb.firebaseio.com/Projects/", nil)
+	f := firego.New("https://devmatch-8f074-default-rtdb.firebaseio.com/Projects/", nil)
 	v := map[string]project{id: proj}
 	if err := f.Update(v); err != nil {
 		log.Fatal(err)
@@ -523,7 +523,7 @@ func updateUserHelp(us user) {
 	// newUser.
 
 	id := us.UserID
-	f := firego.New("https://devmatch-4d490-default-rtdb.firebaseio.com/Users/", nil)
+	f := firego.New("https://devmatch-8f074-default-rtdb.firebaseio.com/Users/", nil)
 	v := map[string]user{id: us}
 	if err := f.Update(v); err != nil {
 		log.Fatal(err)

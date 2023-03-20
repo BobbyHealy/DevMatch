@@ -31,7 +31,7 @@ func getDirectMessage(c *gin.Context) {
 		fmt.Println(id)
 	}
 
-	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/DirectMessages/" + id
+	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/DirectMessages/" + id
 	f := firego.New(path, nil)
 	var v directmessage
 
@@ -59,7 +59,7 @@ func postDirectMessage(c *gin.Context) {
 		return
 	}
 	id := newDM.DMID
-	f := firego.New("https://devmatch-4d490-default-rtdb.firebaseio.com/DirectMessages/", nil)
+	f := firego.New("https://devmatch-8f074-default-rtdb.firebaseio.com/DirectMessages/", nil)
 	v := map[string]directmessage{id: newDM}
 	if err := f.Update(v); err != nil {
 		log.Fatal(err)
@@ -75,7 +75,7 @@ func updateDirectMessage(c *gin.Context) {
 		return
 	}
 	id := updatedDM.DMID
-	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/DirectMessages/"
+	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/DirectMessages/"
 	f := firego.New(path, nil)
 	v := map[string]directmessage{id: updatedDM}
 	if err := f.Update(v); err != nil {
