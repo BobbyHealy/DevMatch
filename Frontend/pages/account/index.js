@@ -13,11 +13,13 @@ import {
 import Profile from "../../components/Profile";
 import DMs from "../../components/DMs";
 import ManageProjects from "@/components/ManageProjects";
+import Documents from "@/components/Documents";
 
 const navigation = [
   { name: "Overview", href: "#", icon: HomeIcon, current: true },
   { name: "DMs", href: "#", icon: UsersIcon, current: false },
   { name: "Manage Projects", href: "#", icon: UsersIcon, current: false },
+  { name: "Documents", href: "#", icon: UsersIcon, current: false },
 ];
 
 function classNames(...classes) {
@@ -38,6 +40,9 @@ export default function Example() {
         break;
       case "Manage Projects":
         <ManageProjects/>;
+        break;
+      case "Documents":
+        <Documents/>;
         break;
 
       default:
@@ -215,7 +220,9 @@ export default function Example() {
               <DMs />
             ) : selectedTab === "Manage Projects" ? (
                 <ManageProjects />
-            ) : (
+            ) : selectedTab === "Documents" ? (
+                <Documents />
+            ): (
               <></>
             )}
           </main>
