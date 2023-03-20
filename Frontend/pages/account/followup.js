@@ -5,6 +5,8 @@ import Head from "next/head";
 import Router from "next/router";
 import { useEffect, useState } from "react";
 import { InputText } from "primereact/inputtext";
+import { db} from "@/config/firebase";
+import { doc, setDoc } from "firebase/firestore";
 import { storage } from "@/config/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
@@ -48,6 +50,7 @@ export default function FollowUp() {
         getDownloadURL(imageRef)
         .then((url) => {
             setUrl(url)
+
             var raw = JSON.stringify({
                 userID: user.uid,
                 name: name,
@@ -66,6 +69,12 @@ export default function FollowUp() {
                 headers: myHeaders,
                 body: raw,
               };
+              setDoc(doc(db, "users", user.uid), {
+                uid: user.uid,
+                email: user.email,
+                displayName: name,
+                photoURL: url,
+              });
           
               fetch("http://localhost:3000/api/addUser", requestOptions)
                 .then((response) => response.text())
@@ -80,10 +89,12 @@ export default function FollowUp() {
             console.log(error.message, "error getting the image url");
         })
         setimage(null);
+        setUrl(undefined);
     
       })}
       else
       {
+
         const skillsArr = skills.split(",");
         var raw = JSON.stringify({
           userID: user.uid,
@@ -92,7 +103,12 @@ export default function FollowUp() {
           skills: skillsArr,
           ProfilePic: url !== undefined ? url : userInfo.profilePic,
         });
-        
+        setDoc(doc(db, "users", user.uid), {
+          uid: user.uid,
+          email: user.email,
+          displayName: name,
+          photoURL:url !== undefined ? url : userInfo.profilePic,
+        });
 
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
@@ -110,6 +126,7 @@ export default function FollowUp() {
             Router.push("../feed");
           })
           .catch((error) => console.log("error", error));}
+        setUrl(undefined);
   };
 
   return (

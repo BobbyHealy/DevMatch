@@ -1,28 +1,29 @@
 import React, { useContext, useEffect, useState } from "react";
-// import {
-//     collection,
-//     query,
-//     where,
-//     setDoc,
-//     doc,
-//     updateDoc,
-//     serverTimestamp,
-//     getDoc,
-//   } from "firebase/firestore";
+
+import {
+    collection,
+    query,
+    where,
+    getDocs,
+    setDoc,
+    doc,
+    updateDoc,
+    serverTimestamp,
+    getDoc,
+  } from "firebase/firestore";
+  import { db } from "@/config/firebase";
+  import { useAuth } from "@/context/AuthContext";
+
+
 
 
 export default function Searchbar() {
+
+    const {user, userInfo} = useAuth()
     const currentUser = {
-        id: 1,
-        name: "Auden",
-        imageUrl:
-        "https://media.licdn.com/dms/image/C4D03AQHHZKUrMMhCsQ/profile-displayphoto-shrink_800_800/0/1610704750210?e=2147483647&v=beta&t=OHuErweO0MQ3CeXJlSKkBpu-FOxPQh1sjcuVOQVTZb8", 
-    }
-    const users= {
-        id: 13,
-        name: "Henry",
-        imageUrl:
-        "https://media.licdn.com/dms/image/C4D03AQHHZKUrMMhCsQ/profile-displayphoto-shrink_800_800/0/1610704750210?e=2147483647&v=beta&t=OHuErweO0MQ3CeXJlSKkBpu-FOxPQh1sjcuVOQVTZb8",
+        uid: user.uid,
+        name: userInfo.name,
+        profilePic: userInfo.profilePic, 
     }
     const TestDM= {
         id: 113,
@@ -31,73 +32,60 @@ export default function Searchbar() {
     const[DMs, setDMs] = useState(null)
     const [username, setUsername] = useState("")
 
-    const [user, setUser] = useState(null)
+    const [user2, setUser] = useState(null)
     const [err, setErr] = useState(false)
-    const handleSearch =() =>{
-        // const q = query(
-        //     collection(db,"users"),
-        //     where("name", "==", username)
-
-        // );
-        // const querySnapshot = await getDocs(q);
-        // querySnapshot.forEach((doec)=>{
-        //     setUser(doc.data)
-        // })
-        try{
-            if (username === users.name)
-            {
-                setUser(users)
-            }
+    const handleSearch = async () => {
+        const q = query(
+          collection(db, "users"),
+          where("displayName", "==", username)
+        );
+    
+        try {
+          const querySnapshot = await getDocs(q);
+          querySnapshot.forEach((doc) => {
+            setUser(doc.data());
+          });
+        } catch (err) {
+          setErr(true);
         }
-        catch(err){
-            setErr(true)
-        }
-    };
+      };
     const handleKey = e=>{
         setUser(null)
         e.code ==="Enter" &&handleSearch(); 
     }
     const handleSelect = async()=>{
-    //  Check whether the DM exist in the firebase. if not create new one
-        const combinedID = currentUser.id< user.id? currentUser.id + user.id: user.id+currentUser.id
-        // try{
-        //     const res = await getDoc(doc(db,"DMs", combinedID))
-        //     if(!res.exists()){
-        //         // create DM 
-        //         await setDoc(doc,(db, "DMs", combinedID,{messages:[]}))
+        //check whether the group(chats in firestore) exists, if not create
+        const combinedId =
+        currentUser.uid > user2.uid
+        ? currentUser.uid + user2.uid
+        : user2.uid + currentUser.uid;
+        try {
+            const res = await getDoc(doc(db, "chats", combinedId));
 
-        //         //creat userDMS
-        //         await setDoc(doc,(db, "userDMs", currentUser.id),{
-        //             [combinedID+".userInfo"]:{
-        //                 id:user.id,
-        //                 name: user.name,
-        //                 imageUrl: user.imageUrl
-        //             },
-        //             [combinedId+".date"]: serverTimestamp()  
-        //         });
-        //         await setDoc(doc,(db, "userDMs", user.id),{
-        //             [combinedID+".userInfo"]:{
-        //                 id:currentUser.id,
-        //                 name: currentUser.name,
-        //                 imageUrl: currentUser.imageUrl
-        //             },
-        //             [combinedId+".date"]: serverTimestamp()  
-        //         });
-        //     }
-        // }catch(err)
-        // {
+            if (!res.exists()) {
+            //create a chat in chats collection
+            await setDoc(doc(db, "chats", combinedId), { messages: [] });
 
-        // }
-        try{
-            if (combinedID === TestDM.id)
-            {
-                setDMs(TestDM)
+            //create user2 chats
+            await updateDoc(doc(db, "userChats", currentUser.uid), {
+                [combinedId + ".userInfo"]: {
+                uid: user2.uid,
+                displayName: user2.displayName,
+                photoURL: user2.photoURL,
+                },
+                [combinedId + ".date"]: serverTimestamp(),
+            });
+
+            await updateDoc(doc(db, "userChats", user2.uid), {
+                [combinedId + ".userInfo"]: {
+                uid: currentUser.uid,
+                displayName: currentUser.displayName,
+                photoURL: currentUser.photoURL,
+                },
+                [combinedId + ".date"]: serverTimestamp(),
+            });
             }
-
-        }catch(err)
-        {
-
-        }
+        } catch (err) {}
         setUser(null)
         setUsername("")
         
@@ -119,13 +107,12 @@ export default function Searchbar() {
             />
         </div>
         {err && <span>User not found!</span>}
-        {user&&<div className='userChat flex p-2 items-center gap-2 hover:bg-indigo-600'
+        {user2&&<div className='userChat flex p-2 items-center gap-2 hover:bg-indigo-600'
         onClick={handleSelect}
         >
-            <img src ={user.imageUrl} className='bg-white h-6 w-6 rounded-full'></img>
+            <img src ={user2.photoURL} className='bg-white h-6 w-6 rounded-full'></img>
             <div className='info'>
-                <span className='text-lg font-medium'>{user.name}</span>
-                <p className='text-sm text-gray-100'>Latest Msg</p>
+                <span className='text-lg font-medium'>{user2.displayName}</span>
             </div>
  
         </div>}
