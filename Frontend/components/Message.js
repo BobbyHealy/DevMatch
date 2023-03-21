@@ -46,7 +46,7 @@ export default function Message({ message }) {
                 <span className='text-sm'>{date[0]}</span>
             </div>
             <div className='content flex flex-col gap-2 max-w-[calc(70%)]'>
-                <img className='w-40 h-45 object-cover' src={message.img}/>
+                <img className='w-1/2 object-cover' src={message.img}/>
                 {message.text&&<p className='bg-orange-100 text-black rounded-tl-none rounded-lg px-4 py-2 max-w-max'>{message.text}</p>}
                 
             </div>
@@ -67,7 +67,7 @@ export default function Message({ message }) {
                 <span className='text-sm'>{date[0]}</span>
             </div>
             <div className='content flex flex-col items-end gap-2 max-w-[calc(70%)]'>
-              <img className='w-40 h-45 object-cover' src={message.img}/>
+              <img className='w-1/2 object-cover' src={message.img}/>
               {message.text&&<p className='bg-blue-300 text-black rounded-tr-none rounded-lg px-4 py-2 max-w-max'>{message.text}</p>}
                 
             </div>
