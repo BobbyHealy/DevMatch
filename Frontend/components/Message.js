@@ -39,7 +39,7 @@ export default function Message({ message }) {
         {/* if it is receiver */}
         { message.senderId !== currentUser.uid&&<div className='flex mb-5 gap-5 '> 
             <div className='info flex flex-col text-gray-300 font-light'>
-                <img className='bg-white w-10 h-10 object-cover rounded-full' src={receiver.photoURL}/>
+                {receiver&&<img className='bg-white w-10 h-10 object-cover rounded-full' src={receiver.photoURL}/>}
                 {/* <span>{message.date}</span> */}
             </div>
             <div className='content flex flex-col gap-2 max-w-[calc(80%)]'>
