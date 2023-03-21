@@ -3,15 +3,7 @@ import Messages from './Messages'
 import ChatInput from './ChatInput'
 import {
   onSnapshot,
-  collection,
-  query,
-  where,
-  getDocs,
-  setDoc,
   doc,
-  updateDoc,
-  serverTimestamp,
-  getDoc,
 } from "firebase/firestore";
 import { db } from "@/config/firebase";
 import { useAuth } from "@/context/AuthContext";

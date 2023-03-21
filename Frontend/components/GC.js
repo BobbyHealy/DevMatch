@@ -1,6 +1,6 @@
 import React,{useState, useEffect}from 'react'
 import GroupMessages from './GroupMessages'
-import ChatInput from './ChatInput'
+import GroupChatInput from './GroupChatInput';
 import { useRouter } from 'next/router';
 
 
@@ -40,7 +40,7 @@ export default function GC() {
 
           </div>
           <GroupMessages/>
-          <ChatInput/>
+          <GroupChatInput/>
       </div>
       
     </div>

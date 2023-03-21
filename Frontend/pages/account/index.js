@@ -4,9 +4,10 @@ import {
   Bars3Icon,
   CalendarIcon,
   ChartBarIcon,
-  FolderIcon,
+  DocumentIcon,
+  RectangleStackIcon,
   HomeIcon,
-  InboxIcon,
+  EnvelopeIcon,
   UsersIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
@@ -17,9 +18,9 @@ import Documents from "@/components/Documents";
 
 const navigation = [
   { name: "Overview", href: "#", icon: HomeIcon, current: true },
-  { name: "DMs", href: "#", icon: UsersIcon, current: false },
-  { name: "Manage Projects", href: "#", icon: UsersIcon, current: false },
-  { name: "Documents", href: "#", icon: UsersIcon, current: false },
+  { name: "DMs", href: "#", icon: EnvelopeIcon, current: false },
+  { name: "Manage Projects", href: "#", icon: RectangleStackIcon, current: false },
+  { name: "Documents", href: "#", icon: DocumentIcon, current: false },
 ];
 
 function classNames(...classes) {

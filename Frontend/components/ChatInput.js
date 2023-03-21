@@ -1,4 +1,4 @@
-import React,{useState, useEffect} from "react";
+import {useState, useEffect} from "react";
 import { db,storage } from "@/config/firebase";
 import { v4 as uuid } from "uuid";
 import {
@@ -9,7 +9,7 @@ import {
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useAuth } from "@/context/AuthContext";
 
 export default function ChatInput() {
@@ -49,114 +49,70 @@ export default function ChatInput() {
     
     const handleSend = async () => {
         console.log(DMID)
-        // if (img&&text) {
-        //     console.log(1)
-        //   const storageRef = ref(storage, uuid());
-    
-        //   const uploadTask = uploadBytesResumable(storageRef, img);
-    
-        //   uploadTask.on(
-        //     (error) => {
-        //       //TODO:Handle Error
-        //     },
-        //     () => {
-        //       getDownloadURL(storageRef).then(async (downloadURL) => {
-        //         await updateDoc(doc(db, "chats", DMID), {
-        //           messages: arrayUnion({
-        //             id: uuid(),
-        //             text,
-        //             senderId: user.uid,
-        //             date: Timestamp.now(),
-        //             img: downloadURL,
-        //           }),
-        //         });
-        //       });
-        //     }
-        //   );
-        // } 
-        // else if(img){
-        //     console.log(2)
-        //     const storageRef = ref(storage, uuid());
-    
-        //     const uploadTask = uploadBytesResumable(storageRef, img);
-      
-        //     uploadTask.on(
-        //       (error) => {
-        //       },
-        //       () => {
-        //         getDownloadURL(storageRef).then(async (downloadURL) => {
-        //           await updateDoc(doc(db, "chats", DMID), {
-        //             messages: arrayUnion({
-        //               id: uuid(),
-        //               senderId: user.uid,
-        //               date: Timestamp.now(),
-        //               img: downloadURL,
-        //             }),
-        //           });
-        //         });
-        //       }
-        //     );
-        // }
-        // else if(text){
-        //     console.log(3)
-        //     await updateDoc(doc(db, "chats", DMID), {
-        //       messages: arrayUnion({
-        //         id: uuid(),
-        //         text,
-        //         senderId: user.uid,
-        //         date: Timestamp.now(),
-        //       }),
-        //     });
-        // }
-        
-    
-        if (img) {
-          const storageRef = ref(storage, uuid());
-    
-          const uploadTask = uploadBytesResumable(storageRef, img);
-    
-          uploadTask.on(
-            (error) => {
-              //TODO:Handle Error
-            },
-            () => {
-              getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-                await updateDoc(doc(db, "chats", DMID), {
-                  messages: arrayUnion({
-                    id: uuid(),
-                    text,
-                    senderId: user.uid,
-                    date: Timestamp.now(),
-                    img: downloadURL,
-                  }),
-                });
+        const msgID = uuid();
+        if (img) 
+        {
+          const storageRef = ref(storage, userInfo.name+"DM"+msgID);
+          uploadBytes(storageRef, img).then (()=>
+          {
+            getDownloadURL(storageRef).then(async (downloadURL) => 
+            {
+              await updateDoc(doc(db, "chats", DMID), 
+              {
+                messages: arrayUnion(
+                {
+                  id: msgID,
+                  text,
+                  senderId: user.uid,
+                  date: Timestamp.now(),
+                  img: downloadURL,
+                }),
               });
-            }
-          );
-        } else {
-          await updateDoc(doc(db, "chats", DMID), {
-            messages: arrayUnion({
-              id: uuid(),
+            });
+          })
+          await updateDoc(doc(db, "userChats", user.uid), {
+            [DMID + ".lastMessage"]: {
+              text,
+              img: true,
+            },
+            [DMID + ".date"]: serverTimestamp(),
+          });
+      
+          await updateDoc(doc(db, "userChats", receiver), {
+            [DMID+ ".lastMessage"]: {
+              text,
+              img: true,
+            },
+            [DMID+ ".date"]: serverTimestamp(),
+          });
+        } else if (text)
+        {
+          await updateDoc(doc(db, "chats", DMID), 
+          {
+            messages: arrayUnion(
+            {
+              id: msgID,
               text,
               senderId: user.uid,
               date: Timestamp.now(),
             }),
           });
+          await updateDoc(doc(db, "userChats", user.uid), {
+            [DMID + ".lastMessage"]: {
+              text,
+            },
+            [DMID + ".date"]: serverTimestamp(),
+          });
+      
+          await updateDoc(doc(db, "userChats", receiver), {
+            [DMID+ ".lastMessage"]: {
+              text,
+            },
+            [DMID+ ".date"]: serverTimestamp(),
+          });
         }
     
-        await updateDoc(doc(db, "userChats", user.uid), {
-          [DMID + ".lastMessage"]: {
-            text,
-          },
-          [DMID + ".date"]: serverTimestamp(),
-        });
-    
-        await updateDoc(doc(db, "userChats", receiver), {
-          [DMID+ ".lastMessage"]: {
-            text,
-          },
-          [DMID+ ".date"]: serverTimestamp(),
-        });
+
     
         setText("");
         setImg(null);
