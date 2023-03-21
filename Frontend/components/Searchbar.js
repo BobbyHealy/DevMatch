@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+import DMs from "./DMs";
 
 import {
     collection,
@@ -25,11 +26,6 @@ export default function Searchbar() {
         name: userInfo.name,
         profilePic: userInfo.profilePic, 
     }
-    const TestDM= {
-        id: 113,
-        messages: []
-    }
-    const[DMs, setDMs] = useState(null)
     const [username, setUsername] = useState("")
 
     const [user2, setUser] = useState(null)
@@ -85,6 +81,14 @@ export default function Searchbar() {
                 [combinedId + ".date"]: serverTimestamp(),
             });
             }
+            await updateDoc(doc(db, "users", currentUser.uid), {
+                currentChat:{
+                    uid: user2.uid,
+                    displayName: user2.displayName,
+                    photoURL: user2.photoURL,
+                }
+            });
+            refreshPage();
         } catch (err) {}
         setUser(null)
         setUsername("")

@@ -7,6 +7,7 @@ export default function DMs() {
     <div className=''>
       <div className='flex justify-center h-full content-center '>
         <div className='flex border border-white rounded-lg w-11/12 h-5/6 overflow-hidden'>
+          
           <Sidebar />
 
           <Chat />
