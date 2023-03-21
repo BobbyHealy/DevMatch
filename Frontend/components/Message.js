@@ -10,7 +10,9 @@ import { useAuth } from "@/context/AuthContext";
 
 export default function Message({ message }) {
     const ref = useRef();
-    console.log(message)
+    console.log(message.date.toDate().toTimeString())
+    const date = message.date.toDate().toLocaleString('en-US').split(",")
+    console.log(date)
     
     useEffect(() => {
         ref.current?.scrollIntoView({ behavior: "smooth" });
@@ -40,7 +42,8 @@ export default function Message({ message }) {
         { message.senderId !== currentUser.uid&&<div className='flex mb-5 gap-5 '> 
             <div className='info flex flex-col text-gray-300 font-light'>
                 {receiver&&<img className='bg-white w-10 h-10 object-cover rounded-full' src={receiver.photoURL}/>}
-                {/* <span>{message.date}</span> */}
+                <span className='text-sm'>{date[1]}</span>
+                <span className='text-sm'>{date[0]}</span>
             </div>
             <div className='content flex flex-col gap-2 max-w-[calc(80%)]'>
                 <p className='bg-orange-100 text-black rounded-tl-none rounded-lg px-4 py-2 max-w-max'>{message.text}</p>
@@ -49,9 +52,10 @@ export default function Message({ message }) {
         </div> }
         {/* if it is sender */}
         {message.senderId === currentUser.uid&&<div className='flex mb-5 gap-5 flex-row-reverse'> 
-            <div className='info flex flex-col text-gray-300 font-light'>
+            <div className='info flex flex-col text-gray-300 font-light items-end'>
                 <img className='bg-white w-10 h-10 object-cover rounded-full' src={currentUser.photoURL}/>
-                {/* <span>{message.date}</span> */}
+                <span className='text-sm'>{date[1]}</span>
+                <span className='text-sm'>{date[0]}</span>
             </div>
             <div className='content flex flex-col items-end gap-2 max-w-[calc(80%)]'>
                 <p className='bg-blue-300 text-black rounded-tr-none rounded-lg px-4 py-2 max-w-max'>{message.text}</p>

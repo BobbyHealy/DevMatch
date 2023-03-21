@@ -49,6 +49,8 @@ export default function Chats() {
             <div className="userChatInfo">
             <span className='text-lg font-medium'>{chat[1].userInfo.displayName}</span>
             <p className='text-sm text-gray-100'>{chat[1].lastMessage?.text}</p>
+            <p className='text-xs text-gray-400'>{chat[1].date?.toDate().toLocaleString('en-US').split(",")[1]}</p>
+            <p className='text-xs text-gray-400'>{chat[1].date?.toDate().toLocaleString('en-US').split(",")[0]}</p>
             </div>
         </div>
         ))}
