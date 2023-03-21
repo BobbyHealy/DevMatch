@@ -9,15 +9,12 @@ import (
 	"gopkg.in/zabawaba99/firego.v1"
 )
 
-
 type groupchat struct {
-	GCID  		  string `json:"gcID"`
-	ProjectID     string `json:"projectID"`
-	UserIDs		[]string `json:"userIDs"`
-	Messages    []string `json:"messages"`
+	GCID      string   `json:"gcID"`
+	ProjectID string   `json:"projectID"`
+	UserIDs   []string `json:"userIDs"`
+	Messages  []string `json:"messages"`
 }
-
-
 
 func getGroupChat(c *gin.Context) {
 	id, exists := c.GetQuery("id")
@@ -29,7 +26,7 @@ func getGroupChat(c *gin.Context) {
 		fmt.Println(id)
 	}
 
-	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/GroupChats/" + id
+	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/GroupChats/" + id
 	f := firego.New(path, nil)
 	var v groupchat
 
@@ -46,7 +43,6 @@ func getGroupChat(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, v)
 }
 
-
 // postGroupChat adds a new GC
 func postGroupChat(c *gin.Context) {
 
@@ -58,7 +54,7 @@ func postGroupChat(c *gin.Context) {
 		return
 	}
 	id := newGC.GCID
-	f := firego.New("https://devmatch-4d490-default-rtdb.firebaseio.com/GroupChats/", nil)
+	f := firego.New("https://devmatch-8f074-default-rtdb.firebaseio.com/GroupChats/", nil)
 	v := map[string]groupchat{id: newGC}
 	if err := f.Update(v); err != nil {
 		log.Fatal(err)
@@ -68,16 +64,13 @@ func postGroupChat(c *gin.Context) {
 	c.IndentedJSON(http.StatusCreated, newGC)
 }
 
-
-
-
 func updateGroupChat(c *gin.Context) {
 	var updatedGC groupchat
 	if err := c.BindJSON(&updatedGC); err != nil {
 		return
 	}
 	id := updatedGC.GCID
-	path := "https://devmatch-4d490-default-rtdb.firebaseio.com/GroupChats/"
+	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/GroupChats/"
 	f := firego.New(path, nil)
 	v := map[string]groupchat{id: updatedGC}
 	if err := f.Update(v); err != nil {
@@ -85,4 +78,3 @@ func updateGroupChat(c *gin.Context) {
 	}
 	c.IndentedJSON(http.StatusOK, updatedGC)
 }
-

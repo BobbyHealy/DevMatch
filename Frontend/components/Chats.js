@@ -45,11 +45,18 @@ export default function Chats() {
             key={chat[0]}
             onClick={() => handleSelect(chat[1].userInfo)}
         >
-            <img src={chat[1].userInfo.photoURL} className='bg-white h-6 w-6 rounded-full object-cover' alt="" />
+            <img src={chat[1].userInfo.photoURL} className='bg-white h-10 w-10 rounded-full object-cover' alt="" />
             <div className="userChatInfo">
             <span className='text-lg font-medium'>{chat[1].userInfo.displayName}</span>
-            <p className='text-sm text-gray-100'>{chat[1].lastMessage?.text}</p>
-            <p className='text-xs text-gray-400'>{chat[1].date?.toDate().toLocaleString('en-US').split(",")[1]}</p>
+            {console.log()}
+            {chat[1].lastMessage?.text.length<28&&<p className='text-sm text-gray-100'>{chat[1].lastMessage?.text}</p>}
+            {chat[1].lastMessage?.text.length>28&&<p className='text-sm text-gray-100'>{chat[1].lastMessage?.text.substring(0,28)} ...</p>}
+
+
+            {chat[1].lastMessage?.img&&<p className='text-sm text-blue-300'>attached img</p>}
+            <p className='text-xs text-gray-400'>{chat[1].date?.toDate().toLocaleString('en-US').split(",")[1].split(":")[0]+":"
+            + chat[1].date?.toDate().toLocaleString('en-US').split(",")[1].split(":")[1]+" "
+            +chat[1].date?.toDate().toLocaleString('en-US').split(",")[1].split(":")[2].split(" ")[1]}</p>
             <p className='text-xs text-gray-400'>{chat[1].date?.toDate().toLocaleString('en-US').split(",")[0]}</p>
             </div>
         </div>
