@@ -24,7 +24,11 @@ export default function Chat() {
   useEffect( () => {
     const getChat = () => {
       const unsub = onSnapshot(doc(db, "users", user.uid), (doc) => {
-        setReceiver(doc.data().currentChat.displayName);
+        if(doc.data().currentChat)
+        {
+          setReceiver(doc.data().currentChat.displayName);
+        }
+     
       });
 
       return () => {

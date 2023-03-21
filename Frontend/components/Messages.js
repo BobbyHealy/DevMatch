@@ -18,20 +18,27 @@ export default function Messages() {
     useEffect( () => {
       const getChat = () => {
         const unsub = onSnapshot(doc(db, "users", user.uid), (doc) => {
-          setReceiver(doc.data().currentChat);
+          if (doc.data().currentChat)
+          {
+            setReceiver(doc.data().currentChat.uid);
+          }
         });
-        if (receiver)
-        {
-        }
+  
         return () => {
           unsub();
         };
       };
       user.uid && getChat()
-
-
     }, [user.uid]);
-  
+
+    useEffect(() => {
+        const dmID =  user.uid > receiver
+          ? user.uid + receiver
+          : receiver + user.uid;
+        setDMID(dmID);
+        
+    }, [receiver]);
+
     useEffect(() => {
       if(DMID){
         console.log(2)
@@ -43,7 +50,6 @@ export default function Messages() {
           unSub();
         };
       }
-
     }, [DMID]);
   return (
     

@@ -24,7 +24,7 @@ export default function Searchbar() {
     const currentUser = {
         uid: user.uid,
         name: userInfo.name,
-        profilePic: userInfo.profilePic, 
+        photoURL: userInfo.profilePic, 
     }
     const [username, setUsername] = useState("")
 
@@ -62,8 +62,8 @@ export default function Searchbar() {
             //create a chat in chats collection
             await setDoc(doc(db, "chats", combinedId), { messages: [] });
 
-            //create user2 chats
             await updateDoc(doc(db, "userChats", currentUser.uid), {
+        
                 [combinedId + ".userInfo"]: {
                 uid: user2.uid,
                 displayName: user2.displayName,
@@ -75,7 +75,7 @@ export default function Searchbar() {
             await updateDoc(doc(db, "userChats", user2.uid), {
                 [combinedId + ".userInfo"]: {
                 uid: currentUser.uid,
-                displayName: currentUser.displayName,
+                displayName: currentUser.name,
                 photoURL: currentUser.photoURL,
                 },
                 [combinedId + ".date"]: serverTimestamp(),
@@ -88,7 +88,6 @@ export default function Searchbar() {
                     photoURL: user2.photoURL,
                 }
             });
-            refreshPage();
         } catch (err) {}
         setUser(null)
         setUsername("")
