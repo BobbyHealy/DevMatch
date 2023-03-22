@@ -3,6 +3,9 @@ import { InputText } from "primereact/inputtext";
 import { useRouter } from "next/router";
 import { storage } from "@/config/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { useAuth } from "@/context/AuthContext";
+import {doc,updateDoc,} from "firebase/firestore";
+import { db } from "@/config/firebase";
 
 
 export default function Overview() {
@@ -27,10 +30,17 @@ export default function Overview() {
   const [projectD, setProject] = useState("");
   const router = useRouter();
   const { pid } = router.query;
+  const{user}=useAuth();
+  
 
   function refreshPage() {
     window.location.reload(false);
   }
+  useEffect(() => {
+    updateDoc(doc(db, "users", user.uid), {
+      currentPage:"Overview"
+    })
+  }, [user.uid])
 
   useEffect(() => {
     var myHeaders = new Headers();

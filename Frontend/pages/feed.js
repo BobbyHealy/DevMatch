@@ -9,6 +9,9 @@ import ProjectDashBoard from "@/components/projectDashBoard";
 import Header from "@/components/header";
 import { projectExamplesArray } from "@/mockup_data/project_array";
 import { userExampleArray } from "@/mockup_data/user_array";
+import {doc,updateDoc,} from "firebase/firestore";
+import { db } from "@/config/firebase";
+import { useAuth } from "@/context/AuthContext";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -17,6 +20,12 @@ function classNames(...classes) {
 export default function Feed() {
   const [posts, setPosts] = useState(null);
   const [enabled, setEnabled] = useState(false);
+  const{user}=useAuth();
+  useEffect(() => {
+    updateDoc(doc(db, "users", user.uid), {
+      currentPage:"Overview"
+    })
+  }, [user.uid])
 
   var myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");

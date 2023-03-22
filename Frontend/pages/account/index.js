@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useState,useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import {
   Bars3Icon,
@@ -15,6 +15,10 @@ import Profile from "../../components/Profile";
 import DMs from "../../components/DMs";
 import ManageProjects from "@/components/ManageProjects";
 import Documents from "@/components/Documents";
+import { useAuth } from "@/context/AuthContext";
+import {  onSnapshot,doc, updateDoc,} from "firebase/firestore";
+import { db } from "@/config/firebase";
+
 
 const navigation = [
   { name: "Overview", href: "#", icon: HomeIcon, current: true },
@@ -29,7 +33,24 @@ function classNames(...classes) {
 
 export default function Example() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [selectedTab, setSelectedTab] = useState("Overview");
+  const [selectedTab, setSelectedTab] = useState("OverView");
+  const {user} = useAuth();
+
+  useEffect(() => 
+    {
+      const getLoc  = () => 
+      {
+        const unSub = onSnapshot(doc(db, "users", user.uid), (doc) => 
+        {
+          doc.exists() && setSelectedTab(doc.data().currentPage);
+        });
+        return () => 
+        {
+          unSub();
+        };
+      }
+      user.email&&getLoc()
+    }, [user]);
 
   const selectedTabContent = () => {
     switch (selectedTab) {
