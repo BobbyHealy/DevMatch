@@ -22,10 +22,13 @@ export default function Feed() {
   const [enabled, setEnabled] = useState(false);
   const{user}=useAuth();
   useEffect(() => {
-    updateDoc(doc(db, "users", user.uid), {
-      currentPage:"Overview"
-    })
-  }, [user.uid])
+    if(user.uid)
+    {
+      updateDoc(doc(db, "users", user.uid), {
+        currentPage:"Overview"
+      })
+    }
+  }, [])
 
   var myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
