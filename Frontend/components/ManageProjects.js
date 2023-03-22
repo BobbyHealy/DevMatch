@@ -15,6 +15,9 @@ export default function ManageProjects() {
     const [completeUser, setCompleteUser] = useState({});
     const [currProj, setCurrProj] = useState([]);
     const [timesChanged, setTimesChanged] = useState(0);
+    const [projects, setProjects]=useState([])
+    const [owner, setOwner]=useState("")
+    const [members, setMembers]=useState([]);
     useEffect(() => {
         updateDoc(doc(db, "users", user.uid), {
           currentPage:"Manage Projects"
@@ -72,6 +75,7 @@ export default function ManageProjects() {
         }
     
     )}
+    
 
     const exec = async (projectId) => {
     var myHeaders = new Headers();
@@ -123,11 +127,106 @@ export default function ManageProjects() {
         }
     }
     }, [completeUser, userInfo]);
+    const fetchProjects  = async () => 
+    {
+        console.log(projects)
+        if(currProj){
+            currProj.map(async (project)=>{
+                await getOwner(project.owners);
+                await getMem(project.tmembers);
+                const proj ={
+                    pid: project.pid,
+                    name: project.name,
+                    owner,
+                    members,
+                    des: project.projectDes,
+                    skills: project.skills
+                }
+                addProj(proj)
+                setOwner("")
+                setMembers([])
+            })
+        }
+     
+    }
+    function addProj(proj){
         
+        if(projects!==null)
+        {
+            var newList = [...projects,proj]
+            setProjects(newList)
+        }else
+        {
+            setProjects([proj])
+        }
+    }
 
     useEffect(() => {
-    console.log(currProj);
+
     }, [currProj]);
+
+    function getOwner(id){
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        var raw = JSON.stringify({
+            userID: id,
+        });
+        var requestOptions = {
+          method: "POST",
+          headers: myHeaders,
+          body: raw,
+        };
+        fetch("http://localhost:3000/api/getUser", requestOptions)
+          .then((response) => response.text())
+          .then((result) => 
+          {
+            setOwner(JSON.parse(result).name)
+        }
+          )
+          .catch((err) => {
+            console.log(err);
+          });
+
+    }
+    function addMember(name){
+        
+        if(members!==null)
+        {
+            var newList = [...members,name]
+            setMembers(newList)
+        }else
+        {
+            setMembers([name])
+        }
+      }
+    function getMem(ids){
+        ids.map((id)=>{
+            var myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+            var raw = JSON.stringify({
+                userID: id,
+            });
+            var requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: raw,
+            };
+            fetch("http://localhost:3000/api/getUser", requestOptions)
+            .then((response) => response.text())
+            .then((result) => 
+            {
+                addMember(JSON.parse(result).name)
+            }
+            )
+            .catch((err) => {
+                console.log(err);
+            });
+
+        })
+        
+
+    }
+
     
     const redirectToProject = (id) => {
     // Router.push("./projctSpace"+id);
@@ -213,6 +312,7 @@ export default function ManageProjects() {
                         </td>
                         <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
                         {project.owners}
+                    
                        </td>
                         <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
                         {project.tmembers.map((
