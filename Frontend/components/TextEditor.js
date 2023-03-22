@@ -4,7 +4,7 @@ import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import Router from 'next/router';
 import { useAuth } from '@/context/AuthContext';
 import { db } from '@/config/firebase';
-import { updateDoc, doc,query, collection,getDocs} from 'firebase/firestore';
+import { updateDoc, doc,query, collection,getDocs, serverTimestamp} from 'firebase/firestore';
 import {EditorState, convertFromRaw, convertToRaw } from 'draft-js';
 
 function TextEditor() {
@@ -14,6 +14,7 @@ function TextEditor() {
     const onEditChange =async (state) =>{
         setState(state)
         await updateDoc(doc(db, "userDocs", user.email,"docs",id), {
+            lastEdit: serverTimestamp(),
             state: convertToRaw(state.getCurrentContent())
           });
     }

@@ -4,6 +4,7 @@ import { db } from '@/config/firebase';
 import { useAuth } from '@/context/AuthContext';
 import DocumentRow from './DocumentRow';
 import { v4 as uuid } from "uuid";
+import Router from 'next/router';
 // import {useCollection,useCollectionDataOnce} from "react-firebase-hooks/firestore";
 import {
     doc,
@@ -19,7 +20,6 @@ export default function Documents() {
     const {user, userInfo} = useAuth()
     const [showModal, setShowModal] = useState(false);
     const [input, setInput]= useState("")
-    const [documents, setDocs]= useState([])
     const [snap, setSnap]= useState()
     function refreshPage() {
       window.location.reload(false);
@@ -40,13 +40,16 @@ export default function Documents() {
         {
           // id: uuid(),
           fileName: input,
-          time: serverTimestamp()
+          time: serverTimestamp(),
+          lastEdit: serverTimestamp()
         }
         await setDoc(doc(db, "userDocs", user.email, "docs", input ),data)
         // await setDoc(doc(db, "userDocs", user.email),data)
+        Router.push(`/doc/${input}`)
         setInput("")
         setShowModal(false)
-        refreshPage()
+      
+        // refreshPage()
     };
     
     useEffect(() => {
@@ -134,9 +137,12 @@ export default function Documents() {
                         My Documents
                     </h2>
                     <p className='mr-12'>
+                        Last Edit
+                    </p>
+                    <p className='mr-8'>
                         Date Created
                     </p>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 mr-4">
                     <path d="M19.5 21a3 3 0 003-3v-4.5a3 3 0 00-3-3h-15a3 3 0 00-3 3V18a3 3 0 003 3h15zM1.5 10.146V6a3 3 0 013-3h5.379a2.25 2.25 0 011.59.659l2.122 2.121c.14.141.331.22.53.22H19.5a3 3 0 013 3v1.146A4.483 4.483 0 0019.5 9h-15a4.483 4.483 0 00-3 1.146z" />
                     </svg>
                 </div>
@@ -145,12 +151,12 @@ export default function Documents() {
 
               <DocumentRow key = {doc.id} id ={doc.id} fileName ={doc.fileName} date = {doc.time}/>
             ))} */}
-            {snap&&snap.docs.map((doc)=>(
-     
-              // <DocumentRow key = {doc.data().id} id ={doc.data().id} fileName ={doc.data().fileName} date = {doc.data().time}/>
-                   
-              <DocumentRow key = {doc.id} id ={doc.id} fileName ={doc.data().fileName} date = {doc.data().time}/>
-            ))}
+            {snap&&Object.entries(snap.docs)?.sort((a,b)=>(b[1].data().lastEdit - a[1].data().lastEdit))
+            .map((doc)=>(
+              // console.log(doc[1].id)
+              <DocumentRow key = {doc[1].id} id ={doc[1].id} fileName ={doc[1].data().fileName} lastEdit ={doc[1].data().lastEdit}date = {doc[1].data().time}/>
+            ))
+            }
             </div>
         </section>
 
