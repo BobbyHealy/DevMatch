@@ -1,20 +1,16 @@
 
-import React,{use, useState,useEffect}from 'react'
+import React,{useState,useEffect}from 'react'
 import { db } from '@/config/firebase';
 import { useAuth } from '@/context/AuthContext';
 import DocumentRow from './DocumentRow';
 import { v4 as uuid } from "uuid";
 // import {useCollection,useCollectionDataOnce} from "react-firebase-hooks/firestore";
 import {
-    onSnapshot,
-    arrayUnion,
     doc,
-    where, 
     serverTimestamp,
-    getDocs,
-    Timestamp,
     updateDoc,
     setDoc,
+    getDocs,
     collection,
     query, orderBy, limit 
   } from "firebase/firestore";
@@ -24,42 +20,54 @@ export default function Documents() {
     const [showModal, setShowModal] = useState(false);
     const [input, setInput]= useState("")
     const [documents, setDocs]= useState([])
+    const [snap, setSnap]= useState()
+    function refreshPage() {
+      window.location.reload(false);
+    }
     const createDocument =async ()=>
     {
         if(!input) return;
-        await updateDoc(doc(db, "userDocs", user.email), 
+        // await updateDoc(doc(db, "userDocs", user.email), 
+        // {
+        //   docs: arrayUnion(
+        //   {
+        //     id: uuid(),
+        //     fileName: input,
+        //     time: Timestamp.now()
+        //   }),
+        // });
+        const data =
         {
-          docs: arrayUnion(
-          {
-            id: uuid(),
-            fileName: input,
-            time: Timestamp.now()
-          }),
-        });
-        // await setDoc(doc(db, "userDocs", user.email, "docs", input ),data)
+          // id: uuid(),
+          fileName: input,
+          time: serverTimestamp()
+        }
+        await setDoc(doc(db, "userDocs", user.email, "docs", input ),data)
         // await setDoc(doc(db, "userDocs", user.email),data)
         setInput("")
         setShowModal(false)
+        refreshPage()
     };
+    
     useEffect(() => {
       updateDoc(doc(db, "users", user.uid), {
         currentPage:"Documents"
       })
     }, [user.uid])
+
+    const fetchDoc  = async () => 
+    {
+      const q = query(
+        collection(db, "userDocs", user.email,"docs")
+      );
+      const querySnapshot = await getDocs(q);
+      setSnap(querySnapshot)
+  
+    }
     useEffect(() => 
     {
-      const getDocs  = () => 
-      {
-        const unSub = onSnapshot(doc(db, "userDocs", user.email), (doc) => 
-        {
-          doc.exists() && setDocs(doc.data().docs);
-        });
-        return () => 
-        {
-          unSub();
-        };
-      }
-      user.email&&getDocs()
+
+      user.email&&fetchDoc ()
     }, [user.email]);
   return (
     <div>
@@ -133,9 +141,15 @@ export default function Documents() {
                     </svg>
                 </div>
             
-            {documents.map((doc)=>(
+            {/* {documents.map((doc)=>(
 
               <DocumentRow key = {doc.id} id ={doc.id} fileName ={doc.fileName} date = {doc.time}/>
+            ))} */}
+            {snap&&snap.docs.map((doc)=>(
+     
+              // <DocumentRow key = {doc.data().id} id ={doc.data().id} fileName ={doc.data().fileName} date = {doc.data().time}/>
+                   
+              <DocumentRow key = {doc.id} id ={doc.id} fileName ={doc.data().fileName} date = {doc.data().time}/>
             ))}
             </div>
         </section>

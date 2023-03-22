@@ -1,33 +1,33 @@
 import React, { useEffect, useState } from "react";
 import Router from 'next/router';
 import { DocumentTextIcon } from "@heroicons/react/24/outline";
-import { doc, onSnapshot } from "firebase/firestore";
+import { getDocs,collection,query} from "firebase/firestore";
 import { db } from "@/config/firebase";
 import { useAuth } from "@/context/AuthContext";
 import TextEditor from "@/components/TextEditor";
+
 
 function Doc() {
     const{id} =Router.query;
     const{user} = useAuth();
     const[document, setDoc] = useState(null)
-    const getDoc  = () => 
+    const getDoc  = async() => 
     {
-      const unSub = onSnapshot(doc(db, "userDocs", user.email), (doc) => 
-      {
-        doc.exists() && doc.data().docs.map((doc)=>{
-
-            if(doc.id === id){setDoc(doc)}
+        const q = query(
+            collection(db, "userDocs", user.email,"docs")
+          );
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc)=>
+        {
+            if(doc.id === id)
+            {
+                setDoc(doc.data())
+            }
         })
-      });
-      
-
-      return () => 
-      {
-        unSub();
-      };
     }
-    useEffect(() => {
-    id&& getDoc()  
+    useEffect(() => 
+    {
+        id&& getDoc()  
     }, [id])
 
   return (
@@ -49,7 +49,6 @@ function Doc() {
             </div>
         </header>
         <TextEditor/>
-
     </div>
   )
 }
