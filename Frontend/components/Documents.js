@@ -3,6 +3,7 @@ import React,{use, useState,useEffect}from 'react'
 import { db } from '@/config/firebase';
 import { useAuth } from '@/context/AuthContext';
 import DocumentRow from './DocumentRow';
+import { v4 as uuid } from "uuid";
 // import {useCollection,useCollectionDataOnce} from "react-firebase-hooks/firestore";
 import {
     onSnapshot,
@@ -25,12 +26,12 @@ export default function Documents() {
     const [documents, setDocs]= useState([])
     const createDocument =async ()=>
     {
-        console.log(input)
         if(!input) return;
         await updateDoc(doc(db, "userDocs", user.email), 
         {
           docs: arrayUnion(
           {
+            id: uuid(),
             fileName: input,
             time: Timestamp.now()
           }),
@@ -53,7 +54,6 @@ export default function Documents() {
         {
           doc.exists() && setDocs(doc.data().docs);
         });
-        console.log(documents)
         return () => 
         {
           unSub();
@@ -134,6 +134,7 @@ export default function Documents() {
                 </div>
             
             {documents.map((doc)=>(
+
               <DocumentRow key = {doc.id} id ={doc.id} fileName ={doc.fileName} date = {doc.time}/>
             ))}
             </div>

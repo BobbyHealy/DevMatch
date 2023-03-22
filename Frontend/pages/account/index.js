@@ -43,9 +43,7 @@ export default function Example() {
         const unSub = onSnapshot(doc(db, "users", user.uid), (doc) => 
         {
           doc.exists() && setSelectedTab(doc.data().currentPage);
-          console.log(doc.data().currentPage)
         });
-        console.log(selectedTab)
         return () => 
         {
           unSub();
