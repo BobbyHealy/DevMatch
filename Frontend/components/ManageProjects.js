@@ -223,7 +223,7 @@ export default function ManageProjects() {
                         (<li key={member}>{member}</li>))}
                         </td>
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-500 sm:pl-0">
-                        {project.description}
+                        {project.projectDes}
                         </td>
                         <td className="whitespace-nowrap py-4 px-3 text-sm text-gray-500">
                         {project.skills.map((skill)=>
