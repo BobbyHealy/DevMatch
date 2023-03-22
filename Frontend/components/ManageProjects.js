@@ -3,6 +3,8 @@ import Input from "./Input";
 import Router from "next/router";
 import { useAuth } from "@/context/AuthContext";
 import { resolve } from "styled-jsx/css";
+import {doc,updateDoc,} from "firebase/firestore";
+import { db } from "@/config/firebase";
 
 
 
@@ -13,7 +15,11 @@ export default function ManageProjects() {
     const [completeUser, setCompleteUser] = useState({});
     const [currProj, setCurrProj] = useState([]);
     const [timesChanged, setTimesChanged] = useState(0);
-  
+    useEffect(() => {
+        updateDoc(doc(db, "users", user.uid), {
+          currentPage:"Manage Projects"
+        })
+      }, [user.uid])
     useEffect(() => {
         if (user === null && userInfo === null) {
         } else if (userInfo === null) {

@@ -4,6 +4,8 @@ import { EnvelopeIcon } from "@heroicons/react/20/solid";
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 import { useAuth } from "@/context/AuthContext";
 import DeactivateModal from "./DeactivateModal";
+import {doc,updateDoc,} from "firebase/firestore";
+import { db } from "@/config/firebase";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -47,6 +49,9 @@ function Profile() {
 
   useEffect(() => {
   
+    updateDoc(doc(db, "users", user.uid), {
+      currentPage:"Overview"
+    })
     if (user === null && userInfo === null) {
       Router.push("/account/login");
     } else if (userInfo === null) {

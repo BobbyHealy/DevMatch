@@ -1,8 +1,8 @@
-// import ModalBody from '@material-tailwind/react'
+
 import React,{use, useState,useEffect}from 'react'
 import { db } from '@/config/firebase';
 import { useAuth } from '@/context/AuthContext';
-import {useCollection,useCollectionDataOnce} from "react-firebase-hooks/firestore";
+// import {useCollection,useCollectionDataOnce} from "react-firebase-hooks/firestore";
 import {
     onSnapshot,
     arrayUnion,
@@ -21,18 +21,45 @@ export default function Documents() {
     const {user, userInfo} = useAuth()
     const [showModal, setShowModal] = useState(false);
     const [input, setInput]= useState("")
+    const [documents, setDocs]= useState([])
     const createDocument =async ()=>
     {
         console.log(input)
         if(!input) return;
-        const data={
+        await updateDoc(doc(db, "userDocs", user.email), 
+        {
+          docs: arrayUnion(
+          {
             fileName: input,
-            time: serverTimestamp()
-        }
-        await setDoc(doc(db, "userDocs", user.email, "docs", input ),data)
+            time: Timestamp.now()
+          }),
+        });
+        // await setDoc(doc(db, "userDocs", user.email, "docs", input ),data)
+        // await setDoc(doc(db, "userDocs", user.email),data)
         setInput("")
         setShowModal(false)
     };
+    useEffect(() => {
+      updateDoc(doc(db, "users", user.uid), {
+        currentPage:"Documents"
+      })
+    }, [user.uid])
+    useEffect(() => 
+    {
+      const getDocs  = () => 
+      {
+        const unSub = onSnapshot(doc(db, "userDocs", user.email), (doc) => 
+        {
+          doc.exists() && setDocs(doc.data().docs);
+        });
+        console.log(documents)
+        return () => 
+        {
+          unSub();
+        };
+      }
+      user.email&&getDocs()
+    }, [user.email]);
   return (
     <div>
         <section className='bg-[#F8F9FA] pb-10 px-10'>
@@ -105,6 +132,9 @@ export default function Documents() {
                     </svg>
                 </div>
             </div>
+            {/* {documents.map(doc=>(
+              
+            ))} */}
         </section>
 
     </div>

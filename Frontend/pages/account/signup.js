@@ -22,7 +22,7 @@ export default function SignUp() {
         email: email
       });
       await setDoc(doc(db, "userChats", res.user.uid), {});
-      await setDoc(doc(db, "userDocs", res.user.email), {});
+      await setDoc(doc(db, "userDocs", res.user.email), {docs: [] });
       Router.push("./followup");
     } catch (err) {
       console.log(err);
