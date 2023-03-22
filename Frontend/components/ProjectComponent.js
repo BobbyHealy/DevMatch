@@ -22,9 +22,10 @@ const default_project = {
 export default function ProjComponent(props) {
   const { project = default_project, ...restProps } = props;
   const { user } = useAuth();
-  const [owners, setOwners]=useState(null)
+  const [owners, setOwners]=useState([])
   const [load, setload] =useState(false)
-
+  const [members, setMembers]=useState([])
+  const [otherMembers, setOtherMembers] = useState([])
   const [showModal, setShowModal] = useState(false);
   function addOwner(name){
         
@@ -35,6 +36,28 @@ export default function ProjComponent(props) {
     }else
     {
       setOwners([name])
+    }
+  }
+  function addOtherMember(name){
+        
+    if(otherMembers!==null)
+    {
+        var newList = [...otherMembers,name]
+        setOtherMembers(newList)
+    }else
+    {
+      setOtherMembers([name])
+    }
+  }
+  function addMember(name){
+        
+    if(members!==null)
+    {
+        var newList = [...members,name]
+        setMembers(newList)
+    }else
+    {
+      setMembers([name])
     }
   }
   function getOwner(id){
@@ -60,14 +83,53 @@ export default function ProjComponent(props) {
       });
 
 }
+function getMember(id){
+  var myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+  var raw = JSON.stringify({
+      userID: id,
+  });
+  var requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: raw,
+  };
+  fetch("http://localhost:3000/api/getUser", requestOptions)
+    .then((response) => response.text())
+    .then((result) => 
+    {
+      addMember(JSON.parse(result).name)
+  }
+    )
+    .catch((err) => {
+      console.log(err);
+    });
+
+}
 useEffect(() => {
 
   if(!load)
   {
     project.owners.map((owner)=>{getOwner(owner)})
+    project.tmembers.map((mem)=>{getMember(mem)})
     setload(true)
+    
   }
 }, [project])
+useEffect(() => {
+  if(load)
+  {
+    console.log(members)
+    members.map((mem)=>{
+      console.log(mem);
+      if(!mem.includes(owners))
+      {
+        addOtherMember(mem)
+      }})
+    console.log()
+  }
+}, [load])
+
 
   const handleJoinProject = async () => {
     var myHeaders = new Headers();
@@ -198,9 +260,9 @@ useEffect(() => {
                   <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
                     <dt className="text-sm font-medium text-gray-500">Other members</dt>
                     <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{" "}
-                      {project.members !== undefined
-                        ? project.members.map((e, i) => <p key={i}>{e + " "}</p>)
-                        : "N/a"}</dd>
+                    {otherMembers.length!==0? otherMembers.map((mem)=><span>{mem}</span>) : "N/a"} 
+
+                    </dd>
                   </div>
                   <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
                     <dt className="text-sm font-medium text-gray-500">Expected hours per week</dt>
