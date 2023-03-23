@@ -8,6 +8,7 @@ import {doc,
     getDocs,
     collection,} from "firebase/firestore";
 import { db } from "@/config/firebase";
+import { v4 as uuid } from "uuid";
 import Router from 'next/router';
 import ProjDocRow from "./ProjDocRow";
 export default function ProjectDocs() {
@@ -138,8 +139,9 @@ export default function ProjectDocs() {
             lastEdit: serverTimestamp(),
             createBy: userInfo.name
           }
-          await setDoc(doc(db, "projDocs", pid, "docs", input ),data)
-        //   Router.push(`/doc/${input}`)
+          const docID= uuid()
+          await setDoc(doc(db, "projDocs", pid, "docs", docID ),data)
+          Router.push(`/projDoc/${pid}DocId=${docID}`)
           setInput("")
           setShowModal(false)
       };
