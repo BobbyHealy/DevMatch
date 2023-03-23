@@ -200,6 +200,10 @@ export default function ProjectSpace(){
               onClick={()=>RedirectTo("")}>
                   DevMatch
               </h2>
+              <span>
+                      <p className="pl-10 text-red-400 cursor-pointer hover:text-red-200">leave</p>
+                      <p className="pl-10 text-red-600 cursor-pointer hover:text-red-900">delete</p>
+                    </span>
             </div>
             <nav className='mt-5 flex-1 space-y-1 bg-black px-2'>
               {navigation.map((item) => (
