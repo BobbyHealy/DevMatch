@@ -42,6 +42,7 @@ type project struct {
 	ProjectProfilePic  string   `json:"projectProfile"`
 	ProjectBannerPic   string   `json:"projectBannerPic"`
 	ProjectDescription string   `json:"projectDes"`
+	ProjectType        string   `json:"type"`
 	//TaskBoard     Scrumboard `json: "board"`
 }
 

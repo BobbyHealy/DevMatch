@@ -21,9 +21,7 @@ export default function Documents() {
     const [showModal, setShowModal] = useState(false);
     const [input, setInput]= useState("")
     const [snap, setSnap]= useState()
-    function refreshPage() {
-      window.location.reload(false);
-    }
+
     const createDocument =async ()=>
     {
         if(!input) return;

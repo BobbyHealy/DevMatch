@@ -1,13 +1,11 @@
-import { Fragment, useState } from "react";
+import { Fragment, useState,useEffect } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { EnvelopeIcon } from "@heroicons/react/20/solid";
 import { UserGroupIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "@/context/AuthContext";
 import ProjectModal from "./ProjectModal";
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
+
 
 const default_project = {
   name: "The project",
@@ -24,8 +22,114 @@ const default_project = {
 export default function ProjComponent(props) {
   const { project = default_project, ...restProps } = props;
   const { user } = useAuth();
-
+  const [owners, setOwners]=useState([])
+  const [load, setload] =useState(false)
+  const [members, setMembers]=useState([])
+  const [otherMembers, setOtherMembers] = useState([])
   const [showModal, setShowModal] = useState(false);
+  function addOwner(name){
+        
+    if(owners!==null)
+    {
+        var newList = [...owners,name]
+        setOwners(newList)
+    }else
+    {
+      setOwners([name])
+    }
+  }
+  function addOtherMember(name){
+        
+    if(otherMembers!==null)
+    {
+        var newList = [...otherMembers,name]
+        setOtherMembers(newList)
+    }else
+    {
+      setOtherMembers([name])
+    }
+  }
+  function addMember(name){
+        
+    if(members!==null)
+    {
+        var newList = [...members,name]
+        setMembers(newList)
+    }else
+    {
+      setMembers([name])
+    }
+  }
+  function getOwner(id){
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    var raw = JSON.stringify({
+        userID: id,
+    });
+    var requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+    };
+    fetch("http://localhost:3000/api/getUser", requestOptions)
+      .then((response) => response.text())
+      .then((result) => 
+      {
+        addOwner(JSON.parse(result).name)
+    }
+      )
+      .catch((err) => {
+        console.log(err);
+      });
+
+}
+function getMember(id){
+  var myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+  var raw = JSON.stringify({
+      userID: id,
+  });
+  var requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: raw,
+  };
+  fetch("http://localhost:3000/api/getUser", requestOptions)
+    .then((response) => response.text())
+    .then((result) => 
+    {
+      addMember(JSON.parse(result).name)
+  }
+    )
+    .catch((err) => {
+      console.log(err);
+    });
+
+}
+useEffect(() => {
+
+  if(!load)
+  {
+    project.owners.map((owner)=>{getOwner(owner)})
+    project.tmembers.map((mem)=>{getMember(mem)})
+    setload(true)
+    
+  }
+}, [project])
+useEffect(() => {
+  if(load)
+  {
+    console.log(members)
+    members.map((mem)=>{
+      console.log(mem);
+      if(!mem.includes(owners))
+      {
+        addOtherMember(mem)
+      }})
+    console.log()
+  }
+}, [load])
+
 
   const handleJoinProject = async () => {
     var myHeaders = new Headers();
@@ -77,13 +181,13 @@ export default function ProjComponent(props) {
             <p className='text-sm text-gray-500'>
               <a href='#' className='hover:underline'>
                 Owner:{" "}
-                {project.owners !== undefined ? project.owners[0] : "N/a"}
+                {owners!==null? owners.map((owner)=><span>{owner}</span>) : "N/a"}
               </a>
             </p>
             <p className='text-sm text-gray-500'>
               <a href='#' className='hover:underline'>
                 Project Type:{" "}
-                {"Research"}
+                {project.type}
               </a>
             </p>
             <div className='text-sm text-gray-500'>
@@ -97,9 +201,7 @@ export default function ProjComponent(props) {
             <div className='text-sm text-gray-500'>
               <a href='#' className='hover:underline'>
                 Other members:{" "}
-                {project.members !== undefined
-                  ? project.members.map((e, i) => <p key={i}>{e + " "}</p>)
-                  : "N/a"}
+                {otherMembers.length!==0? otherMembers.map((mem)=><span>{mem}</span>) : "N/a"} 
               </a>
             </div>
           </div>
@@ -144,7 +246,7 @@ export default function ProjComponent(props) {
                   <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
                     <dt className="text-sm font-medium text-gray-500">Project Owner</dt>
                     <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{" "}
-                        {project.owners !== undefined ? project.owners[0] : "N/a"}</dd>
+                      {owners!==null? owners.map((owner)=><span>{owner}</span>) : "N/a"} </dd>
                   </div>
                   <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
                     <dt className="text-sm font-medium text-gray-500">Looking for</dt>
@@ -156,9 +258,9 @@ export default function ProjComponent(props) {
                   <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
                     <dt className="text-sm font-medium text-gray-500">Other members</dt>
                     <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{" "}
-                      {project.members !== undefined
-                        ? project.members.map((e, i) => <p key={i}>{e + " "}</p>)
-                        : "N/a"}</dd>
+                    {otherMembers.length!==0? otherMembers.map((mem)=><span>{mem}</span>) : "N/a"} 
+
+                    </dd>
                   </div>
                   <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
                     <dt className="text-sm font-medium text-gray-500">Expected hours per week</dt>
@@ -166,14 +268,14 @@ export default function ProjComponent(props) {
                   </div>
                   <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
                     <dt className="text-sm font-medium text-gray-500">Project Type</dt>
-                    <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">Research</dd>
+                    <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                      {project.type}
+                      </dd>
                   </div>
                   <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
                     <dt className="text-sm font-medium text-gray-500">Project Description</dt>
                     <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                      This is a project created throught the DevMatch platform. This is a default description provided by the
-                      developers since the project owner left this field blank. If you would like to learn more about the project,
-                      message the owner and start a conversation.
+                      {project.projectDes}
                     </dd>
                   </div>
                 </dl>
