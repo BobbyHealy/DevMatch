@@ -21,7 +21,69 @@ export default function Documents() {
     const [showModal, setShowModal] = useState(false);
     const [input, setInput]= useState("")
     const [snap, setSnap]= useState()
+    const [sortByCreate, setCreate]= useState(false)
+    const [sortByName, setName]= useState(false)
+    const [sortByEdit, setEdit]= useState(true)
+    const [createNew, setCreateNew] = useState(false)
+    const [editNew, setEditNew] = useState(true)
+    const [nameNew, setNameNew] = useState(false)
 
+    const onclickCreate = () =>{
+      if(!sortByCreate)
+      {
+        setCreate(true)
+        setName(false)
+        setEdit(false)
+        setCreateNew(true)
+  
+      }else
+      {
+        if(createNew)
+        {
+          setCreateNew(false)
+        }else
+        {
+          setCreateNew(true)
+        }
+      }
+ 
+    }
+    const onclickEditDate = () =>{
+      if(!sortByEdit)
+      {
+        setCreate(false)
+        setName(false)
+        setEdit(true)
+        setEditNew(true)
+      }else
+      {
+        if(editNew)
+        {
+          setEditNew(false)
+        }else
+        {
+          setEditNew(true)
+        }
+      }
+    }
+    const onclickName = () =>{
+      if(!sortByName)
+      {
+        setCreate(false)
+        setName(true)
+        setEdit(false)
+        // setNameNew(true)
+      }else
+      {
+        // if(nameNew)
+        // {
+        //   setNameNew(false)
+        // }else
+        // {
+        //   setNameNew(true)
+        // }
+      }
+    }
     const createDocument =async ()=>
     {
         if(!input) return;
@@ -87,7 +149,7 @@ export default function Documents() {
             </div>
             {showModal ? (
         <>
-          <div className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none" >
+          <div className="flex justify-center items-center overflow-x-hidden  fixed inset-0 z-50 outline-none focus:outline-none" >
             <div className="relative w-auto my-6 mx-auto max-w-3xl">
               <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                 <div className="flex items-start justify-between p-5 border-b border-solid border-gray-300 rounded-t ">
@@ -131,13 +193,16 @@ export default function Documents() {
         <section className=' bg-white px-10 md:px-0'>
             <div className='max-w-3xl mx-auto py-8 text-sm text-gray-700'>
                 <div className='flex items-center justify-between pb-5'>
-                    <h2 className='font-medium flex-grow'>
+                    <h2 onClick={onclickName}
+                    className='font-medium flex-grow cursor-pointer'>
                         My Documents
                     </h2>
-                    <p className='mr-12'>
+                    <p onClick={onclickEditDate}
+                    className='mr-12 cursor-pointer'>
                         Last Edit
                     </p>
-                    <p className='mr-8'>
+                    <p onClick={onclickCreate}
+                    className='mr-8 cursor-pointer'>
                         Date Created
                     </p>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 mr-4">
@@ -149,12 +214,33 @@ export default function Documents() {
 
               <DocumentRow key = {doc.id} id ={doc.id} fileName ={doc.fileName} date = {doc.time}/>
             ))} */}
-            {snap&&Object.entries(snap.docs)?.sort((a,b)=>(b[1].data().lastEdit - a[1].data().lastEdit))
+            <div className='overflow-y-scroll'>
+            {snap&&sortByEdit&&editNew&&Object.entries(snap.docs)?.sort((a,b)=>(b[1].data().lastEdit - a[1].data().lastEdit))
             .map((doc)=>(
-              // console.log(doc[1].id)
               <DocumentRow key = {doc[1].id} id ={doc[1].id} fileName ={doc[1].data().fileName} lastEdit ={doc[1].data().lastEdit}date = {doc[1].data().time}/>
             ))
             }
+            {snap&&sortByEdit&&!editNew&&Object.entries(snap.docs)?.sort((a,b)=>(a[1].data().lastEdit - b[1].data().lastEdit))
+            .map((doc)=>(
+              <DocumentRow key = {doc[1].id} id ={doc[1].id} fileName ={doc[1].data().fileName} lastEdit ={doc[1].data().lastEdit}date = {doc[1].data().time}/>
+            ))
+            }
+            {snap&&sortByCreate&&createNew&&Object.entries(snap.docs)?.sort((a,b)=>(b[1].data().time - a[1].data().time))
+            .map((doc)=>(
+              <DocumentRow key = {doc[1].id} id ={doc[1].id} fileName ={doc[1].data().fileName} lastEdit ={doc[1].data().lastEdit}date = {doc[1].data().time}/>
+            ))
+            }
+            {snap&&sortByCreate&&!createNew&&Object.entries(snap.docs)?.sort((a,b)=>(a[1].data().time - b[1].data().time))
+            .map((doc)=>(
+              <DocumentRow key = {doc[1].id} id ={doc[1].id} fileName ={doc[1].data().fileName} lastEdit ={doc[1].data().lastEdit}date = {doc[1].data().time}/>
+            ))
+            }
+            {snap&&sortByName&&Object.entries(snap.docs)?.sort((a,b)=>(b[1].data().fileName -a[1].data().fileName))
+            .map((doc)=>(
+              <DocumentRow key = {doc[1].id} id ={doc[1].id} fileName ={doc[1].data().fileName} lastEdit ={doc[1].data().lastEdit}date = {doc[1].data().time}/>
+            ))
+            }
+            </div>
             </div>
         </section>
 
