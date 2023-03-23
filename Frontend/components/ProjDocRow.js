@@ -8,7 +8,7 @@ import {
   import { doc, deleteDoc } from "firebase/firestore";
   import { db } from '@/config/firebase';
 
-function ProjDocRow({id, fileName, lastEdit,date}) {
+function ProjDocRow({id, fileName, lastEdit, date, createdBy}) {
   const { pid } = Router.query;
   const  dateTime =lastEdit?.toDate().toLocaleString('en-US').split(",")
   const  times= dateTime[1].split(":")
@@ -35,10 +35,12 @@ function ProjDocRow({id, fileName, lastEdit,date}) {
       className=' flex items-center p-4 rounded-lg hover:bg-gray-100 text-gray-700 text-sm cursor-pointer w-11/12'>
           <DocumentTextIcon className='fill-blue-500 h-6 w-6'/>
           <p className='flex-grow pl-5 w-10 pr-10 truncate '>{fileName}</p>
+          <p className='flex-grow pl-2 text-sm truncate'>{createdBy}</p>
           {diff<day&&<p className='mr-14 flex-col text-sm'>{time}</p>}
           {diff>day&&<p className='mr-12 flex-col text-sm'>{dateTime[0]}</p>}
 
-          <p className='text-sm'>{date?.toDate().toLocaleString('en-US').split(",")[0]}</p>
+          <p className='text-sm mr-4'>{date?.toDate().toLocaleString('en-US').split(",")[0]}</p>
+   
       </div>
       <div  onMouseLeave={() => setOpen(false)} className='p-4'>
         

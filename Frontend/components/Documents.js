@@ -72,16 +72,16 @@ export default function Documents() {
         setCreate(false)
         setName(true)
         setEdit(false)
-        // setNameNew(true)
+        setNameNew(true)
       }else
       {
-        // if(nameNew)
-        // {
-        //   setNameNew(false)
-        // }else
-        // {
-        //   setNameNew(true)
-        // }
+        if(nameNew)
+        {
+          setNameNew(false)
+        }else
+        {
+          setNameNew(true)
+        }
       }
     }
     const createDocument =async ()=>
@@ -235,7 +235,12 @@ export default function Documents() {
               <DocumentRow key = {doc[1].id} id ={doc[1].id} fileName ={doc[1].data().fileName} lastEdit ={doc[1].data().lastEdit}date = {doc[1].data().time}/>
             ))
             }
-            {snap&&sortByName&&Object.entries(snap.docs)?.sort((a,b)=>(b[1].data().fileName -a[1].data().fileName))
+            {snap&&sortByName&&nameNew&&Object.entries(snap.docs)?.sort((a,b)=>{if(a[1].data().fileName<b[1].data().fileName){return -1}else{return 1}})
+            .map((doc)=>(
+              <DocumentRow key = {doc[1].id} id ={doc[1].id} fileName ={doc[1].data().fileName} lastEdit ={doc[1].data().lastEdit}date = {doc[1].data().time}/>
+            ))
+            }
+            {snap&&sortByName&&!nameNew&&Object.entries(snap.docs)?.sort((a,b)=>{if(a[1].data().fileName>b[1].data().fileName){return -1}else{return 1}})
             .map((doc)=>(
               <DocumentRow key = {doc[1].id} id ={doc[1].id} fileName ={doc[1].data().fileName} lastEdit ={doc[1].data().lastEdit}date = {doc[1].data().time}/>
             ))
