@@ -201,9 +201,7 @@ useEffect(() => {
             <div className='text-sm text-gray-500'>
               <a href='#' className='hover:underline'>
                 Other members:{" "}
-                {project.members !== undefined
-                  ? project.members.map((e, i) => <p key={i}>{e + " "}</p>)
-                  : "N/a"}
+                {otherMembers.length!==0? otherMembers.map((mem)=><span>{mem}</span>) : "N/a"} 
               </a>
             </div>
           </div>

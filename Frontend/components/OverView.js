@@ -18,6 +18,7 @@ export default function Overview() {
     banner2:
       "https://images.unsplash.com/photo-1444628838545-ac4016a5418a?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80",
     description: "Description",
+    type: "type"
   };
   const[icon, setIcon] = useState(null)
   const[iconURL, setIconUrl] = useState(null)
@@ -25,12 +26,16 @@ export default function Overview() {
   const[bannerURL, setBannerURL] = useState(null)
   const [newSkills, setNewSkills] = useState();
   const [edit, setEdit] = useState(false);
-  
   const [name, setName] = useState("");
   const [projectD, setProject] = useState("");
   const router = useRouter();
   const { pid } = router.query;
   const{user}=useAuth();
+  const [owners, setOwners]=useState([])
+  const [load, setload] =useState(false)
+  const [members, setMembers]=useState([])
+  const [otherMembers, setOtherMembers] = useState([])
+  
   
 
   function refreshPage() {
@@ -42,24 +47,125 @@ export default function Overview() {
     })
   }, [user.uid])
 
-  useEffect(() => {
+
+  function addOwner(name){
+        
+    if(owners!==null)
+    {
+        var newList = [...owners,name]
+        setOwners(newList)
+    }else
+    {
+      setOwners([name])
+    }
+  }
+  function addOtherMember(name){
+        
+    if(otherMembers!==null)
+    {
+        var newList = [...otherMembers,name]
+        setOtherMembers(newList)
+    }else
+    {
+      setOtherMembers([name])
+    }
+  }
+  function addMember(name){
+        
+    if(members!==null)
+    {
+        var newList = [...members,name]
+        setMembers(newList)
+    }else
+    {
+      setMembers([name])
+    }
+  }
+  function getOwner(id){
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     var raw = JSON.stringify({
-      pid: pid,
+        userID: id,
     });
     var requestOptions = {
       method: "POST",
       headers: myHeaders,
       body: raw,
     };
-    fetch("http://localhost:3000/api/getProject", requestOptions)
+    fetch("http://localhost:3000/api/getUser", requestOptions)
       .then((response) => response.text())
-      .then((result) => setProject(JSON.parse(result)))
+      .then((result) => 
+      {
+        addOwner(JSON.parse(result).name)
+    }
+      )
       .catch((err) => {
         console.log(err);
       });
+
+}
+function getMember(id){
+  var myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+  var raw = JSON.stringify({
+      userID: id,
+  });
+  var requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: raw,
+  };
+  fetch("http://localhost:3000/api/getUser", requestOptions)
+    .then((response) => response.text())
+    .then((result) => 
+    {
+      addMember(JSON.parse(result).name)
+  }
+    )
+    .catch((err) => {
+      console.log(err);
+    });
+
+}
+  useEffect(() => {
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+      var raw = JSON.stringify({
+        pid: pid,
+      });
+      var requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+      };
+      fetch("http://localhost:3000/api/getProject", requestOptions)
+        .then((response) => response.text())
+        .then((result) => setProject(JSON.parse(result)))
+        .catch((err) => {
+          console.log(err);
+        });
   }, []);
+  useEffect(() => {
+    if(!load&&projectD)
+    {  
+      projectD.owners.map((owner)=>{getOwner(owner)})
+      projectD.tmembers.map((mem)=>{getMember(mem)})
+      setload(true)
+    }
+
+  }, [projectD]);
+  useEffect(() => {
+    if(load)
+    {
+      members.map((mem)=>{
+        console.log(mem);
+        if(!mem.includes(owners))
+        {
+          addOtherMember(mem)
+        }})
+      console.log(projectD)
+    }
+  }, [load])
 
   useEffect(() => {
     setNewSkills(
@@ -116,11 +222,11 @@ useEffect(() => {
           projectD.projectBannerPic !== undefined
             ? projectD.projectBannerPic
             : undefined,
-        projectDes: des !==undefined? des: projectD.projectDes
+        projectDes: des !==undefined? des: projectD.projectDes,
+        type: projectD.type !== undefined? projectD.type : undefined,
         
       });
-      console.log(des!==undefined)
-      console.log(raw)
+
 
       var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
@@ -134,7 +240,6 @@ useEffect(() => {
       fetch("http://localhost:3000/api/addProject", requestOptions)
         .then((response) => response.text())
         .then((result) => {
-          console.log(result);
           setEdit(false);
         })
         .catch((error) => console.log("error", error));
@@ -156,7 +261,8 @@ useEffect(() => {
         projectBannerPic: projectD.projectBannerPic !== undefined
         ? projectD.projectBannerPic
         : undefined,
-        projectDes: des !==undefined? des: projectD.projectDes
+        projectDes: des !==undefined? des: projectD.projectDes,
+        type: projectD.type !== undefined? projectD.type: undefined,
       });
 
       var myHeaders = new Headers();
@@ -197,9 +303,9 @@ useEffect(() => {
                 ? projectD.projectProfile
                 : undefined,
             projectBannerPic: url,
-            projectDes: des !==undefined? des: projectD.projectDes
+            projectDes: des !==undefined? des: projectD.projectDes,
+            type: projectD.type !== undefined? projectD.type: undefined,
           });
-          console.log(2)
 
           var myHeaders = new Headers();
           myHeaders.append("Content-Type", "application/json");
@@ -213,7 +319,6 @@ useEffect(() => {
           fetch("http://localhost:3000/api/addProject", requestOptions)
             .then((response) => response.text())
             .then((result) => {
-              console.log(result);
               setEdit(false);
             })
         .catch((error) => console.log("error", error));
@@ -238,11 +343,9 @@ useEffect(() => {
               owners: projectD.owners !== undefined ? projectD.owners : undefined,
               projectProfile: url1,
               projectBannerPic: url2,
-              projectDes: des !==undefined? des: projectD.projectDes
+              projectDes: des !==undefined? des: projectD.projectDes,
+              type: projectD.type !== undefined? projectD.type: undefined,
             });
-            console.log(4)
-            console.log(projectD.des)
-            console.log(des)
   
             var myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
@@ -256,7 +359,6 @@ useEffect(() => {
             fetch("http://localhost:3000/api/addProject", requestOptions)
             .then((response) => response.text())
             .then((result) => {
-              console.log(result);
               setEdit(false);
             })
             .catch((error) => console.log("error", error));
@@ -386,9 +488,7 @@ useEffect(() => {
                           Owner(s)
                         </dt>
                         <dd className='mt-1 text-sm text-gray-900'>
-                          {projectD.owners !== undefined
-                            ? projectD.owners[0]
-                            : "N/a"}
+                        {owners!==null? owners.map((owner)=><p>{owner}</p>) : "N/a"}
                         </dd>
                       </div>
                       <div className='sm:col-span-1'>
@@ -396,11 +496,15 @@ useEffect(() => {
                           Members
                         </dt>
                         <dd className='mt-1 text-sm text-gray-900'>
-                          {projectD.tmembers !== null
-                            ? projectD.tmembers !== undefined
-                              ? projectD.tmembers.join(", ")
-                              : "N/a"
-                            : "N/a"}
+                        {otherMembers.length!==0? otherMembers.map((mem)=><p>{mem}</p>) : "N/a"} 
+                        </dd>
+                      </div>
+                      <div className='sm:col-span-1'>
+                        <dt className='text-sm font-medium text-gray-500'>
+                          Type
+                        </dt>
+                        <dd className='mt-1 text-sm text-gray-900'>
+                        {projectD.type? projectD.type: "N/a"} 
                         </dd>
                       </div>
                       <div className='sm:col-span-2'>
@@ -465,11 +569,15 @@ useEffect(() => {
                           Members
                         </dt>
                         <dd className='mt-1 text-sm text-gray-900'>
-                          {projectD.tmembers !== null
-                            ? projectD.tmembers !== undefined
-                              ? projectD.tmembers.join(", ")
-                              : "N/a"
-                            : "N/a"}
+                        {otherMembers.length!==0? otherMembers.map((mem)=><p>{mem}</p>) : "N/a"} 
+                        </dd>
+                      </div>
+                      <div className='sm:col-span-1'>
+                        <dt className='text-sm font-medium text-gray-500'>
+                          Type
+                        </dt>
+                        <dd className='mt-1 text-sm text-gray-900'>
+                        {projectD.type} 
                         </dd>
                       </div>
                       <div className='sm:col-span-2'>
