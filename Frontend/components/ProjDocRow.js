@@ -30,7 +30,7 @@ function ProjDocRow({id, fileName, lastEdit, date, createdBy}) {
   
     <div className='flex '>
       <div 
-    //   onClick={()=> Router.push(`/projDoc/${id}`)} 
+      onClick={()=> Router.push(`/projDoc/${pid}DocId=${id}`)} 
       className=' flex items-center p-4 rounded-lg hover:bg-gray-100 text-gray-700 text-sm cursor-pointer w-11/12'>
           <DocumentTextIcon className='fill-blue-500 h-6 w-6'/>
           <p className='flex-grow pl-5 w-10 pr-10 truncate '>{fileName}</p>
