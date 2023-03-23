@@ -15,9 +15,9 @@ function DocumentRow({id, fileName, lastEdit,date}) {
   const  time= times[0]+":"+times[1] +" "+times[2].split(" ")[1]
   const today = new Date(Timestamp.now().toDate().toLocaleString('en-US').split(",")[0])
   const diff =(lastEdit.toDate()- today)
-  const day = 86400000
   const [open ,setOpen] = useState(false)
   const {user}=useAuth()
+  
   function refreshPage() {
     window.location.reload(false);
   }
@@ -35,15 +35,14 @@ function DocumentRow({id, fileName, lastEdit,date}) {
       <div onClick={()=> Router.push(`/doc/${id}`)} className=' flex items-center p-4 rounded-lg hover:bg-gray-100 text-gray-700 text-sm cursor-pointer w-11/12'>
           <DocumentTextIcon className='fill-blue-500 h-6 w-6'/>
           <p className='flex-grow pl-5 w-10 pr-10 truncate '>{fileName}</p>
-          {diff<day&&<p className='mr-14 flex-col text-sm'>{time}</p>}
-          {diff>day&&<p className='mr-12 flex-col text-sm'>{dateTime[0]}</p>}
+          {diff>0&&<p className='mr-14 flex-col text-sm'>{time}</p>}
+          {diff<0&&<p className='mr-12 flex-col text-sm'>{dateTime[0]}</p>}
 
           <p className='text-sm'>{date?.toDate().toLocaleString('en-US').split(",")[0]}</p>
       </div>
       <div  onMouseLeave={() => setOpen(false)} className='p-4'>
         
       {!open&&<EllipsisVerticalIcon 
-        // onClick={} 
         onMouseOver={()=>setOpen(true)}
         className=' h-6 hover:bg-gray-200 cursor-pointer'/>}
         <ul

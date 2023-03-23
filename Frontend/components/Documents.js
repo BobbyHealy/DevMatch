@@ -5,7 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import DocumentRow from './DocumentRow';
 import { v4 as uuid } from "uuid";
 import Router from 'next/router';
-// import {useCollection,useCollectionDataOnce} from "react-firebase-hooks/firestore";
+
 import {
     doc,
     serverTimestamp,
@@ -87,29 +87,21 @@ export default function Documents() {
     const createDocument =async ()=>
     {
         if(!input) return;
-        // await updateDoc(doc(db, "userDocs", user.email), 
-        // {
-        //   docs: arrayUnion(
-        //   {
-        //     id: uuid(),
-        //     fileName: input,
-        //     time: Timestamp.now()
-        //   }),
-        // });
         const data =
         {
-          // id: uuid(),
+
           fileName: input,
           time: serverTimestamp(),
           lastEdit: serverTimestamp()
         }
-        await setDoc(doc(db, "userDocs", user.email, "docs", input ),data)
-        // await setDoc(doc(db, "userDocs", user.email),data)
-        Router.push(`/doc/${input}`)
+        const docID= uuid()
+        await setDoc(doc(db, "userDocs", user.email, "docs", docID ),data)
+
+        Router.push(`/doc/${docID}`)
         setInput("")
         setShowModal(false)
       
-        // refreshPage()
+
     };
     
     useEffect(() => {
@@ -210,10 +202,7 @@ export default function Documents() {
                     </svg>
                 </div>
             
-            {/* {documents.map((doc)=>(
 
-              <DocumentRow key = {doc.id} id ={doc.id} fileName ={doc.fileName} date = {doc.time}/>
-            ))} */}
             <div className='overflow-y-scroll'>
             {snap&&sortByEdit&&editNew&&Object.entries(snap.docs)?.sort((a,b)=>(b[1].data().lastEdit - a[1].data().lastEdit))
             .map((doc)=>(

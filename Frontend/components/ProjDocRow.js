@@ -15,7 +15,6 @@ function ProjDocRow({id, fileName, lastEdit, date, createdBy}) {
   const  time= times[0]+":"+times[1] +" "+times[2].split(" ")[1]
   const today = new Date(Timestamp.now().toDate().toLocaleString('en-US').split(",")[0])
   const diff =(lastEdit.toDate()- today)
-  const day = 86400000
   const [open ,setOpen] = useState(false)
 
   function refreshPage() {
@@ -36,8 +35,8 @@ function ProjDocRow({id, fileName, lastEdit, date, createdBy}) {
           <DocumentTextIcon className='fill-blue-500 h-6 w-6'/>
           <p className='flex-grow pl-5 w-10 pr-10 truncate '>{fileName}</p>
           <p className='flex-grow pl-2 text-sm truncate'>{createdBy}</p>
-          {diff<day&&<p className='mr-14 flex-col text-sm'>{time}</p>}
-          {diff>day&&<p className='mr-12 flex-col text-sm'>{dateTime[0]}</p>}
+          {diff>0&&<p className='mr-14 flex-col text-sm'>{time}</p>}
+          {diff<0&&<p className='mr-12 flex-col text-sm'>{dateTime[0]}</p>}
 
           <p className='text-sm mr-4'>{date?.toDate().toLocaleString('en-US').split(",")[0]}</p>
    
