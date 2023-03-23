@@ -3,13 +3,16 @@ import { Dialog, Transition } from "@headlessui/react";
 import Router from "next/router";
 import Scrumboard from "@/components/Scrumboard";
 import { useAuth } from "@/context/AuthContext";
+import ProjectDocs from "@/components/ProjectDocs";
 import GroupChat from "@/components/GroupChat";
 import Overview from "@/components/OverView";
+import {  onSnapshot,doc} from "firebase/firestore";
+import { db } from "@/config/firebase";
 
 import {
   Bars3Icon,
   ClipboardIcon,
-  FolderIcon,
+  DocumentIcon,
   InboxIcon,
   HomeIcon,
   XMarkIcon,
@@ -20,8 +23,8 @@ import ManageProjects from "@/components/ManageProjects";
 const navigation = [
   { name: "Overview", href: "#Overview", icon: HomeIcon, current: true },
   { name: "GroupChat", href: "#GC", icon: InboxIcon, current: false },
+  { name: "Documents", href: "#Docs", icon: DocumentIcon, current: false },
   { name: "ScrumBoard", href: "#Scrum", icon: ClipboardIcon, current: false },
-  
 ];
 
 function classNames(...classes) {
@@ -30,13 +33,30 @@ function classNames(...classes) {
 
 
 export default function ProjectSpace(){
-    const {userInfo} = useAuth();
+    const {user,userInfo} = useAuth();
     const [section, setSection] = useState("#");
     function RedirectTo(page){
         Router.push("./"+page)
     }
 
+    
+
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    useEffect(() => 
+    {
+      const getLoc  = () => 
+      {
+        const unSub = onSnapshot(doc(db, "users", user.uid), (doc) => 
+        {
+          doc.exists() && setSection(doc.data().currentProjPage);
+        });
+        return () => 
+        {
+          unSub();
+        };
+      }
+      user.email&&getLoc()
+    }, [user]);
 
 
     return(
@@ -247,12 +267,14 @@ export default function ProjectSpace(){
             {section === "#Overview" ? (
                 
                 <Overview/>
-            ) : section === "#Scrum" ? (
-              <Scrumboard/>
-            ) : section === "#GC" ? (
+            ): section === "#GC" ? (
                 <GroupChat/>
-            ) : (
-              <Overview/>
+            ): section === "#Docs" ? (
+                <ProjectDocs/>
+            ) : section === "#Scrum" ? (
+                <Scrumboard/>
+            )  : (
+              <></>
             )}
           </main>
 

@@ -35,6 +35,14 @@ export default function Overview() {
   const [load, setload] =useState(false)
   const [members, setMembers]=useState([])
   const [otherMembers, setOtherMembers] = useState([])
+  useEffect(() => {
+    if(user.uid)
+    {
+      updateDoc(doc(db, "users", user.uid), {
+        currentProjPage:"#Overview"
+      })
+    }
+  }, [])
   
   
 

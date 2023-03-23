@@ -20,7 +20,8 @@ export default function ManageProjects() {
     const [members, setMembers]=useState([]);
     useEffect(() => {
         updateDoc(doc(db, "users", user.uid), {
-          currentPage:"Manage Projects"
+          currentPage:"Manage Projects",
+          currentProjPage:"#Overview"
         })
       }, [user.uid])
     useEffect(() => {

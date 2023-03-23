@@ -25,7 +25,8 @@ export default function Feed() {
     if(user.uid)
     {
       updateDoc(doc(db, "users", user.uid), {
-        currentPage:"Overview"
+        currentPage:"Overview",
+        currentProjPage:"#Overview"
       })
     }
   }, [])
