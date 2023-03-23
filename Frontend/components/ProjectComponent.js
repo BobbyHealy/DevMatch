@@ -108,7 +108,7 @@ function getMember(id){
 }
 useEffect(() => {
 
-  if(!load)
+  if(!load&&project.owner)
   {
     project.owners.map((owner)=>{getOwner(owner)})
     project.tmembers.map((mem)=>{getMember(mem)})
