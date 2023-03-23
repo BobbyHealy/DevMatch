@@ -243,17 +243,17 @@ export default function ProjectSpace(){
                   />
                 </div>
                 <div className='ml-3 pr-10'>
-                  <p className='text-sm font-medium text-gray-400 group-hover:text-gray-200'>
+                  <p className='text-sm font-medium text-gray-400 '>
                     {userInfo.name}
                   </p>
                   <p
-                    className='text-xs font-medium text-gray-500 group-hover:text-gray-700'
+                    className='text-xs font-medium text-gray-500 hover:text-gray-700'
                     onClick={()=>RedirectTo("account")}
                   >
                     View profile
                   </p>
                 </div>
-                <div className="text-xs w-12 font-bold tracking-tight text-orange-400 ">
+                <div className="text-xs w-12 font-bold tracking-tight text-orange-400 hover:text-orange-800">
                     <span onClick={()=>RedirectTo("")}>Back To Feed</span>
                 </div>
               </div>
