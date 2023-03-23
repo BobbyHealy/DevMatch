@@ -215,6 +215,7 @@ useEffect(() => {
 
     if(!icon&&!banner)
     {
+
       const skillsArr = newSkills.split(",");
       var raw = JSON.stringify({
         pid: pid,
@@ -248,6 +249,7 @@ useEffect(() => {
       fetch("http://localhost:3000/api/addProject", requestOptions)
         .then((response) => response.text())
         .then((result) => {
+          refreshPage()
           setEdit(false);
         })
         .catch((error) => console.log("error", error));
@@ -264,8 +266,7 @@ useEffect(() => {
         skills: skillsArr,
         tmembers: projectD.tmembers !== undefined ? projectD.tmembers : undefined,
         owners: projectD.owners !== undefined ? projectD.owners : undefined,
-        projectProfile:
-          projectD.projectProfile !== url,
+        projectProfile: url,
         projectBannerPic: projectD.projectBannerPic !== undefined
         ? projectD.projectBannerPic
         : undefined,
@@ -285,10 +286,10 @@ useEffect(() => {
       fetch("http://localhost:3000/api/addProject", requestOptions)
         .then((response) => response.text())
         .then((result) => {
-          console.log(result);
+          refreshPage()
           setEdit(false);
         })
-        .catch((error) => console.log("error", error));
+        .catch((error) => {});
         })
       })
 
@@ -296,6 +297,7 @@ useEffect(() => {
     }
     else if(!icon)
     {
+ 
       var imageRef = ref(storage, name+"Banner")
       uploadBytes(imageRef, banner).then(()=>{
         getDownloadURL(imageRef).then((url)=>{
@@ -327,6 +329,7 @@ useEffect(() => {
           fetch("http://localhost:3000/api/addProject", requestOptions)
             .then((response) => response.text())
             .then((result) => {
+              refreshPage()
               setEdit(false);
             })
         .catch((error) => console.log("error", error));
@@ -335,6 +338,7 @@ useEffect(() => {
       })
     }
     else{
+
       var imageRef = ref(storage, name+"Icon")
       var imageRef2 = ref(storage, name+"Banner")
       uploadBytes(imageRef, icon).then(()=>{
@@ -367,6 +371,7 @@ useEffect(() => {
             fetch("http://localhost:3000/api/addProject", requestOptions)
             .then((response) => response.text())
             .then((result) => {
+              refreshPage()
               setEdit(false);
             })
             .catch((error) => console.log("error", error));
@@ -383,7 +388,6 @@ useEffect(() => {
     setIcon(null)
     setBanner(null)
     setDes(undefined)
-    refreshPage()
   };
 
   const handleCancel = () => {
