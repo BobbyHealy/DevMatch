@@ -15,6 +15,7 @@ import { Combobox } from '@headlessui/react'
 import {
   doc,
   setDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 import { db } from "@/config/firebase";
 
@@ -78,9 +79,11 @@ useEffect(() => {
     e.preventDefault();
     const projectID = uuidv4();
     const data ={
-      messages:[]
+      name:"main",
+      messages:[],
+      dateCreated: serverTimestamp(),
     }
-    await setDoc(doc(db, "GCs",projectID,"channels","main" ),data);
+    await setDoc(doc(db, "GCs",projectID,"channels","main"),data);
     if (!icon&&!banner){
     const skillsArr = skills.split(",");
     var raw = JSON.stringify({

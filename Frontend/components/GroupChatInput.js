@@ -11,7 +11,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useAuth } from "@/context/AuthContext";
 import Router from "next/router";
 
-export default function GroupChatInput() {
+export default function GroupChatInput({channel}) {
     const [text, setText] = useState("");
     const [img, setImg] = useState(null);
     const { userInfo} = useAuth();
@@ -27,12 +27,12 @@ export default function GroupChatInput() {
         const msgID = uuid();
         if (img) 
         {
-          const storageRef = ref(storage, userInfo.name+"DM"+msgID);
+          const storageRef = ref(storage, userInfo.name+pid+msgID);
           uploadBytes(storageRef, img).then (()=>
           {
             getDownloadURL(storageRef).then(async (downloadURL) => 
             {
-              await updateDoc(doc(db, "GCs", pid,"channels", "main"), 
+              await updateDoc(doc(db, "GCs", pid,"channels", channel), 
               {
                 messages: arrayUnion(
                 {
@@ -48,7 +48,7 @@ export default function GroupChatInput() {
           })
         } else if (text)
         {
-          await updateDoc(doc(db, "GCs", pid,"channels", "main"), 
+          await updateDoc(doc(db, "GCs", pid,"channels", channel), 
           {
             messages: arrayUnion(
             {
