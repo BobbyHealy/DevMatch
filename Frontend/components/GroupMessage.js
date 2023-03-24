@@ -25,13 +25,13 @@ export default function GroupMessage({message }) {
             </div>
             <div className='content flex flex-col max-w-[calc(90%)]'>
                 <div>
-                    <span className='text-orange-800'>{message.sender}</span>
+                    <span className='text-yellow-300'>{message.sender}</span>
                     {diff<0&&<span className='text-xs pl-2'>{date[0]}</span>}
                     {diff>0&&<span className='text-xs pl-2'>Today at</span>}
                     <span className='text-xs pl-1'>{time[0].trim()+":"+time[1]+" "+sign[1]}</span>
                 </div>
                 <img className='w-60 object-cover' src={message.img}/>
-                {message.text&&<p className='text-black  max-w-max'>{message.text}</p>}  
+                {message.text&&<p className='text-white  max-w-max'>{message.text}</p>}  
             </div>
         </div> 
     </div>
