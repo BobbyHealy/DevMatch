@@ -8,20 +8,19 @@ import { db } from "@/config/firebase";
 import GroupMessage from './GroupMessage';
 
 
-export default function GroupMessages() {
+export default function GroupMessages({channel}) {
   const [messages, setMessages] = useState([]);
   const {pid}= Router.query;
-
   useEffect(() => {
     if(pid){
-      const unSub = onSnapshot(doc(db, "GCs", pid, "channels", "main"), (doc) => {
+      const unSub = onSnapshot(doc(db, "GCs", pid, "channels", channel), (doc) => {
         doc.exists() && setMessages(doc.data().messages);
       });
       return () => {
         unSub();
       };
     }
-  }, [pid]);
+  }, [channel]);
   return (
     <div className='bg-gray-100 text-gray-400 p-2 overflow-scroll h-[calc(100vh-153px)] '>
        {messages.map((m) => 

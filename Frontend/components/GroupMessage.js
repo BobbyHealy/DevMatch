@@ -2,7 +2,7 @@ import {useEffect, useRef } from "react";
 import { Timestamp } from "firebase/firestore";
 
 
-export default function GroupMessage({ lastSender,message }) {
+export default function GroupMessage({message }) {
     const ref = useRef(); 
     const date = message.date.toDate().toLocaleString('en-US').split(",")
     const time = date[1].split(":")
