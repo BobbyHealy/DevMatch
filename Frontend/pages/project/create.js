@@ -12,6 +12,11 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import ProjType from "@/components/ProjTypeComboBox";
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
 import { Combobox } from '@headlessui/react'
+import {
+  doc,
+  setDoc,
+} from "firebase/firestore";
+import { db } from "@/config/firebase";
 
 
 export default function Create() {
@@ -71,8 +76,12 @@ useEffect(() => {
 
   const handleSumbit = async (e) => {
     e.preventDefault();
-    if (!icon&&!banner){
     const projectID = uuidv4();
+    const data ={
+      messages:[]
+    }
+    await setDoc(doc(db, "GCs",projectID,"channels","main" ),data);
+    if (!icon&&!banner){
     const skillsArr = skills.split(",");
     var raw = JSON.stringify({
       a: "a",
@@ -138,7 +147,6 @@ useEffect(() => {
         var imageRef = ref(storage, projectName+"Icon")
         uploadBytes(imageRef, icon).then(()=>{
           getDownloadURL(imageRef).then((url)=>{
-            const projectID = uuidv4();
             const skillsArr = skills.split(",");
             var raw = JSON.stringify({
               a: "a",
@@ -208,7 +216,6 @@ useEffect(() => {
         var imageRef = ref(storage, projectName+"Banner")
         uploadBytes(imageRef, banner).then(()=>{
           getDownloadURL(imageRef).then((url)=>{
-            const projectID = uuidv4();
             const skillsArr = skills.split(",");
             var raw = JSON.stringify({
               a: "a",
@@ -278,7 +285,6 @@ useEffect(() => {
           uploadBytes(imageRef2, banner).then(()=>{
             getDownloadURL(imageRef).then((url1)=>{
               getDownloadURL(imageRef2).then((url2)=>{
-                const projectID = uuidv4();
                 const skillsArr = skills.split(",");
                 var raw = JSON.stringify({
                   a: "a",
