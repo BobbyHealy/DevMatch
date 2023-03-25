@@ -20,15 +20,23 @@ function classNames(...classes) {
 export default function Feed() {
   const [posts, setPosts] = useState(null);
   const [enabled, setEnabled] = useState(false);
-  const{user, userInfo}=useAuth();
+  const{user}=useAuth();
   useEffect(() => {
-    if(user.uid)
+    if(!user)
     {
-      updateDoc(doc(db, "users", user.uid), {
-        currentPage:"Overview",
-        currentProjPage:"#Overview"
-      })
+      Router.push('/account/login')
     }
+    else{
+      if(user.uid)
+      {
+        updateDoc(doc(db, "users", user.uid), {
+          currentPage:"Overview",
+          currentProjPage:"#Overview"
+        })
+      }
+    }
+
+
   }, [])
 
   var myHeaders = new Headers();
@@ -104,7 +112,7 @@ export default function Feed() {
         <Header />
       </div>
 
-      <div className='py-6'>
+      {user&&<div className='py-6'>
         <div className='mx-auto max-w-3xl sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-12 lg:gap-8 lg:px-8'>
           <div className='hidden lg:col-span-3 lg:block xl:col-span-2'>
             <nav
@@ -135,24 +143,10 @@ export default function Feed() {
           <main className='lg:col-span-9 xl:col-span-6'>
             {/* Update this to use API + map to generate a bunch of enties of either User or Project components */}
             {/* ProjComponent on feed example */}
-            {userInfo.pJoined&&posts !== null && !enabled ? (
+            {posts !== null && !enabled ? (
               posts.map((e, i) => {
                 return (
-
-                  e.owners&&!e.owners.includes(user.uid)&&!userInfo.pJoined.includes(e.pid)&&
-                  <div key={e.toString() + i} className='pb-6'>
-                    <ProjComponent project={e} />
-                  </div>
-                );
-              })
-            ) : (
-              <></>
-            )}
-             {!userInfo.pJoined&&posts !== null && !enabled ? (
-              posts.map((e, i) => {
-                return (
-
-                  e.owners&&!e.owners.includes(user.uid)&&
+                  e.owners&&!e.owners.includes(user.uid)&&!e.tmembers.includes(user.uid)&&
                   <div key={e.toString() + i} className='pb-6'>
                     <ProjComponent project={e} />
                   </div>
@@ -184,7 +178,7 @@ export default function Feed() {
             </div>
           </aside>
         </div>
-      </div>
+      </div>}
     </div>
   );
 }
