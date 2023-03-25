@@ -20,7 +20,7 @@ function classNames(...classes) {
 export default function Feed() {
   const [posts, setPosts] = useState(null);
   const [enabled, setEnabled] = useState(false);
-  const{user}=useAuth();
+  const{user, userInfo}=useAuth();
   useEffect(() => {
     if(user.uid)
     {
@@ -138,6 +138,7 @@ export default function Feed() {
             {posts !== null && !enabled ? (
               posts.map((e, i) => {
                 return (
+                  e.owners&&!e.owners.includes(user.uid)&&!userInfo.pJoined.includes(e.pid)&&
                   <div key={e.toString() + i} className='pb-6'>
                     <ProjComponent project={e} />
                   </div>
