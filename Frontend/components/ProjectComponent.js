@@ -4,7 +4,15 @@ import { EnvelopeIcon } from "@heroicons/react/20/solid";
 import { UserGroupIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "@/context/AuthContext";
 import ProjectModal from "./ProjectModal";
-
+import Router from "next/router";
+import {
+  setDoc,
+  doc,
+  updateDoc,
+  serverTimestamp,
+  getDoc,
+} from "firebase/firestore";
+import { db } from "@/config/firebase";
 
 
 const default_project = {
@@ -21,13 +29,64 @@ const default_project = {
 
 export default function ProjComponent(props) {
   const { project = default_project, ...restProps } = props;
-  const { user } = useAuth();
+  const { user,userInfo } = useAuth();
+  const [user2, setUser2] = useState(null)
   const [owners, setOwners]=useState([])
   const [load, setload] =useState(false)
   const [members, setMembers]=useState([])
   const [otherMembers, setOtherMembers] = useState([])
   const [showModal, setShowModal] = useState(false);
 
+  function refreshPage() {
+    window.location.reload(false);
+  }
+  const handleSelect = async()=>{
+    //check whether the group(chats in firestore) exists, if not create
+    const combinedId =
+    userInfo.userID> user2.userID
+    ? userInfo.userID + user2.userID
+    : user2.userID + userInfo.userID;
+    try {
+        const res = await getDoc(doc(db, "chats", combinedId));
+  
+        if (!res.exists()) {
+        //create a chat in chats collection
+        await setDoc(doc(db, "chats", combinedId), { messages: [] });
+  
+        await updateDoc(doc(db, "userChats", userInfo.userID), {
+    
+            [combinedId + ".userInfo"]: {
+            uid: user2.userID,
+            displayName: user2.name,
+            photoURL: user2.profilePic,
+            },
+            [combinedId + ".date"]: serverTimestamp(),
+        });
+  
+        await updateDoc(doc(db, "userChats", user2.userID), {
+            [combinedId + ".userInfo"]: {
+            uid: userInfo.userID,
+            displayName: userInfo.name,
+            photoURL: userInfo.profilePic,
+            },
+            [combinedId + ".date"]: serverTimestamp(),
+        });
+        }
+        await updateDoc(doc(db, "users", userInfo.userID), {
+            currentChat:{
+                uid: user2.userID,
+                displayName: user2.name,
+                photoURL: user2.profilePic,
+            },
+            currentPage: "DMs",
+        });
+        Router.push('/account')
+    } catch (err) {}
+
+    
+  
+  }
+    
   
 
 useEffect(() => {
@@ -53,6 +112,10 @@ useEffect(() => {
         .then((result) => 
         {
           owners.push(JSON.parse(result).name)
+          if(owners.length===1)
+          {
+            setUser2(JSON.parse(result))
+          }
           if(project.owners.length===owners.length)
           {
             setOwners(owners)
@@ -116,6 +179,7 @@ useEffect(() => {
         setUserInfo(JSON.parse(result));
       })
       .catch((error) => console.log("error", error));
+      refreshPage()
   };
   return (
     <div className='bg-grey rounded-lg'>
@@ -194,6 +258,7 @@ useEffect(() => {
           <div className='flex flex-shrink-0 self-center'>
             <button
               type='button'
+              onClick={handleSelect}
               className='inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
             >
               Message

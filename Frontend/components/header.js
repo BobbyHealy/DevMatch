@@ -31,7 +31,7 @@ export default function Header() {
   });
 
   useEffect(() => {
-    if (user === null && userInfo === null) {
+    if (user === null ) {
       Router.push("/account/login");
     } else if (userInfo === null) {
       setCompleteUser({
