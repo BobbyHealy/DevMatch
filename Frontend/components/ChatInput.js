@@ -62,7 +62,7 @@ export default function ChatInput() {
                 messages: arrayUnion(
                 {
                   id: msgID,
-                  text,
+                  text: text.trim(),
                   senderId: user.uid,
                   date: Timestamp.now(),
                   img: downloadURL,
@@ -72,7 +72,7 @@ export default function ChatInput() {
           })
           await updateDoc(doc(db, "userChats", user.uid), {
             [DMID + ".lastMessage"]: {
-              text,
+              text: text.trim(),
               img: true,
             },
             [DMID + ".date"]: serverTimestamp(),
@@ -80,33 +80,33 @@ export default function ChatInput() {
       
           await updateDoc(doc(db, "userChats", receiver), {
             [DMID+ ".lastMessage"]: {
-              text,
+              text: text.trim(),
               img: true,
             },
             [DMID+ ".date"]: serverTimestamp(),
           });
-        } else if (text)
+        } else if (text.trim())
         {
           await updateDoc(doc(db, "chats", DMID), 
           {
             messages: arrayUnion(
             {
               id: msgID,
-              text,
+              text: text.trim(),
               senderId: user.uid,
               date: Timestamp.now(),
             }),
           });
           await updateDoc(doc(db, "userChats", user.uid), {
             [DMID + ".lastMessage"]: {
-              text,
+              text: text.trim(),
             },
             [DMID + ".date"]: serverTimestamp(),
           });
       
           await updateDoc(doc(db, "userChats", receiver), {
             [DMID+ ".lastMessage"]: {
-              text,
+              text: text.trim(),
             },
             [DMID+ ".date"]: serverTimestamp(),
           });

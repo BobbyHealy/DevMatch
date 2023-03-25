@@ -66,24 +66,22 @@ export default function GC() {
 
 const handleSend = async () => 
 {
-  if(title)
+  if(title.trim())
   {
     const data ={
-      name:title,
+      name:title.trim(),
       messages:[],
       dateCreated: serverTimestamp()
     }
     await setDoc(doc(db, "GCs", pid, "channels", uuid()),data)
-    setTitle("")
-    setEdit(false)
   }
-  
-
+  setTitle("")
+  setEdit(false)
 }
   return (
     <div className='h-[calc(100vh)] bg-gray-600 '>
   
-          <div className='flex bg-red-100 h-12  justify-between  border-b border-black'>
+          <div onClick={()=>{setEdit(false); setTitle("")}} className='flex bg-red-100 h-12  justify-between  border-b border-black'>
               <div className='flex-1  basis-1/4 bg-gray-700 ' >
                 <span className='flex p-2'>                
                 <img src= {project.projectProfile} className='bg-white h-8 w-8 rounded-full'/>
@@ -102,9 +100,9 @@ const handleSend = async () =>
       
               <div className='flex-1  bg-gray-700 overflow-y-scroll h-[calc(100vh-105px)]'>
         
-                  {!expend&&<span className='flex-grow  pl-1 w-5 text-gray-500 cursor-pointer hover:text-white ' onClick={()=>setExpend(true)}>{">"}</span>}
-                  {expend&&<span className='flex-grow  pl-1 w-5 text-gray-500 cursor-pointer hover:text-white ' onClick={()=>setExpend(false)}>v</span>}
-                  <span className='flex-grow pl-2 w-10 pr-2 text-gray-500 '>CHANNELS</span>
+                  {!expend&&<span className='flex-grow  pl-1 w-5 text-gray-500 cursor-pointer hover:text-white ' onClick={()=>{setExpend(true); setEdit(false); setTitle("")}}>{">"}</span>}
+                  {expend&&<span className='flex-grow  pl-1 w-5 text-gray-500 cursor-pointer hover:text-white ' onClick={()=>{setExpend(false); setEdit(false);setTitle("")}}>v</span>}
+                  <span onClick={()=>{setEdit(false); setTitle("")}} className='flex-grow pl-2 w-10 pr-2 text-gray-500 '>CHANNELS</span>
                   <span
                     onClick={()=>setEdit(true)}
                     className='flex-col text-gray-400 hover:text-white cursor-pointer'>+</span>
@@ -118,7 +116,7 @@ const handleSend = async () =>
                     <p className='text-red-800 hover:text-red-600 cursor-pointer'
                       onClick={()=>{setEdit(false); setTitle("")}}>cancel</p>
                   </div>}
-                  <div className='p-2 pl-1 pr-5'>
+                  <div onClick={()=>{setEdit(false); setTitle("")}} className='p-2 pl-1 pr-5'>
                     {!expend&&Object.entries(channels)?.sort((a,b)=>a[1].data().dateCreated- b[1].data().dateCreated).map((channel)=>
                       (channel[1].id===channelID&&<span onClick={()=>{setChannel(channel[1].data().name); setID(channel[1].id)}}
                          className='flex items-center bg-gray-500 text-gray-200  rounded-lg  cursor-pointer'>
@@ -141,7 +139,7 @@ const handleSend = async () =>
         
                   </div>
               </div>
-              <div className='flex-2 bg-gray-800 items-center justify-between h-14 p-3 pl-5 pr-5 '>
+              <div onClick={()=>{setEdit(false); setTitle("")}} className='flex-2 bg-gray-800 items-center justify-between h-14 p-3 pl-5 pr-5 '>
               <div className='flex'>
                 <img src= {userInfo.profilePic} className='bg-white h-8 w-8 rounded-full'/>
                 <span className='text-white pl-3 p-1 truncate'>{userInfo.name}</span>
@@ -150,7 +148,7 @@ const handleSend = async () =>
             </div>
 
           
-            <div className='flex-2 basis-3/4'>
+            <div onClick={()=>{setEdit(false); setTitle("")}} className='flex-2 basis-3/4'>
             <GroupMessages channel={channelID}/>
             <GroupChatInput channel={channelID}/>
             </div>
