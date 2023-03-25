@@ -150,6 +150,7 @@ export default function Feed() {
             {posts !== null && enabled ? (
               posts.map((e, i) => {
                 return (
+                  e.userID!==user.uid&&
                   <div key={e.toString() + i} className='pb-6'>
                     <UserComponent user={e} />
                   </div>

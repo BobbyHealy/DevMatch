@@ -34,7 +34,6 @@ export default function Overview() {
   const [owners, setOwners]=useState([])
   const [load, setload] =useState(false)
   const [members, setMembers]=useState([])
-  const [otherMembers, setOtherMembers] = useState([])
   useEffect(() => {
     if(user.uid)
     {
@@ -56,85 +55,7 @@ export default function Overview() {
   }, [user.uid])
 
 
-  function addOwner(name){
-        
-    if(owners!==null)
-    {
-        var newList = [...owners,name]
-        setOwners(newList)
-    }else
-    {
-      setOwners([name])
-    }
-  }
-  function addOtherMember(name){
-        
-    if(otherMembers!==null)
-    {
-        var newList = [...otherMembers,name]
-        setOtherMembers(newList)
-    }else
-    {
-      setOtherMembers([name])
-    }
-  }
-  function addMember(name){
-        
-    if(members!==null)
-    {
-        var newList = [...members,name]
-        setMembers(newList)
-    }else
-    {
-      setMembers([name])
-    }
-  }
-  function getOwner(id){
-    var myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    var raw = JSON.stringify({
-        userID: id,
-    });
-    var requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-    };
-    fetch("http://localhost:3000/api/getUser", requestOptions)
-      .then((response) => response.text())
-      .then((result) => 
-      {
-        addOwner(JSON.parse(result).name)
-    }
-      )
-      .catch((err) => {
-        console.log(err);
-      });
 
-}
-function getMember(id){
-  var myHeaders = new Headers();
-  myHeaders.append("Content-Type", "application/json");
-  var raw = JSON.stringify({
-      userID: id,
-  });
-  var requestOptions = {
-    method: "POST",
-    headers: myHeaders,
-    body: raw,
-  };
-  fetch("http://localhost:3000/api/getUser", requestOptions)
-    .then((response) => response.text())
-    .then((result) => 
-    {
-      addMember(JSON.parse(result).name)
-  }
-    )
-    .catch((err) => {
-      console.log(err);
-    });
-
-}
   useEffect(() => {
       var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
@@ -154,26 +75,68 @@ function getMember(id){
         });
   }, []);
   useEffect(() => {
-    if(!load&&projectD)
-    {  
-      projectD.owners.map((owner)=>{getOwner(owner)})
-      projectD.tmembers.map((mem)=>{getMember(mem)})
+    if(!load&&projectD.owners)
+    { 
       setload(true)
+      var owners =[]
+      var members =[]
+      projectD.owners.map((owner)=>{
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        var raw = JSON.stringify({
+            userID: owner,
+        });
+        var requestOptions = {
+          method: "POST",
+          headers: myHeaders,
+          body: raw,
+        };
+        fetch("http://localhost:3000/api/getUser", requestOptions)
+          .then((response) => response.text())
+          .then((result) => 
+          {
+            owners.push(JSON.parse(result).name)
+            if(projectD.owners.length===owners.length)
+            {
+              setOwners(owners)
+            }
+          }
+          )
+          .catch((err) => {
+            console.log(err);
+          });
+      })
+      projectD.tmembers.map((mem)=>{
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        var raw = JSON.stringify({
+            userID: mem,
+        });
+        var requestOptions = {
+          method: "POST",
+          headers: myHeaders,
+          body: raw,
+        };
+        fetch("http://localhost:3000/api/getUser", requestOptions)
+          .then((response) => response.text())
+          .then((result) => 
+          {
+            members.push(JSON.parse(result).name)
+            if(projectD.tmembers.length===members.length)
+            {
+              setMembers(members)
+            }
+          }
+          )
+          .catch((err) => {
+            console.log(err);
+          });
+      })
+
     }
 
   }, [projectD]);
-  useEffect(() => {
-    if(load)
-    {
-      members.map((mem)=>{
-        console.log(mem);
-        if(!mem.includes(owners))
-        {
-          addOtherMember(mem)
-        }})
-      console.log(projectD)
-    }
-  }, [load])
+
 
   useEffect(() => {
     setNewSkills(
@@ -500,7 +463,9 @@ useEffect(() => {
                           Owner(s)
                         </dt>
                         <dd className='mt-1 text-sm text-gray-900'>
-                        {owners!==null? owners.map((owner)=><p>{owner}</p>) : "N/a"}
+                        {owners.length>0? owners.sort((a,b)=>
+                        { if(a<b){ return -1}else{return 1}
+                        }).map((owner)=><p>{owner}</p>) : <p>N/a</p>}
                         </dd>
                       </div>
                       <div className='sm:col-span-1'>
@@ -508,7 +473,14 @@ useEffect(() => {
                           Members
                         </dt>
                         <dd className='mt-1 text-sm text-gray-900'>
-                        {otherMembers.length!==0? otherMembers.map((mem)=><p>{mem}</p>) : "N/a"} 
+                        {
+                          members.length>1? 
+                          members.sort((a,b)=>
+                          { if(a<b){ return -1}else{return 1}
+                          }).map((mem)=>
+                          (!owners.includes(mem)&&<p key={mem}>{mem}</p>)) 
+                          : <p>N/a</p>
+                        }
                         </dd>
                       </div>
                       <div className='sm:col-span-1'>
@@ -569,7 +541,9 @@ useEffect(() => {
                           Owner(s)
                         </dt>
                         <dd className='mt-1 text-sm text-gray-900'>
-                          {project.owner}
+                        {owners.length>0? owners.sort((a,b)=>
+                        { if(a<b){ return -1}else{return 1}
+                        }).map((owner)=><p>{owner}</p>) : <p>N/a</p>}
                         </dd>
                         <button className=' rounded-md border bg-white text-black my-1 py-1 px-4 text-sm shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'>
                           {" "}
@@ -581,7 +555,14 @@ useEffect(() => {
                           Members
                         </dt>
                         <dd className='mt-1 text-sm text-gray-900'>
-                        {otherMembers.length!==0? otherMembers.map((mem)=><p>{mem}</p>) : "N/a"} 
+                        {
+                          members.length>1? 
+                          members.sort((a,b)=>
+                          { if(a<b){ return -1}else{return 1}
+                          }).map((mem)=>
+                          (!owners.includes(mem)&&<p key={mem}>{mem}</p>)) 
+                          : <p>N/a</p>
+                        }
                         </dd>
                       </div>
                       <div className='sm:col-span-1'>
