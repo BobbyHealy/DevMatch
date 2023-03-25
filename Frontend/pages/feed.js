@@ -135,10 +135,24 @@ export default function Feed() {
           <main className='lg:col-span-9 xl:col-span-6'>
             {/* Update this to use API + map to generate a bunch of enties of either User or Project components */}
             {/* ProjComponent on feed example */}
-            {posts !== null && !enabled ? (
+            {userInfo.pJoined&&posts !== null && !enabled ? (
               posts.map((e, i) => {
                 return (
+
                   e.owners&&!e.owners.includes(user.uid)&&!userInfo.pJoined.includes(e.pid)&&
+                  <div key={e.toString() + i} className='pb-6'>
+                    <ProjComponent project={e} />
+                  </div>
+                );
+              })
+            ) : (
+              <></>
+            )}
+             {!userInfo.pJoined&&posts !== null && !enabled ? (
+              posts.map((e, i) => {
+                return (
+
+                  e.owners&&!e.owners.includes(user.uid)&&
                   <div key={e.toString() + i} className='pb-6'>
                     <ProjComponent project={e} />
                   </div>
