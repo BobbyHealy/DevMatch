@@ -84,6 +84,7 @@ func main() {
 	router.POST("/userToProject", userToProject)
 	router.DELETE("/removeUser", removeUser)
 	router.DELETE("/removeProject", removeProject)
+	router.POST("/addMilestone", addMilestone)
 
 	router.Run("localhost:8080")
 
@@ -552,8 +553,7 @@ func addMilestone(c *gin.Context) {
 		fmt.Println(milestone)
 	}
 
-	var proj project
-	proj = getProjectFromID(pid)
+	var proj project = getProjectFromID(pid)
 	if proj.ProjectID == "" {
 		c.IndentedJSON(http.StatusBadRequest, nil)
 		return
