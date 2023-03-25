@@ -27,108 +27,71 @@ export default function ProjComponent(props) {
   const [members, setMembers]=useState([])
   const [otherMembers, setOtherMembers] = useState([])
   const [showModal, setShowModal] = useState(false);
-  function addOwner(name){
-        
-    if(owners!==null)
-    {
-        var newList = [...owners,name]
-        setOwners(newList)
-    }else
-    {
-      setOwners([name])
-    }
-  }
-  function addOtherMember(name){
-        
-    if(otherMembers!==null)
-    {
-        var newList = [...otherMembers,name]
-        setOtherMembers(newList)
-    }else
-    {
-      setOtherMembers([name])
-    }
-  }
-  function addMember(name){
-        
-    if(members!==null)
-    {
-        var newList = [...members,name]
-        setMembers(newList)
-    }else
-    {
-      setMembers([name])
-    }
-  }
-  function getOwner(id){
-    var myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    var raw = JSON.stringify({
-        userID: id,
-    });
-    var requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-    };
-    fetch("http://localhost:3000/api/getUser", requestOptions)
-      .then((response) => response.text())
-      .then((result) => 
-      {
-        addOwner(JSON.parse(result).name)
-    }
-      )
-      .catch((err) => {
-        console.log(err);
-      });
 
-}
-function getMember(id){
-  var myHeaders = new Headers();
-  myHeaders.append("Content-Type", "application/json");
-  var raw = JSON.stringify({
-      userID: id,
-  });
-  var requestOptions = {
-    method: "POST",
-    headers: myHeaders,
-    body: raw,
-  };
-  fetch("http://localhost:3000/api/getUser", requestOptions)
-    .then((response) => response.text())
-    .then((result) => 
-    {
-      addMember(JSON.parse(result).name)
-  }
-    )
-    .catch((err) => {
-      console.log(err);
-    });
+  
 
-}
 useEffect(() => {
 
   if(!load&&project.owners)
   {
-    project.owners.map((owner)=>{getOwner(owner)})
-    project.tmembers.map((mem)=>{getMember(mem)})
     setload(true)
+    var owners =[]
+    var members =[]
+    project.owners.map((owner)=>{
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+      var raw = JSON.stringify({
+          userID: owner,
+      });
+      var requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+      };
+      fetch("http://localhost:3000/api/getUser", requestOptions)
+        .then((response) => response.text())
+        .then((result) => 
+        {
+          owners.push(JSON.parse(result).name)
+          if(project.owners.length===owners.length)
+          {
+            setOwners(owners)
+          }
+        }
+        )
+        .catch((err) => {
+          console.log(err);
+        });
+    })
+    project.tmembers.map((mem)=>{
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+      var raw = JSON.stringify({
+          userID: mem,
+      });
+      var requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+      };
+      fetch("http://localhost:3000/api/getUser", requestOptions)
+        .then((response) => response.text())
+        .then((result) => 
+        {
+          members.push(JSON.parse(result).name)
+          if(project.tmembers.length===members.length)
+          {
+            setMembers(members)
+          }
+        }
+        )
+        .catch((err) => {
+          console.log(err);
+        });})
+    
     
   }
-}, [project])
-useEffect(() => {
-  if(load)
-  {
-    console.log(members)
-    members.map((mem)=>{
-      console.log(mem);
-      if(!mem.includes(owners))
-      {
-        addOtherMember(mem)
-      }})
-    console.log()
-  }
-}, [load])
+}, [])
 
 
   const handleJoinProject = async () => {
@@ -179,30 +142,40 @@ useEffect(() => {
               </a>
             </p>
             <p className='text-sm text-gray-500'>
-              <a href='#' className='hover:underline'>
-                Owner:{" "}
-                {owners!==null? owners.map((owner)=><span>{owner}</span>) : "N/a"}
-              </a>
+                <span className="font-bold">Owners</span>
+                {owners.length>0? owners.sort((a,b)=>
+                      { if(a<b){ return -1}else{return 1}
+                      }).map((owner)=><p>{owner}</p>) : <p>N/a</p>}
+            
             </p>
             <p className='text-sm text-gray-500'>
-              <a href='#' className='hover:underline'>
-                Project Type:{" "}
-                {project.type}
-              </a>
+              <span className="font-bold"> Project Type</span>
+               
+                <p>{project.type}</p>
+        
             </p>
             <div className='text-sm text-gray-500'>
-              <a href='#' className='hover:underline'>
-                Skills Needed:{" "}
+              <p className="font-bold">
+                Skills Needed
+              </p>
                 {project.skills !== undefined
                   ? project.skills.map((e, i) => <p key={i}>{e + " "}</p>)
                   : "N/a"}
-              </a>
+              
             </div>
             <div className='text-sm text-gray-500'>
-              <a href='#' className='hover:underline'>
-                Other members:{" "}
-                {otherMembers.length!==0? otherMembers.map((mem)=><span>{mem}</span>) : "N/a"} 
-              </a>
+              <span className="font-bold">
+                
+                Other members
+              </span>
+                {
+                members.length>1? 
+                members.sort((a,b)=>
+                { if(a<b){ return -1}else{return 1}
+                }).map((mem)=>
+                (!owners.includes(mem)&&<p key={mem}>{mem}</p>)) 
+                : <p>N/a</p>
+                }
             </div>
           </div>
           <div className='flex flex-shrink-0 self-center'>
@@ -246,7 +219,9 @@ useEffect(() => {
                   <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
                     <dt className="text-sm font-medium text-gray-500">Project Owner</dt>
                     <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{" "}
-                      {owners!==null? owners.map((owner)=><span>{owner}</span>) : "N/a"} </dd>
+                    {owners.length>0? owners.sort((a,b)=>
+                      { if(a<b){ return -1}else{return 1}
+                      }).map((owner)=><p>{owner}</p>) : <p>N/a</p>} </dd>
                   </div>
                   <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
                     <dt className="text-sm font-medium text-gray-500">Looking for</dt>
@@ -256,9 +231,14 @@ useEffect(() => {
                         : "N/a"}</dd>
                   </div>
                   <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
-                    <dt className="text-sm font-medium text-gray-500">Other members</dt>
+                    <dt className="text-sm font-medium text-gray-500 font-bold">Other members</dt>
                     <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{" "}
-                    {otherMembers.length!==0? otherMembers.map((mem)=><span>{mem}</span>) : "N/a"} 
+                    {members.length>1? 
+                      members.sort((a,b)=>
+                      { if(a<b){ return -1}else{return 1}
+                      }).map((mem)=>
+                      (!owners.includes(mem)&&<p key={mem}>{mem}</p>)) 
+                      : <p>N/a</p>} 
 
                     </dd>
                   </div>
