@@ -158,7 +158,7 @@ useEffect(() => {
               <p className="font-bold">
                 Skills Needed
               </p>
-                {project.skills !== undefined
+                {project.skills[0].length>0
                   ? project.skills.map((e, i) => <p key={i}>{e + " "}</p>)
                   : "N/a"}
               
@@ -226,7 +226,7 @@ useEffect(() => {
                   <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
                     <dt className="text-sm font-medium text-gray-500">Looking for</dt>
                     <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{" "}
-                      {project.skills !== undefined
+                      {project.skills[0].length>0
                         ? project.skills.map((e, i) => <p key={i}>{e + " "}</p>)
                         : "N/a"}</dd>
                   </div>
