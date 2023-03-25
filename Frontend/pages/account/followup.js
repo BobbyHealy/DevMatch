@@ -44,7 +44,7 @@ export default function FollowUp() {
     e.preventDefault();
     if(image)
     {
-    var imageRef = ref(storage, name +"ProfilePic")
+    var imageRef = ref(storage, name+user.uid +"ProfilePic")
     uploadBytes(imageRef, image)
     .then(() => {
         getDownloadURL(imageRef)
@@ -107,7 +107,7 @@ export default function FollowUp() {
           uid: user.uid,
           email: user.email,
           displayName: name,
-          photoURL:url !== undefined ? url : userInfo.profilePic,
+          photoURL:url !== undefined ? url : "https://www.nicepng.com/png/detail/73-730154_open-default-profile-picture-png.png",
         });
 
         var myHeaders = new Headers();
