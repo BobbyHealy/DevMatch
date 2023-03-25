@@ -507,11 +507,10 @@ useEffect(() => {
                           Require Skill
                         </dt>
                         <dd className='mt-1 max-w-prose space-y-5 text-sm text-gray-900'>
-                          {projectD.skills !== null
-                            ? projectD.skills !== undefined
-                              ? projectD.skills.join(", ")
-                              : "N/a"
-                            : "N/a"}
+                        {projectD.skills !== undefined&&projectD.skills[0].length>1
+                            ? projectD.skills.join(", ")
+                            : "N/a"
+                            }
                         </dd>
                       </div>
                     </dl>
