@@ -43,6 +43,7 @@ type project struct {
 	ProjectBannerPic   string   `json:"projectBannerPic"`
 	ProjectDescription string   `json:"projectDes"`
 	ProjectType        string   `json:"type"`
+	Milestones         []string `json:"milestones"`
 	//TaskBoard     Scrumboard `json: "board"`
 }
 
@@ -529,5 +530,36 @@ func updateUserHelp(us user) {
 	if err := f.Update(v); err != nil {
 		log.Fatal(err)
 	}
+
+}
+
+func addMilestone(c *gin.Context) {
+	pid, exists := c.GetQuery("pid")
+	if !exists {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	} else {
+		fmt.Println(pid)
+	}
+
+	milestone, exists2 := c.GetQuery("milestone")
+	if !exists2 {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	} else {
+		fmt.Println(milestone)
+	}
+
+	var proj project
+	proj = getProjectFromID(pid)
+	if proj.ProjectID == "" {
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	}
+
+	proj.Milestones = append(proj.Milestones, milestone)
+	updateProjectHelp(proj)
 
 }
