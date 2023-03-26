@@ -8,7 +8,7 @@ import {doc,updateDoc,} from "firebase/firestore";
 import { db } from "@/config/firebase";
 
 
-export default function Overview() {
+export default function Overview({pid, projectD}) {
   const project = {
     name: "DevMatch",
     owner: "John Doe",
@@ -26,10 +26,7 @@ export default function Overview() {
   const[bannerURL, setBannerURL] = useState(null)
   const [newSkills, setNewSkills] = useState();
   const [edit, setEdit] = useState(false);
-  const [name, setName] = useState("");
-  const [projectD, setProject] = useState("");  
-  const router = useRouter();
-  const { pid } = router.query;
+  const [name, setName] = useState(""); 
   const{user}=useAuth();
   const [owners, setOwners]=useState([])
   const [load, setload] =useState(false)

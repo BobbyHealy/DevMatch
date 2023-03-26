@@ -15,11 +15,9 @@ import { useAuth } from '@/context/AuthContext';
 
 
 
-export default function GC() {
+export default function GC({pid,project}) {
   
   const router = useRouter();
-  const { pid } = router.query;
-  const [project, setProject] = useState("");
   const [edit, setEdit] = useState(false);
   const [expend, setExpend] = useState(false);
   const [title, setTitle] = useState("");
@@ -28,23 +26,6 @@ export default function GC() {
 
   const [channelName, setChannel]=useState("main")
   const [channelID, setID]=useState("main")
-  useEffect(() => {
-    var myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    var raw = JSON.stringify({
-      pid: pid,
-    });
-    var requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-    };
-    fetch("http://localhost:3000/api/getProject", requestOptions)
-      .then((response) => response.text())
-      .then((result) => setProject(JSON.parse(result)))
-      .catch((err) => {
-      });
-  }, []);
 
   useEffect(() => {
     if(pid){

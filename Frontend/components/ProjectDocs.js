@@ -11,8 +11,7 @@ import { db } from "@/config/firebase";
 import { v4 as uuid } from "uuid";
 import Router from 'next/router';
 import ProjDocRow from "./ProjDocRow";
-export default function ProjectDocs() {
-    const { pid } = Router.query;
+export default function ProjectDocs({pid}) {
     const {user, userInfo} = useAuth()
     const [showModal, setShowModal] = useState(false);
     const [input, setInput]= useState("")
@@ -25,7 +24,6 @@ export default function ProjectDocs() {
     const [editNew, setEditNew] = useState(true)
     const [nameNew, setNameNew] = useState(false)
     const [fileNameNew, setFileNameNew] = useState(false)
-    const [project, setProject] = useState("");
     useEffect(() => {
         if(user.uid)
         {
@@ -45,11 +43,8 @@ export default function ProjectDocs() {
     useEffect(() => 
     {
       pid&&fetchDoc()
-      console.log(pid)
     }, [pid]);
-    useEffect(() => {
 
-    }, [project]);
     const onclickCreate = () =>{
         if(!sortByCreate)
         {
