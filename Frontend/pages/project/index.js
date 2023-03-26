@@ -11,7 +11,6 @@ import { db } from "@/config/firebase";
 
 import {
   Bars3Icon,
-  ClipboardIcon,
   DocumentIcon,
   InboxIcon,
   HomeIcon,
@@ -26,8 +25,9 @@ const navigation = [
   { name: "Overview", href: "#Overview", icon: HomeIcon, current: true },
   { name: "GroupChat", href: "#GC", icon: InboxIcon, current: false },
   { name: "Documents", href: "#Docs", icon: DocumentIcon, current: false },
-  { name: "ScrumBoard", href: "#Scrum", icon: ClipboardIcon, current: false },
   { name: "Explore", href: "#Explore", icon: UserGroupIcon, current: false },
+  // { name: "ScrumBoard", href: "#Scrum", icon: ClipboardIcon, current: false },
+  
 ];
 
 function classNames(...classes) {
@@ -53,6 +53,26 @@ export default function ProjectSpace() {
     };
     user.email && getLoc();
   }, [user]);
+  const { pid } = Router.query;
+  const [project, setProject] = useState(""); 
+  useEffect(() => {
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    var raw = JSON.stringify({
+      pid: pid,
+    });
+    var requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+    };
+    fetch("http://localhost:3000/api/getProject", requestOptions)
+      .then((response) => response.text())
+      .then((result) => setProject(JSON.parse(result)))
+      .catch((err) => {
+        console.log(err);
+      });
+}, []);
 
   return (
     <>
@@ -267,15 +287,15 @@ export default function ProjectSpace() {
           </div>
           <main className='flex-1'>
             {section === "#Overview" ? (
-              <Overview />
+              <Overview pid={pid} projectD={project}/>
             ) : section === "#GC" ? (
-              <GroupChat />
+              project&&<GroupChat pid={pid} project={project}/>
             ) : section === "#Docs" ? (
-              <ProjectDocs />
+              <ProjectDocs pid={pid}/>
             ) : section === "#Scrum" ? (
               <Scrumboard />
             ) : section === "#Explore" ? (
-              <Explore />
+              <Explore project={project}/>
             ) : (
               <></>
             )}
