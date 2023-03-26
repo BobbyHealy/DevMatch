@@ -1,7 +1,13 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Router from 'next/router';
 import { DocumentTextIcon } from "@heroicons/react/24/outline";
-import { updateDoc,doc, getDocs,collection,query} from "firebase/firestore";
+import { 
+    updateDoc,
+    doc, 
+    getDocs,
+    collection,
+    query,
+} from "firebase/firestore";
 import { db } from "@/config/firebase";
 import { useAuth } from "@/context/AuthContext";
 import ProjTextEditor from "@/components/ProjTextEditor";
@@ -88,7 +94,7 @@ function ProjDoc() {
                 </div>
             </div>
         </header>
-        <ProjTextEditor/>
+        <ProjTextEditor pid={pid} docId={docId}/>
     </div>
   )
 }
