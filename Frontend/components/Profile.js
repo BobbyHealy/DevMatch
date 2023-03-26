@@ -56,10 +56,6 @@ function Profile() {
   },[])
 
   useEffect(() => {
-  
-    updateDoc(doc(db, "users", user.uid), {
-      currentPage:"Overview"
-    })
     if (user === null && userInfo === null) {
       Router.push("/account/login");
     } else if (userInfo === null) {
@@ -80,6 +76,9 @@ function Profile() {
         userInfo.skills !== undefined ? userInfo.skills.join(",") : []
       );
     }
+    updateDoc(doc(db, "users", user.uid), {
+      currentPage:"Overview"
+    })
   }, [user, userInfo]);
 
 
@@ -168,10 +167,11 @@ function Profile() {
   };
 
   const handleSubmit = async (e) => {
+    console.log(newName==="")
     const skillsArr = newSkills!== undefined? newSkills.split(","): undefined
     var raw = JSON.stringify({
       userID: user.uid,
-      name: newName !== undefined ? newName : userInfo.name,
+      name: newName !== undefined&&newName.trim().length>0 ? newName.trim() : userInfo.name,
       rating: 100,
       skills: skillsArr!== undefined ? skillsArr : userInfo.name,
       pOwned: userInfo.pOwned !== undefined ? userInfo.pOwned : undefined,
@@ -188,6 +188,9 @@ function Profile() {
       headers: myHeaders,
       body: raw,
     };
+    updateDoc(doc(db, "users", user.uid), {
+      displayName: newName !== undefined&&newName.trim().length>0 ? newName.trim() : userInfo.name
+    })
 
     fetch("http://localhost:3000/api/addUser", requestOptions)
       .then((response) => response.text())
