@@ -103,9 +103,9 @@ const handleSend = async () =>
                   {!expend&&<span className='flex-grow  pl-1 w-5 text-gray-500 cursor-pointer hover:text-white ' onClick={()=>{setExpend(true); setEdit(false); setTitle("")}}>{">"}</span>}
                   {expend&&<span className='flex-grow  pl-1 w-5 text-gray-500 cursor-pointer hover:text-white ' onClick={()=>{setExpend(false); setEdit(false);setTitle("")}}>v</span>}
                   <span onClick={()=>{setEdit(false); setTitle("")}} className='flex-grow pl-2 w-10 pr-2 text-gray-500 '>CHANNELS</span>
-                  <span
+                  {project.owners?.includes(userInfo.userID)&&<span
                     onClick={()=>setEdit(true)}
-                    className='flex-col text-gray-400 hover:text-white cursor-pointer'>+</span>
+                    className='flex-col text-gray-400 hover:text-white cursor-pointer'>+</span>}
                   {edit&&<div className='p-2 pl-5 pr-5'>
                     <input type="text" 
                       placeholder='new-channel'  

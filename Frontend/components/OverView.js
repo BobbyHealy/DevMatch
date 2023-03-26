@@ -27,7 +27,7 @@ export default function Overview() {
   const [newSkills, setNewSkills] = useState();
   const [edit, setEdit] = useState(false);
   const [name, setName] = useState("");
-  const [projectD, setProject] = useState("");
+  const [projectD, setProject] = useState("");  
   const router = useRouter();
   const { pid } = router.query;
   const{user}=useAuth();
@@ -425,10 +425,16 @@ useEffect(() => {
                     </div>
                     {!edit && (
                       <div className='mt-6 hidden min-w-0 flex-1 sm:block 2xl:hidden'>
+                        <div className="flex">
                         <h1 className='truncate text-2xl font-bold text-gray-900'>
                           {projectD.name}
                         </h1>
+                        {projectD.owners?.includes(user.uid)&&<span className='pl-10 p-2 hover:text-gray-500 cursor-pointer' onClick={handleEdit}>
+                            Edit Info
+                        </span>}
+                        </div>
                       </div>
+                      
                     )}
                     {edit && (
                       <div className='mt-6 hidden min-w-0 flex-1 sm:block 2xl:hidden'>
@@ -453,10 +459,7 @@ useEffect(() => {
                 </div>
                 {!edit && (
                   <div className='mx-auto mt-6 max-w-5xl px-4 sm:px-6 lg:px-8'>
-                    <span className='' onClick={handleEdit}>
-                      {" "}
-                      Edit Info
-                    </span>
+
                     <dl className='grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2'>
                       <div className='sm:col-span-1'>
                         <dt className='text-sm font-medium text-gray-500'>
@@ -491,7 +494,7 @@ useEffect(() => {
                         {projectD.type? projectD.type: "N/a"} 
                         </dd>
                       </div>
-                      <div className='sm:col-span-2'>
+                      <div className='sm:col-span-1'>
                         <dt className='text-sm font-medium text-gray-500'>
                           About
                         </dt>
@@ -502,7 +505,7 @@ useEffect(() => {
                           }}
                         />
                       </div>
-                      <div className='sm:col-span-2'>
+                      <div className='sm:col-span-1'>
                         <dt className='text-sm font-medium text-gray-500'>
                           Require Skill
                         </dt>
@@ -513,7 +516,14 @@ useEffect(() => {
                             }
                         </dd>
                       </div>
+                      <div className='sm:col-span-1'>
+                          <dt >
+                          <span className='text-red-600  cursor-pointer hover:text-red-200'>Leave Project</span>
+                          </dt>
+                        </div>
                     </dl>
+                
+                    
                   </div>
                 )}
                 {edit && (
@@ -572,7 +582,7 @@ useEffect(() => {
                         {projectD.type} 
                         </dd>
                       </div>
-                      <div className='sm:col-span-2'>
+                      <div className='sm:col-span-1'>
                         <dt className='text-sm font-medium text-gray-500'>
                           About
                         </dt>
@@ -586,7 +596,7 @@ useEffect(() => {
                           />
                         </dd>
                       </div>
-                      <div className='sm:col-span-2'>
+                      <div className='sm:col-span-1'>
                         <dt className='text-sm font-medium text-gray-500'>
                           Require Skill
                         </dt>
@@ -599,6 +609,11 @@ useEffect(() => {
                             onChange={(e) => setNewSkills(e.target.value)}
                           />
                         </dd>
+                      </div>
+                      <div className='sm:col-span-1'>
+                        <dt>
+                      <span className=' text-red-600 cursor-pointer hover:text-red-900'>Delete Project</span>
+                          </dt>
                       </div>
                     </dl>
                   </div>
