@@ -1,21 +1,23 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import {doc,
+import {
+    doc,
     updateDoc,
-    query,
     serverTimestamp,
     setDoc,
-    getDocs,
-    collection,} from "firebase/firestore";
+    collection,
+    onSnapshot,
+  } from "firebase/firestore";
 import { db } from "@/config/firebase";
 import { v4 as uuid } from "uuid";
 import Router from 'next/router';
 import ProjDocRow from "./ProjDocRow";
+import {EditorState,convertToRaw} from 'draft-js';
 export default function ProjectDocs({pid}) {
     const {user, userInfo} = useAuth()
     const [showModal, setShowModal] = useState(false);
     const [input, setInput]= useState("")
-    const [snap, setSnap]= useState()
+    const [docs, setDocs]= useState()
     const [sortByCreate, setCreate]= useState(false)
     const [sortByName, setName]= useState(false)
     const [sortByFileName, setFileName]= useState(false)
@@ -34,11 +36,13 @@ export default function ProjectDocs({pid}) {
       }, [])
     const fetchDoc  = async () => 
     {
-      const q = query(
-        collection(db, "projDocs", pid,"docs")
-      );
-      const querySnapshot = await getDocs(q);
-      setSnap(querySnapshot)
+      const unsub = onSnapshot(collection(db, "projDocs", pid, "docs"), (snap) => {
+        setDocs(snap.docs)
+      });
+
+      return () => {
+        unsub();
+      };
     }
     useEffect(() => 
     {
@@ -127,12 +131,14 @@ export default function ProjectDocs({pid}) {
       const createDocument =async ()=>
       {
           if(!input) return;
+
           const data =
           {
             fileName: input,
             time: serverTimestamp(),
             lastEdit: serverTimestamp(),
-            createBy: userInfo.name
+            createBy: userInfo.name,
+            state: convertToRaw(EditorState.createEmpty().getCurrentContent())
           }
           const docID= uuid()
           await setDoc(doc(db, "projDocs", pid, "docs", docID ),data)
@@ -224,94 +230,95 @@ export default function ProjectDocs({pid}) {
                 </div>
             
             <div className='overflow-y-scroll'>
-            {snap&&sortByEdit&&editNew&&Object.entries(snap.docs)?.sort((a,b)=>(b[1].data().lastEdit - a[1].data().lastEdit))
-            .map((doc)=>(
-                <ProjDocRow 
-                key = {doc[1].id} 
-                id ={doc[1].id} 
-                fileName ={doc[1].data().fileName} 
-                lastEdit ={doc[1].data().lastEdit} 
-                date = {doc[1].data().time} 
-                createdBy = {doc[1].data().createBy}/>
-            ))
-            }
-            {snap&&sortByEdit&&!editNew&&Object.entries(snap.docs)?.sort((a,b)=>(a[1].data().lastEdit - b[1].data().lastEdit))
+
+            {docs&&sortByEdit&&editNew&&docs.sort((a,b)=>(b.data().lastEdit - a.data().lastEdit))
             .map((doc)=>(
               <ProjDocRow 
-              key = {doc[1].id} 
-              id ={doc[1].id} 
-              fileName ={doc[1].data().fileName} 
-              lastEdit ={doc[1].data().lastEdit} 
-              date = {doc[1].data().time} 
-              createdBy = {doc[1].data().createBy}/>
+              key = {doc.id} 
+              id ={doc.id} 
+              fileName ={doc.data().fileName} 
+              lastEdit ={doc.data().lastEdit} 
+              date = {doc.data().time} 
+              createdBy = {doc.data().createBy}/>
             ))
             }
-            {snap&&sortByCreate&&createNew&&Object.entries(snap.docs)?.sort((a,b)=>(b[1].data().time - a[1].data().time))
+            {docs&&sortByEdit&&!editNew&&docs.sort((a,b)=>(a.data().lastEdit - b.data().lastEdit))
             .map((doc)=>(
-                <ProjDocRow 
-                key = {doc[1].id} 
-                id ={doc[1].id} 
-                fileName ={doc[1].data().fileName} 
-                lastEdit ={doc[1].data().lastEdit} 
-                date = {doc[1].data().time} 
-                createdBy = {doc[1].data().createBy}/>
+              <ProjDocRow 
+              key = {doc.id} 
+              id ={doc.id} 
+              fileName ={doc.data().fileName} 
+              lastEdit ={doc.data().lastEdit} 
+              date = {doc.data().time} 
+              createdBy = {doc.data().createBy}/>
             ))
             }
-            {snap&&sortByCreate&&!createNew&&Object.entries(snap.docs)?.sort((a,b)=>(a[1].data().time - b[1].data().time))
+            {docs&&sortByCreate&&createNew&&docs.sort((a,b)=>(b.data().time - a.data().time))
             .map((doc)=>(
-                <ProjDocRow 
-                key = {doc[1].id} 
-                id ={doc[1].id} 
-                fileName ={doc[1].data().fileName} 
-                lastEdit ={doc[1].data().lastEdit} 
-                date = {doc[1].data().time} 
-                createdBy = {doc[1].data().createBy}/>
+              <ProjDocRow 
+              key = {doc.id} 
+              id ={doc.id} 
+              fileName ={doc.data().fileName} 
+              lastEdit ={doc.data().lastEdit} 
+              date = {doc.data().time} 
+              createdBy = {doc.data().createBy}/>
             ))
             }
-            {snap&&sortByFileName &&fileNameNew&&Object.entries(snap.docs)?.sort((a,b)=>{if(a[1].data().fileName<b[1].data().fileName){return -1}else{return 1}})
+            {docs&&sortByCreate&&!createNew&&docs.sort((a,b)=>(a.data().time - b.data().time))
             .map((doc)=>(
-                <ProjDocRow 
-                key = {doc[1].id} 
-                id ={doc[1].id} 
-                fileName ={doc[1].data().fileName} 
-                lastEdit ={doc[1].data().lastEdit} 
-                date = {doc[1].data().time} 
-                createdBy = {doc[1].data().createBy}/>
+              <ProjDocRow 
+              key = {doc.id} 
+              id ={doc.id} 
+              fileName ={doc.data().fileName} 
+              lastEdit ={doc.data().lastEdit} 
+              date = {doc.data().time} 
+              createdBy = {doc.data().createBy}/>
             ))
             }
-            {snap&&sortByFileName &&!fileNameNew&&Object.entries(snap.docs)?.sort((a,b)=>{if(a[1].data().fileName>b[1].data().fileName){return -1}else{return 1}})
+            {docs&&sortByFileName &&fileNameNew&&docs.sort((a,b)=>{if(a.data().fileName<b.data().fileName){return -1}else{return 1}})
             .map((doc)=>(
-                <ProjDocRow 
-                key = {doc[1].id} 
-                id ={doc[1].id} 
-                fileName ={doc[1].data().fileName} 
-                lastEdit ={doc[1].data().lastEdit} 
-                date = {doc[1].data().time} 
-                createdBy = {doc[1].data().createBy}/>
+              <ProjDocRow 
+              key = {doc.id} 
+              id ={doc.id} 
+              fileName ={doc.data().fileName} 
+              lastEdit ={doc.data().lastEdit} 
+              date = {doc.data().time} 
+              createdBy = {doc.data().createBy}/>
             ))
             }
-            {snap&&sortByName&&nameNew&&Object.entries(snap.docs)?.sort((a,b)=>{
-                if(b[1].data().createBy>a[1].data().createBy){return -1}else{return 1}})
+            {docs&&sortByFileName &&!fileNameNew&&docs.sort((a,b)=>{if(a.data().fileName>b.data().fileName){return -1}else{return 1}})
             .map((doc)=>(
-                <ProjDocRow 
-                key = {doc[1].id} 
-                id ={doc[1].id} 
-                fileName ={doc[1].data().fileName} 
-                lastEdit ={doc[1].data().lastEdit} 
-                date = {doc[1].data().time} 
-                createdBy = {doc[1].data().createBy}/>
+              <ProjDocRow 
+              key = {doc.id} 
+              id ={doc.id} 
+              fileName ={doc.data().fileName} 
+              lastEdit ={doc.data().lastEdit} 
+              date = {doc.data().time} 
+              createdBy = {doc.data().createBy}/>
             ))
             }
-            {snap&&sortByName&&!nameNew&&Object.entries(snap.docs)?.sort((a,b)=>{
-                if(b[1].data().createBy<a[1].data().createBy){return -1}else{return 1}})
+            {docs&&sortByName&&nameNew&&docs.sort((a,b)=>{
+                if(b.data().createBy>a.data().createBy){return -1}else{return 1}})
             .map((doc)=>(
                 <ProjDocRow 
-                key = {doc[1].id} 
-                id ={doc[1].id} 
-                fileName ={doc[1].data().fileName} 
-                lastEdit ={doc[1].data().lastEdit} 
-                date = {doc[1].data().time} 
-                createdBy = {doc[1].data().createBy}/>
+                key = {doc.id} 
+                id ={doc.id} 
+                fileName ={doc.data().fileName} 
+                lastEdit ={doc.data().lastEdit} 
+                date = {doc.data().time} 
+                createdBy = {doc.data().createBy}/>
+            ))
+            }
+            {docs&&sortByName&&!nameNew&&docs.sort((a,b)=>{
+                if(b.data().createBy<a.data().createBy){return -1}else{return 1}})
+            .map((doc)=>(
+              <ProjDocRow 
+              key = {doc.id} 
+              id ={doc.id} 
+              fileName ={doc.data().fileName} 
+              lastEdit ={doc.data().lastEdit} 
+              date = {doc.data().time} 
+              createdBy = {doc.data().createBy}/>
             ))
             }
             </div>
