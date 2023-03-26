@@ -208,19 +208,19 @@ export default function ProjectDocs() {
             <div className='max-w-3xl mx-auto py-8 text-sm text-gray-700'>
                 <div className='flex items-center justify-between pb-5'>
                     <h2 onClick={onclickFileName}
-                    className='font-medium flex-grow cursor-pointer'>
+                    className='font-medium flex-grow hover:text-gray-400 cursor-pointer'>
                         My Documents
                     </h2>
                     <p onClick={onclickName}
-                    className='font-medium flex-grow hover:bg-gray-300 cursor-pointer'>
+                    className='font-medium flex-grow hover:text-gray-400 cursor-pointer'>
                         Created By
                     </p>
                     <p onClick={onclickEditDate}
-                    className='mr-12 hover:bg-gray-300 cursor-pointer'>
+                    className='mr-12 hover:text-gray-400 cursor-pointer'>
                         Last Edit
                     </p>
                     <p onClick={onclickCreate}
-                    className='mr-12 hover:bg-gray-300 cursor-pointer'>
+                    className='mr-12 hover:text-gray-400 cursor-pointer'>
                         Date Created
                     </p>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 mr-4">
