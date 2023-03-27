@@ -41,17 +41,21 @@ function Profile() {
   const [phone, setPhone] = useState("");
   const [des, setDes] = useState(undefined);
   const [edit, setEdit] = useState(false);
+  const [pO, setPO] = useState([]);
+  const [pJ, setPJ] = useState([]);
   const [projectsO, setProjectsO] = useState([]);
   const [projectsJ, setProjectsJ] = useState([]);
   function refreshPage() {
     window.location.reload(false);
   }
+  useEffect(()=>
+  {
+    setPO(userInfo.pOwned)
+    setPJ(userInfo.pJoined)
+    
+  },[])
 
   useEffect(() => {
-  
-    updateDoc(doc(db, "users", user.uid), {
-      currentPage:"Overview"
-    })
     if (user === null && userInfo === null) {
       Router.push("/account/login");
     } else if (userInfo === null) {
@@ -72,6 +76,9 @@ function Profile() {
         userInfo.skills !== undefined ? userInfo.skills.join(",") : []
       );
     }
+    updateDoc(doc(db, "users", user.uid), {
+      currentPage:"Overview"
+    })
   }, [user, userInfo]);
 
 
@@ -80,27 +87,14 @@ function Profile() {
   const profileImageURL =
     "https://cdn.britannica.com/79/114979-050-EA390E84/ruins-St-Andrews-Castle-Scotland.jpg";
 
-  function addPO(project){
-    console.log(project)
-    console.log(...projectsO)
-    console.log(projectsO!==[]) 
 
-    if(projectsO!==null)
-    {
-      var newList = [...projectsO,project]
-      setProjectsO(newList)
-    }else
-    {
-      setProjectsO([project])
-    }
-  }
   useEffect(() => {
 
-    var pOwned = userInfo.pOwned !==undefined? userInfo.pOwned : []
-      if(pOwned!==null)
+
+    var projects =[]
+      if(pO )
       {
-        pOwned.map((project)=>{
-          console.log(project)
+        pO.map((project)=>{
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
         var raw = JSON.stringify({
@@ -115,37 +109,29 @@ function Profile() {
           .then((response) => response.text())
           .then((result) => 
           {
-          addPO(JSON.parse(result))
-        }
+            projects.push(JSON.parse(result))
+            if(pO.length===projects.length)
+            {
+              setProjectsO(projects)
+            }
+          }
           )
           .catch((err) => {
             console.log(err);
           });
           
-      })
+        })
+        
       }
-
    
-  }, [userInfo]);
+  }, [pO]);
 
-  function addPJ(project){
-    if(projectsJ!==null)
-    {
-      var newList = [...projectsJ,project]
-      setProjectsJ(newList)
-    }else
-    {
-      setProjectsJ[project]
-    }
-  }
   useEffect(() => {
-    var pJoined = userInfo.pJoined !==undefined? userInfo.pJoined : []
-    console.log(userInfo)
-    console.log(pJoined)
-    if (pJoined!==null)
+     var projects =[]
+
+    if (pJ)
     {
-      console.log(pJoined)
-      pJoined.map((project)=>{
+      pJ.map((project)=>{
       var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
       var raw = JSON.stringify({
@@ -158,25 +144,34 @@ function Profile() {
       };
       fetch("http://localhost:3000/api/getProject", requestOptions)
         .then((response) => response.text())
-        .then((result) => addPJ(JSON.parse(result)))
+        .then((result) =>  
+        {
+          projects.push(JSON.parse(result))
+          if(pJ.length===projects.length)
+          {
+            setProjectsJ(projects)
+          }
+
+        })
         .catch((err) => {
           console.log(err);
         });
-        console.log(...projectsJ)
     })
     }
+
     
    
-  }, [userInfo]);
+  }, [pJ]);
   const handleEdit = () => {
     setEdit(true);
   };
 
   const handleSubmit = async (e) => {
+    console.log(newName==="")
     const skillsArr = newSkills!== undefined? newSkills.split(","): undefined
     var raw = JSON.stringify({
       userID: user.uid,
-      name: newName !== undefined ? newName : userInfo.name,
+      name: newName !== undefined&&newName.trim().length>0 ? newName.trim() : userInfo.name,
       rating: 100,
       skills: skillsArr!== undefined ? skillsArr : userInfo.name,
       pOwned: userInfo.pOwned !== undefined ? userInfo.pOwned : undefined,
@@ -193,6 +188,9 @@ function Profile() {
       headers: myHeaders,
       body: raw,
     };
+    updateDoc(doc(db, "users", user.uid), {
+      displayName: newName !== undefined&&newName.trim().length>0 ? newName.trim() : userInfo.name
+    })
 
     fetch("http://localhost:3000/api/addUser", requestOptions)
       .then((response) => response.text())
@@ -333,8 +331,17 @@ function Profile() {
                 {"Owned Projects"}
               </dt>
               <dd className='mt-1 text-sm text-gray-900'>
-              {projectsO.map((project)=>
-                        (<li >{project.name}</li>))}
+              {projectsO.length>0?projectsO.sort((a,b)=>
+              {
+                if(a.name<b.name)
+                {
+                  return -1
+                }else
+                {
+                  return 1
+                }
+              }).map((project)=>
+                        (<li key={project.pid}>{project.name}</li>)):"N/A"}
               </dd>
             </div>
 
@@ -343,8 +350,17 @@ function Profile() {
                 {"Joined Projects"}
               </dt>
               <dd className='mt-1 text-sm text-gray-900'>
-              {projectsJ.map((project)=>
-                        (<li >{project.name}</li>))}
+              {projectsJ.length>0?projectsJ.sort((a,b)=>
+              {
+                if(a.name<b.name)
+                {
+                  return -1
+                }else
+                {
+                  return 1
+                }
+              }).map((project)=>
+                        (<li key={project.pid}>{project.name}</li>)): "N/A"}
               </dd>
             </div>
 

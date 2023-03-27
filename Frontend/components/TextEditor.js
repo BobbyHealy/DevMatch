@@ -47,6 +47,14 @@ function TextEditor() {
             onEditorStateChange={onEditChange}
             toolbarClassName='flex sticky top-0 z-50 !justify-center mx-auto'
             editorClassName='mt-6  p-10 bg-white shadow-lg max-w-5xl mx-auto mb-12 border '
+            toolbar={{
+                options: [
+                    "inline",
+                    "list",
+                    "textAlign",
+                    "history",
+                  ],
+              }}
         />
     </div>
   )

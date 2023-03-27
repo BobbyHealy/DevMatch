@@ -1,4 +1,4 @@
-import {useState}from 'react'
+import {useState,useEffect}from 'react'
 import Router from "next/router";
 import {
     DocumentTextIcon,
@@ -11,20 +11,26 @@ import {
 function ProjDocRow({id, fileName, lastEdit, date, createdBy}) {
   const { pid } = Router.query;
   const  dateTime =lastEdit?.toDate().toLocaleString('en-US').split(",")
-  const  times= dateTime[1].split(":")
-  const  time= times[0]+":"+times[1] +" "+times[2].split(" ")[1]
+
+  const  [time,setTime]= useState()
   const today = new Date(Timestamp.now().toDate().toLocaleString('en-US').split(",")[0])
-  const diff =(lastEdit.toDate()- today)
+  const diff =(lastEdit?.toDate()- today)
   const [open ,setOpen] = useState(false)
 
-  function refreshPage() {
-    window.location.reload(false);
-  }
+
+
   const handleDelete = async () => {
     await deleteDoc(doc(db, "projDocs", pid,"docs",id));
-    refreshPage()
 
   };
+  useEffect(() => {
+    if(dateTime)
+    {
+      const  times = dateTime[1].split(":")
+      setTime(times[0]+":"+times[1]+" "+times[2].split(" ")[1])
+    }
+
+  }, [dateTime])
   
   return (
   
@@ -36,7 +42,7 @@ function ProjDocRow({id, fileName, lastEdit, date, createdBy}) {
           <p className='flex-grow pl-5 w-10 pr-10 truncate '>{fileName}</p>
           <p className='flex-grow pl-2 text-sm truncate'>{createdBy}</p>
           {diff>0&&<p className='mr-14 flex-col text-sm'>{time}</p>}
-          {diff<0&&<p className='mr-12 flex-col text-sm'>{dateTime[0]}</p>}
+          {diff<0&&<p className='mr-12 flex-col text-sm'>{dateTime[0]?dateTime[0]:null}</p>}
 
           <p className='text-sm mr-4'>{date?.toDate().toLocaleString('en-US').split(",")[0]}</p>
    

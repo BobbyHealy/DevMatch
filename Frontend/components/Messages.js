@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState} from "react";
+import { useEffect, useState} from "react";
 
 import {
   onSnapshot,
@@ -7,37 +7,9 @@ import {
 
 } from "firebase/firestore";
 import { db } from "@/config/firebase";
-import { useAuth } from "@/context/AuthContext";
 import Message from './Message'
-export default function Messages() {
+export default function Messages({DMID}) {
     const [messages, setMessages] = useState([]);
-    const { user, userInfo} = useAuth();
-    const [receiver, setReceiver] = useState(null);
-    const [DMID, setDMID] = useState()
-
-    useEffect( () => {
-      const getChat = () => {
-        const unsub = onSnapshot(doc(db, "users", user.uid), (doc) => {
-          if (doc.data().currentChat)
-          {
-            setReceiver(doc.data().currentChat.uid);
-          }
-        });
-  
-        return () => {
-          unsub();
-        };
-      };
-      user.uid && getChat()
-    }, [user.uid]);
-
-    useEffect(() => {
-        const dmID =  user.uid > receiver
-          ? user.uid + receiver
-          : receiver + user.uid;
-        setDMID(dmID);
-        
-    }, [receiver]);
 
     useEffect(() => {
       if(DMID){
@@ -53,7 +25,7 @@ export default function Messages() {
     }, [DMID]);
   return (
     
-    <div className='bg-orange-500 text-gray-400 p-2 overflow-scroll h-[calc(100vh-231px)] '>
+    <div className='bg-zinc-700 text-gray-400 p-2 overflow-scroll h-[calc(100vh-110px)] '>
         {messages.map((m) => (
         <Message message={m} key={m.id} />
         ))}

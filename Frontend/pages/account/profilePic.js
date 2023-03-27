@@ -5,6 +5,8 @@ import { useEffect } from "react";
 import { storage } from "@/config/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useAuth } from "@/context/AuthContext";
+import {doc,updateDoc,} from "firebase/firestore";
+import { db } from "@/config/firebase";
 
 
 function profilePic() {
@@ -41,6 +43,9 @@ function profilePic() {
                     headers: myHeaders,
                     body: raw,
                   };
+                  updateDoc(doc(db, "users", user.uid), {
+                    photoURL: url
+                  })
               
                   fetch("http://localhost:3000/api/addUser", requestOptions)
                     .then((response) => response.text())

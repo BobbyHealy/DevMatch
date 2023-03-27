@@ -3,7 +3,7 @@ import GC from "./GC";
 import { useAuth } from "@/context/AuthContext";
 import {doc,updateDoc,} from "firebase/firestore";
 import { db } from "@/config/firebase";
-export default function GroupChat() {
+export default function GroupChat({pid,project}) {
   const{user}= useAuth();
   useEffect(() => {
     if(user.uid)
@@ -15,7 +15,7 @@ export default function GroupChat() {
   }, [])
   return (
     <div>
-        <GC/>
+        <GC pid={pid} project={project}/>
     </div>
   )
 }

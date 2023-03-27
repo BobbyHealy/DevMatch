@@ -37,7 +37,7 @@ export default function GroupChatInput({channel}) {
                 messages: arrayUnion(
                 {
                   id: msgID,
-                  text,
+                  text: text.trim(),
                   sender: userInfo.name,
                   photoURL: userInfo.profilePic,
                   date: Timestamp.now(),
@@ -46,14 +46,14 @@ export default function GroupChatInput({channel}) {
               });
             });
           })
-        } else if (text)
+        } else if (text.trim())
         {
           await updateDoc(doc(db, "GCs", pid,"channels", channel), 
           {
             messages: arrayUnion(
             {
                 id: msgID,
-                text,
+                text: text.trim(),
                 sender: userInfo.name,
                 photoURL: userInfo.profilePic,
                 date: Timestamp.now(),

@@ -1,34 +1,29 @@
 import {useState,useEffect}from 'react'
 import { Editor } from 'react-draft-wysiwyg';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import Router from 'next/router';
 import { useAuth } from '@/context/AuthContext';
 import { db } from '@/config/firebase';
-import { updateDoc, doc,query, collection,getDocs, serverTimestamp} from 'firebase/firestore';
+import { 
+    updateDoc, 
+    doc,
+    query, 
+    collection,
+    getDocs, 
+    serverTimestamp, 
+    onSnapshot
+} from 'firebase/firestore';
 import {EditorState, convertFromRaw, convertToRaw } from 'draft-js';
 
-function ProjTextEditor() {
-    const[ids, setIds]= useState(null);
-    const[pid, setPid]= useState(null);
-    const[docId, setDocId] = useState(null);
-    useEffect(()=>{
-        setIds(Router.query.id.split("DocId="))
+function ProjTextEditor({pid,docId}) {
 
-    },[])
-
-    useEffect(()=>{
-        if(ids)
-        {
-            setPid(ids[0])
-            setDocId(ids[1])
-        }
-    },[ids])
     const [state,setState] =useState(EditorState.createEmpty())
+    const {userInfo} = useAuth()
     const onEditChange =async (state) =>{
         setState(state)
         if(docId)
         {
             await updateDoc(doc(db, "projDocs", pid,"docs",docId), {
+                lastEditBy: userInfo.name,
                 lastEdit: serverTimestamp(),
                 state: convertToRaw(state.getCurrentContent())
               });
@@ -41,7 +36,7 @@ function ProjTextEditor() {
           );
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc)=>{
-            if(doc.id === ids[1])
+            if(doc.id === docId)
             {
 
                 if(doc.data().state)
@@ -49,8 +44,29 @@ function ProjTextEditor() {
                     setState(EditorState.createWithContent(
                         convertFromRaw(doc.data().state)
                     ))
+
+                    
                 }
+
             }})
+        await onSnapshot(doc(db, "projDocs", pid,"docs",docId), (doc) => {
+
+            if(doc.data())
+            {
+
+                if(doc.data().lastEditBy!==userInfo.name)
+                {
+                    setState(EditorState.createWithContent(
+                        convertFromRaw(doc.data().state)
+                    ))
+    
+                }
+            }
+
+        })
+    
+
+       
     }
     useEffect( () => {
 
@@ -65,7 +81,16 @@ function ProjTextEditor() {
             onEditorStateChange={onEditChange}
             toolbarClassName='flex sticky top-0 z-50 !justify-center mx-auto'
             editorClassName='mt-6  p-10 bg-white shadow-lg max-w-5xl mx-auto mb-12 border '
+            toolbar={{
+                options: [
+                    "inline",
+                    "list",
+                    "textAlign",
+                    "history",
+                  ],
+              }}
         />
+        
     </div>
   )
 }
