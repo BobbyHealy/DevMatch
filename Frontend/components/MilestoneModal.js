@@ -1,5 +1,5 @@
 
-const ProjectModal = ({ isVisible, onClose, children }) => {
+const MilestoneModal = ({ isVisible, onClose, children }) => {
     if (!isVisible) return null;
 
 const handleClose = (e) => {
@@ -8,7 +8,7 @@ const handleClose = (e) => {
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex justify-center items-center" 
-        id="wrapper" onClick={handleClose}>
+        id="wrap" onClick={handleClose}>
             <div className="w-[600px] flex flex-col">
                 <div className="bg-white p-2 rounded">{children}</div>
             </div>
@@ -16,4 +16,4 @@ const handleClose = (e) => {
     );
 };
 
-export default ProjectModal;
+export default MilestoneModal;

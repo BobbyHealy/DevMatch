@@ -2,6 +2,7 @@ import { Fragment, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import Router from "next/router";
 import Scrumboard from "@/components/Scrumboard";
+import Milestone from "@/components/Milestone";
 import { useAuth } from "@/context/AuthContext";
 import ProjectDocs from "@/components/ProjectDocs";
 import GroupChat from "@/components/GroupChat";
@@ -11,7 +12,9 @@ import { db } from "@/config/firebase";
 
 import {
   Bars3Icon,
-  DocumentIcon,
+  ClipboardIcon,
+  CalendarIcon,
+  DocumentDuplicateIcon,
   InboxIcon,
   HomeIcon,
   XMarkIcon,
@@ -24,10 +27,9 @@ import Explore from "@/components/Explore";
 const navigation = [
   { name: "Overview", href: "#Overview", icon: HomeIcon, current: true },
   { name: "GroupChat", href: "#GC", icon: InboxIcon, current: false },
-  { name: "Documents", href: "#Docs", icon: DocumentIcon, current: false },
-  { name: "Explore", href: "#Explore", icon: UserGroupIcon, current: false },
-  // { name: "ScrumBoard", href: "#Scrum", icon: ClipboardIcon, current: false },
-  
+  { name: "Documents", href: "#Docs", icon: DocumentDuplicateIcon, current: false },
+  { name: "ScrumBoard", href: "#Scrum", icon: ClipboardIcon, current: false },
+  { name: "Milestones", href: "#MS", icon: CalendarIcon, current: false },
 ];
 
 function classNames(...classes) {
@@ -293,10 +295,10 @@ export default function ProjectSpace() {
             ) : section === "#Docs" ? (
               <ProjectDocs pid={pid}/>
             ) : section === "#Scrum" ? (
-              <Scrumboard />
-            ) : section === "#Explore" ? (
-              <Explore project={project}/>
-            ) : (
+                <Scrumboard/>
+            ) : section === "#MS" ? (
+                <Milestone/>
+            )  : (
               <></>
             )}
           </main>
