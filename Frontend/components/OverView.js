@@ -8,7 +8,7 @@ import {doc,updateDoc,} from "firebase/firestore";
 import { db } from "@/config/firebase";
 
 
-export default function Overview() {
+export default function Overview({pid, projectD}) {
   const project = {
     name: "DevMatch",
     owner: "John Doe",
@@ -26,15 +26,11 @@ export default function Overview() {
   const[bannerURL, setBannerURL] = useState(null)
   const [newSkills, setNewSkills] = useState();
   const [edit, setEdit] = useState(false);
-  const [name, setName] = useState("");
-  const [projectD, setProject] = useState("");
-  const router = useRouter();
-  const { pid } = router.query;
+  const [name, setName] = useState(""); 
   const{user}=useAuth();
   const [owners, setOwners]=useState([])
   const [load, setload] =useState(false)
   const [members, setMembers]=useState([])
-  const [otherMembers, setOtherMembers] = useState([])
   useEffect(() => {
     if(user.uid)
     {
@@ -56,85 +52,7 @@ export default function Overview() {
   }, [user.uid])
 
 
-  function addOwner(name){
-        
-    if(owners!==null)
-    {
-        var newList = [...owners,name]
-        setOwners(newList)
-    }else
-    {
-      setOwners([name])
-    }
-  }
-  function addOtherMember(name){
-        
-    if(otherMembers!==null)
-    {
-        var newList = [...otherMembers,name]
-        setOtherMembers(newList)
-    }else
-    {
-      setOtherMembers([name])
-    }
-  }
-  function addMember(name){
-        
-    if(members!==null)
-    {
-        var newList = [...members,name]
-        setMembers(newList)
-    }else
-    {
-      setMembers([name])
-    }
-  }
-  function getOwner(id){
-    var myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    var raw = JSON.stringify({
-        userID: id,
-    });
-    var requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-    };
-    fetch("http://localhost:3000/api/getUser", requestOptions)
-      .then((response) => response.text())
-      .then((result) => 
-      {
-        addOwner(JSON.parse(result).name)
-    }
-      )
-      .catch((err) => {
-        console.log(err);
-      });
 
-}
-function getMember(id){
-  var myHeaders = new Headers();
-  myHeaders.append("Content-Type", "application/json");
-  var raw = JSON.stringify({
-      userID: id,
-  });
-  var requestOptions = {
-    method: "POST",
-    headers: myHeaders,
-    body: raw,
-  };
-  fetch("http://localhost:3000/api/getUser", requestOptions)
-    .then((response) => response.text())
-    .then((result) => 
-    {
-      addMember(JSON.parse(result).name)
-  }
-    )
-    .catch((err) => {
-      console.log(err);
-    });
-
-}
   useEffect(() => {
       var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
@@ -154,26 +72,68 @@ function getMember(id){
         });
   }, []);
   useEffect(() => {
-    if(!load&&projectD)
-    {  
-      projectD.owners.map((owner)=>{getOwner(owner)})
-      projectD.tmembers.map((mem)=>{getMember(mem)})
+    if(!load&&projectD.owners)
+    { 
       setload(true)
+      var owners =[]
+      var members =[]
+      projectD.owners.map((owner)=>{
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        var raw = JSON.stringify({
+            userID: owner,
+        });
+        var requestOptions = {
+          method: "POST",
+          headers: myHeaders,
+          body: raw,
+        };
+        fetch("http://localhost:3000/api/getUser", requestOptions)
+          .then((response) => response.text())
+          .then((result) => 
+          {
+            owners.push(JSON.parse(result).name)
+            if(projectD.owners.length===owners.length)
+            {
+              setOwners(owners)
+            }
+          }
+          )
+          .catch((err) => {
+            console.log(err);
+          });
+      })
+      projectD.tmembers.map((mem)=>{
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        var raw = JSON.stringify({
+            userID: mem,
+        });
+        var requestOptions = {
+          method: "POST",
+          headers: myHeaders,
+          body: raw,
+        };
+        fetch("http://localhost:3000/api/getUser", requestOptions)
+          .then((response) => response.text())
+          .then((result) => 
+          {
+            members.push(JSON.parse(result).name)
+            if(projectD.tmembers.length===members.length)
+            {
+              setMembers(members)
+            }
+          }
+          )
+          .catch((err) => {
+            console.log(err);
+          });
+      })
+
     }
 
   }, [projectD]);
-  useEffect(() => {
-    if(load)
-    {
-      members.map((mem)=>{
-        console.log(mem);
-        if(!mem.includes(owners))
-        {
-          addOtherMember(mem)
-        }})
-      console.log(projectD)
-    }
-  }, [load])
+
 
   useEffect(() => {
     setNewSkills(
@@ -462,10 +422,16 @@ useEffect(() => {
                     </div>
                     {!edit && (
                       <div className='mt-6 hidden min-w-0 flex-1 sm:block 2xl:hidden'>
+                        <div className="flex">
                         <h1 className='truncate text-2xl font-bold text-gray-900'>
                           {projectD.name}
                         </h1>
+                        {projectD.owners?.includes(user.uid)&&<span className='pl-10 p-2 hover:text-gray-500 cursor-pointer' onClick={handleEdit}>
+                            Edit Info
+                        </span>}
+                        </div>
                       </div>
+                      
                     )}
                     {edit && (
                       <div className='mt-6 hidden min-w-0 flex-1 sm:block 2xl:hidden'>
@@ -490,17 +456,16 @@ useEffect(() => {
                 </div>
                 {!edit && (
                   <div className='mx-auto mt-6 max-w-5xl px-4 sm:px-6 lg:px-8'>
-                    <span className='' onClick={handleEdit}>
-                      {" "}
-                      Edit Info
-                    </span>
+
                     <dl className='grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2'>
                       <div className='sm:col-span-1'>
                         <dt className='text-sm font-medium text-gray-500'>
                           Owner(s)
                         </dt>
                         <dd className='mt-1 text-sm text-gray-900'>
-                        {owners!==null? owners.map((owner)=><p>{owner}</p>) : "N/a"}
+                        {owners.length>0? owners.sort((a,b)=>
+                        { if(a<b){ return -1}else{return 1}
+                        }).map((owner)=><p>{owner}</p>) : <p>N/a</p>}
                         </dd>
                       </div>
                       <div className='sm:col-span-1'>
@@ -508,7 +473,14 @@ useEffect(() => {
                           Members
                         </dt>
                         <dd className='mt-1 text-sm text-gray-900'>
-                        {otherMembers.length!==0? otherMembers.map((mem)=><p>{mem}</p>) : "N/a"} 
+                        {
+                          members.length>1? 
+                          members.sort((a,b)=>
+                          { if(a<b){ return -1}else{return 1}
+                          }).map((mem)=>
+                          (!owners.includes(mem)&&<p key={mem}>{mem}</p>)) 
+                          : <p>N/a</p>
+                        }
                         </dd>
                       </div>
                       <div className='sm:col-span-1'>
@@ -519,7 +491,7 @@ useEffect(() => {
                         {projectD.type? projectD.type: "N/a"} 
                         </dd>
                       </div>
-                      <div className='sm:col-span-2'>
+                      <div className='sm:col-span-1'>
                         <dt className='text-sm font-medium text-gray-500'>
                           About
                         </dt>
@@ -530,19 +502,25 @@ useEffect(() => {
                           }}
                         />
                       </div>
-                      <div className='sm:col-span-2'>
+                      <div className='sm:col-span-1'>
                         <dt className='text-sm font-medium text-gray-500'>
                           Require Skill
                         </dt>
                         <dd className='mt-1 max-w-prose space-y-5 text-sm text-gray-900'>
-                          {projectD.skills !== null
-                            ? projectD.skills !== undefined
-                              ? projectD.skills.join(", ")
-                              : "N/a"
-                            : "N/a"}
+                        {projectD.skills !== undefined&&projectD.skills[0].length>1
+                            ? projectD.skills.join(", ")
+                            : "N/a"
+                            }
                         </dd>
                       </div>
+                      <div className='sm:col-span-1'>
+                          <dt >
+                          <span className='text-red-600  cursor-pointer hover:text-red-200'>Leave Project</span>
+                          </dt>
+                        </div>
                     </dl>
+                
+                    
                   </div>
                 )}
                 {edit && (
@@ -569,7 +547,9 @@ useEffect(() => {
                           Owner(s)
                         </dt>
                         <dd className='mt-1 text-sm text-gray-900'>
-                          {project.owner}
+                        {owners.length>0? owners.sort((a,b)=>
+                        { if(a<b){ return -1}else{return 1}
+                        }).map((owner)=><p>{owner}</p>) : <p>N/a</p>}
                         </dd>
                         <button className=' rounded-md border bg-white text-black my-1 py-1 px-4 text-sm shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'>
                           {" "}
@@ -581,7 +561,14 @@ useEffect(() => {
                           Members
                         </dt>
                         <dd className='mt-1 text-sm text-gray-900'>
-                        {otherMembers.length!==0? otherMembers.map((mem)=><p>{mem}</p>) : "N/a"} 
+                        {
+                          members.length>1? 
+                          members.sort((a,b)=>
+                          { if(a<b){ return -1}else{return 1}
+                          }).map((mem)=>
+                          (!owners.includes(mem)&&<p key={mem}>{mem}</p>)) 
+                          : <p>N/a</p>
+                        }
                         </dd>
                       </div>
                       <div className='sm:col-span-1'>
@@ -592,7 +579,7 @@ useEffect(() => {
                         {projectD.type} 
                         </dd>
                       </div>
-                      <div className='sm:col-span-2'>
+                      <div className='sm:col-span-1'>
                         <dt className='text-sm font-medium text-gray-500'>
                           About
                         </dt>
@@ -606,7 +593,7 @@ useEffect(() => {
                           />
                         </dd>
                       </div>
-                      <div className='sm:col-span-2'>
+                      <div className='sm:col-span-1'>
                         <dt className='text-sm font-medium text-gray-500'>
                           Require Skill
                         </dt>
@@ -619,6 +606,11 @@ useEffect(() => {
                             onChange={(e) => setNewSkills(e.target.value)}
                           />
                         </dd>
+                      </div>
+                      <div className='sm:col-span-1'>
+                        <dt>
+                      <span className=' text-red-600 cursor-pointer hover:text-red-900'>Delete Project</span>
+                          </dt>
                       </div>
                     </dl>
                   </div>

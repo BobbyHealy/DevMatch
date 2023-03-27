@@ -84,6 +84,13 @@ func main() {
 	router.DELETE("/removeUser", removeUser)
 	router.DELETE("/removeProject", removeProject)
 
+	router.DELETE("/removeProjectComplete", removeProjectAll)
+	router.DELETE("/removeUserComplete", removeUserAll)
+
+	router.POST("/updateProjectParts", updateProjectParts)
+	router.POST("/removeUserFromProject", removeUserFromProject)
+	router.POST("/removeProjectFromUser", removeProjectFromUser)
+
 	router.Run("localhost:8080")
 
 }
@@ -518,6 +525,82 @@ func updateProjectHelp(proj project) {
 
 }
 
+func interfaceToStringSplice(in interface{}) []string {
+	interfaceH := in.([]interface{})
+	splice := make([]string, len(interfaceH))
+	for i, v := range interfaceH {
+		splice[i] = v.(string)
+	}
+	return splice
+}
+
+/*
+ * Supports updating project when given only parts of the project
+ */
+func updateProjectParts(c *gin.Context) {
+	var newProj project
+	fmt.Println(c)
+
+	projFields := []string{"owners", "name", "tmembers", "skills", "projectProfile", "projectBannerPic", "projectDes", "type"}
+	// projFieldsPair := []string{"OwnersID",
+	// 	"ProjectName",
+	// 	"MembersID",
+	// 	"NeededSkills",
+	// 	"ProjectProfilePic",
+	// 	"ProjectBannerPic",
+	// 	"ProjectDescription",
+	// 	"ProjectType"}
+	// if err := c.BindJSON(&newProj); err != nil {
+	// 	return
+	// }
+	// updateProjectHelp(newProj)
+
+	holdMap := make(map[string]interface{})
+	if err := c.BindJSON(&holdMap); err != nil {
+		return
+	}
+	if holdMap["pid"] == nil {
+		fmt.Println("need pid")
+		return
+	}
+	pid := fmt.Sprintf("%v", holdMap["pid"])
+
+	newProj = getProjectFromID(pid)
+
+	for i := 0; i < len(projFields); i++ {
+		hold := holdMap[projFields[i]]
+		if hold != nil { //if exists in the
+			switch projFields[i] { //please don't judge me
+			case projFields[0]:
+				newProj.OwnersID = interfaceToStringSplice(hold)
+				fmt.Println(interfaceToStringSplice(hold))
+			case projFields[1]:
+				newProj.ProjectName = fmt.Sprintf("%v", hold)
+			case projFields[2]:
+				newProj.MembersID = interfaceToStringSplice(hold)
+			case projFields[3]:
+				newProj.NeededSkills = interfaceToStringSplice(hold)
+			case projFields[4]:
+				newProj.ProjectProfilePic = fmt.Sprintf("%v", hold)
+			case projFields[5]:
+				newProj.ProjectBannerPic = fmt.Sprintf("%v", hold)
+			case projFields[6]:
+				newProj.ProjectDescription = fmt.Sprintf("%v", hold)
+			case projFields[7]:
+				newProj.ProjectType = fmt.Sprintf("%v", hold)
+
+			}
+		}
+	}
+
+	// if err := json.Unmarshal([]byte(c), &personMap); err != nil {
+	// 		panic(err)
+	// }
+	//fmt.Println(holdMap["non"])
+	updateProjectHelp(newProj)
+	c.IndentedJSON(http.StatusCreated, newProj)
+}
+
 func updateUserHelp(us user) {
 
 	// Call BindJSON to bind the received JSON to
@@ -530,4 +613,174 @@ func updateUserHelp(us user) {
 		log.Fatal(err)
 	}
 
+}
+
+func removeProjHelper(pid string) {
+
+	//path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
+
+	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Projects/" + pid
+	f := firego.New(path, nil)
+	if err := f.Remove(); err != nil {
+		log.Fatal(err)
+	}
+}
+func removeUserHelper(uid string) {
+
+	//path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
+	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Users/" + uid
+	f := firego.New(path, nil)
+	if err := f.Remove(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func removeProjFromUser(uid string, pid string) {
+
+	var us user = getUserFromID(uid)
+	if us.UserID == "" {
+		return //invalid
+	}
+	var owned []string = us.ProjectOwned
+	var joined []string = us.ProjectJoined
+	var owned2 []string = make([]string, 0)
+	var joined2 []string = make([]string, 0)
+
+	for i := 0; i < len(owned); i++ {
+		if !(owned[i] == pid) {
+			owned2 = append(owned2, owned[i])
+		}
+	}
+	for i := 0; i < len(joined); i++ {
+		if !(joined[i] == pid) {
+			joined2 = append(joined2, joined[i])
+		}
+	}
+	us.ProjectOwned = owned2
+	us.ProjectJoined = joined2
+	updateUserHelp(us)
+
+}
+
+func removeUserFromProj(pid string, uid string) {
+
+	var proj project = getProjectFromID(pid)
+	if proj.ProjectID == "" {
+		return
+	}
+	var mems []string = proj.MembersID
+	var owns []string = proj.OwnersID
+	var mems2 []string = make([]string, 0)
+	var owns2 []string = make([]string, 0)
+
+	for i := 0; i < len(mems); i++ {
+		if !(mems[i] == uid) {
+			mems2 = append(mems2, mems[i])
+		}
+	}
+	for i := 0; i < len(owns); i++ {
+		if !(owns[i] == uid) {
+			owns2 = append(owns2, owns[i])
+		}
+	}
+	proj.MembersID = mems2
+	proj.OwnersID = owns2
+	updateProjectHelp(proj)
+
+}
+
+func removeProjectFromUser(c *gin.Context) {
+	pid, exists := c.GetQuery("pid")
+	if !exists {
+		fmt.Println("Request with pid")
+		return
+	} else {
+		fmt.Println(pid)
+	}
+	uid, exists := c.GetQuery("uid")
+	if !exists {
+		fmt.Println("Request with pid")
+		return
+	} else {
+		fmt.Println(pid)
+	}
+
+	removeProjFromUser(uid, pid)
+}
+
+func removeUserFromProject(c *gin.Context) {
+	pid, exists := c.GetQuery("pid")
+	if !exists {
+		fmt.Println("Request with pid")
+		return
+	} else {
+		fmt.Println(pid)
+	}
+	uid, exists := c.GetQuery("uid")
+	if !exists {
+		fmt.Println("Request with pid")
+		return
+	} else {
+		fmt.Println(pid)
+	}
+
+	removeUserFromProj(pid, uid)
+}
+
+/*
+ * Removes project from all associated users
+ *
+ */
+func removeProjectAll(c *gin.Context) {
+	pid, exists := c.GetQuery("pid")
+	if !exists {
+		fmt.Println("Request with key")
+		return
+	} else {
+		fmt.Println(pid)
+	}
+
+	var proj project = getProjectFromID(pid)
+	var mems []string = proj.MembersID
+	var owns []string = proj.OwnersID
+
+	for i := 0; i < len(mems); i++ {
+		fmt.Println(mems[i])
+		removeProjFromUser(mems[i], pid)
+	}
+	for i := 0; i < len(owns); i++ {
+		fmt.Println(owns[i])
+		removeProjFromUser(owns[i], pid)
+	}
+
+	removeProjHelper(pid)
+}
+
+/*
+ * Removes project from all associated users
+ *
+ */
+func removeUserAll(c *gin.Context) {
+	uid, exists := c.GetQuery("uid")
+	if !exists {
+		fmt.Println("Request with key")
+		return
+	} else {
+		fmt.Println(uid)
+	}
+
+	var us user = getUserFromID(uid)
+	var joined []string = us.ProjectJoined
+	var owned []string = us.ProjectOwned
+
+	for i := 0; i < len(joined); i++ {
+		fmt.Println(joined[i])
+		removeUserFromProj(joined[i], uid)
+	}
+	for i := 0; i < len(owned); i++ {
+		fmt.Println(owned[i])
+		removeUserFromProj(owned[i], uid)
+	}
+
+	removeUserHelper(uid)
 }

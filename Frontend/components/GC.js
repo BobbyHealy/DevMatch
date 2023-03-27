@@ -15,11 +15,9 @@ import { useAuth } from '@/context/AuthContext';
 
 
 
-export default function GC() {
+export default function GC({pid,project}) {
   
   const router = useRouter();
-  const { pid } = router.query;
-  const [project, setProject] = useState("");
   const [edit, setEdit] = useState(false);
   const [expend, setExpend] = useState(false);
   const [title, setTitle] = useState("");
@@ -28,23 +26,6 @@ export default function GC() {
 
   const [channelName, setChannel]=useState("main")
   const [channelID, setID]=useState("main")
-  useEffect(() => {
-    var myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    var raw = JSON.stringify({
-      pid: pid,
-    });
-    var requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-    };
-    fetch("http://localhost:3000/api/getProject", requestOptions)
-      .then((response) => response.text())
-      .then((result) => setProject(JSON.parse(result)))
-      .catch((err) => {
-      });
-  }, []);
 
   useEffect(() => {
     if(pid){
@@ -103,9 +84,9 @@ const handleSend = async () =>
                   {!expend&&<span className='flex-grow  pl-1 w-5 text-gray-500 cursor-pointer hover:text-white ' onClick={()=>{setExpend(true); setEdit(false); setTitle("")}}>{">"}</span>}
                   {expend&&<span className='flex-grow  pl-1 w-5 text-gray-500 cursor-pointer hover:text-white ' onClick={()=>{setExpend(false); setEdit(false);setTitle("")}}>v</span>}
                   <span onClick={()=>{setEdit(false); setTitle("")}} className='flex-grow pl-2 w-10 pr-2 text-gray-500 '>CHANNELS</span>
-                  <span
+                  {project.owners?.includes(userInfo.userID)&&<span
                     onClick={()=>setEdit(true)}
-                    className='flex-col text-gray-400 hover:text-white cursor-pointer'>+</span>
+                    className='flex-col text-gray-400 hover:text-white cursor-pointer'>+</span>}
                   {edit&&<div className='p-2 pl-5 pr-5'>
                     <input type="text" 
                       placeholder='new-channel'  
