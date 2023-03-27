@@ -53,9 +53,7 @@ function ProjTextEditor({pid,docId}) {
 
             if(doc.data())
             {
-                setOState(EditorState.createWithContent(
-                    convertFromRaw(doc.data().state)
-                ))
+
                 if(doc.data().lastEditBy!==userInfo.name)
                 {
                     setState(EditorState.createWithContent(
