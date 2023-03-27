@@ -28,8 +28,9 @@ const navigation = [
   { name: "Overview", href: "#Overview", icon: HomeIcon, current: true },
   { name: "GroupChat", href: "#GC", icon: InboxIcon, current: false },
   { name: "Documents", href: "#Docs", icon: DocumentDuplicateIcon, current: false },
-  { name: "ScrumBoard", href: "#Scrum", icon: ClipboardIcon, current: false },
+  // { name: "ScrumBoard", href: "#Scrum", icon: ClipboardIcon, current: false },
   { name: "Milestones", href: "#MS", icon: CalendarIcon, current: false },
+  { name: "Explore", href: "#Explore", icon: UserGroupIcon, current: false },
 ];
 
 function classNames(...classes) {
@@ -295,7 +296,9 @@ export default function ProjectSpace() {
             ) : section === "#Docs" ? (
               <ProjectDocs pid={pid}/>
             ) : section === "#Scrum" ? (
-                <Scrumboard/>
+              <Scrumboard />
+            ) : section === "#Explore" ? (
+                <Explore project={project}/>
             ) : section === "#MS" ? (
                 <Milestone/>
             )  : (
