@@ -85,6 +85,7 @@ func main() {
 	router.DELETE("/removeUser", removeUser)
 	router.DELETE("/removeProject", removeProject)
 	router.POST("/addMilestone", addMilestone)
+	router.GET("/getMilestones", getMilestones)
 
 	router.DELETE("/removeProjectComplete", removeProjectAll)
 	router.DELETE("/removeUserComplete", removeUserAll)
@@ -617,7 +618,6 @@ func updateUserHelp(us user) {
 
 }
 
-
 func removeProjHelper(pid string) {
 
 	//path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
@@ -700,9 +700,6 @@ func removeProjectFromUser(c *gin.Context) {
 	} else {
 		fmt.Println(pid)
 	}
-
-
-
 
 	uid, exists := c.GetQuery("uid")
 	if !exists {
@@ -808,41 +805,41 @@ func addMilestone(c *gin.Context) {
 		c.IndentedJSON(http.StatusBadRequest, nil)
 		return
 	} else {
- 		fmt.Println(milestone)
- 	}
-  
- 	var proj project = getProjectFromID(pid)
- 	if proj.ProjectID == "" {
- 		c.IndentedJSON(http.StatusBadRequest, nil)
- 		return
+		fmt.Println(milestone)
+	}
+
+	var proj project = getProjectFromID(pid)
+	if proj.ProjectID == "" {
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
 	}
 	proj.Milestones = append(proj.Milestones, milestone)
 	updateProjectHelp(proj)
 }
 
 func getMilestones(c *gin.Context) {
- 	pid, exists := c.GetQuery("pid")
- 	if !exists {
- 		fmt.Println("Request with key")
- 		c.IndentedJSON(http.StatusBadRequest, nil)
- 		return
- 	} else {
- 		fmt.Println(pid)
- 	}
- 	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Projects/" + pid
- 	f := firego.New(path, nil)
- 	var v project
- 	if err := f.Value(&v); err != nil {
- 		log.Fatal(err)
- 	}
- 	fmt.Printf("%+v\n", v)
+	pid, exists := c.GetQuery("pid")
+	if !exists {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	} else {
+		fmt.Println(pid)
+	}
+	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Projects/" + pid
+	f := firego.New(path, nil)
+	var v project
+	if err := f.Value(&v); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%+v\n", v)
 
- 	var milestones []string
- 	for j := 0; j < len(v.Milestones); j++ {
- 		milestone := v.Milestones[j]
- 		milestones = append(milestones, milestone)
- 	}
+	var milestones []string
+	for j := 0; j < len(v.Milestones); j++ {
+		milestone := v.Milestones[j]
+		milestones = append(milestones, milestone)
+	}
 
- 	c.IndentedJSON(http.StatusOK, []interface{}{milestones})
+	c.IndentedJSON(http.StatusOK, []interface{}{milestones})
 
- }
+}
