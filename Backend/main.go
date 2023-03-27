@@ -71,12 +71,12 @@ func main() {
 	router.POST("/updateProject", updateProject)
 	router.POST("/search", search)
 
-	router.POST("/addDM", postDirectMessage)
-	router.POST("/updateDM", updateDirectMessage)
-	router.GET("/directmessages", getDirectMessage)
-	router.POST("/addGC", postGroupChat)
-	router.POST("/updateGC", updateGroupChat)
-	router.GET("/groupchats", getGroupChat)
+	//router.POST("/addDM", postDirectMessage)
+	//router.POST("/updateDM", updateDirectMessage)
+	//router.GET("/directmessages", getDirectMessage)
+	//router.POST("/addGC", postGroupChat)
+	//router.POST("/updateGC", updateGroupChat)
+	//router.GET("/groupchats", getGroupChat)
 
 	router.GET("/prettyProject", getPrettyProject)
 	router.GET("/prettyUser", getPrettyUser)
@@ -171,13 +171,18 @@ func getUsers(c *gin.Context) {
 		fmt.Println(uid)
 	}
 	//path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
-	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Users/" + uid
+	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Users/"
 	f := firego.New(path, nil)
-	var v user
+	//interfaceToStringSplice(in interface{})
+	var v interface{}
+	//var b = interfaceToStringSplice(v)
 	if err := f.Value(&v); err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("%+v\n", v)
+	var b []string = interfaceToStringSplice(v)
+	b = append(b, "a")
+	//fmt.Printf("%s\n", b[1])
+	//fmt.Printf("%+v\n", v)
 	c.IndentedJSON(http.StatusOK, v)
 }
 
@@ -283,7 +288,7 @@ func search(c *gin.Context) {
 		if err := f.OrderBy("$key").LimitToFirst(int64(limit)).Value(&v); err != nil {
 			log.Fatal(err)
 		}
-		fmt.Printf("%+v\n", v)
+		//fmt.Printf("%+v\n", v)
 		c.IndentedJSON(http.StatusOK, v)
 		return
 	}
@@ -783,4 +788,17 @@ func removeUserAll(c *gin.Context) {
 	}
 
 	removeUserHelper(uid)
+}
+
+func searchIgnore(ignore []string) []string {
+	return ignore
+}
+
+func searchSkill(skills []string) []string {
+	return skills
+}
+
+func searchFilter(c *gin.Context) {
+	//var projects []project
+
 }
