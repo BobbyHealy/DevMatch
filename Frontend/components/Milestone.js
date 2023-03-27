@@ -1,4 +1,4 @@
-import React,{Fragment, useEffect, useState} from "react";
+import React,{Fragment, useEffect, useState, useLayoutEffect, useRef} from "react";
 import { useAuth } from "@/context/AuthContext";
 import {doc,updateDoc,} from "firebase/firestore";
 import { db } from "@/config/firebase";
@@ -22,6 +22,16 @@ const dueDates = [
   { name: 'Today', value: 'today' },
 ]
 
+const milestones = [
+  {
+    title: 'Create login UI',
+    assignedto: 'Lindsay Walton',
+    labels: 'Frontend',
+    duedate: 'Today',
+  },
+  // More people...
+]
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
@@ -34,6 +44,24 @@ export default function Milestone() {
   const [assigned, setAssigned] = useState(assignees[0])
   const [labelled, setLabelled] = useState(labels[0])
   const [dated, setDated] = useState(dueDates[0])
+  const checkbox = useRef()
+  const [checked, setChecked] = useState(false)
+  const [indeterminate, setIndeterminate] = useState(false)
+  const [selectedMilestones, setSelectedMilestones] = useState([])
+
+  useLayoutEffect(() => {
+    const isIndeterminate = selectedMilestones.length > 0 && selectedMilestones.length < milestones.length
+    setChecked(selectedMilestones.length === milestones.length)
+    setIndeterminate(isIndeterminate)
+    checkbox.current.indeterminate = isIndeterminate
+  }, [selectedMilestones])
+
+  function toggleAll() {
+    setSelectedMilestones(checked || indeterminate ? [] : milestones)
+    setChecked(!checked && !indeterminate)
+    setIndeterminate(false)
+  }
+
   useEffect(() => {
     if(user.uid)
     {
@@ -44,14 +72,118 @@ export default function Milestone() {
   }, []);
   return (
     <div>
-        <button
-              type='button'
-              className='inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
-              onClick={() => setShowModal(true)}
-            >
-              Create new Milestone
-              <PlusIcon className='ml-2 -mr-1 h-5 w-5' aria-hidden='true' />
-        </button>
+
+        <div className="px-4 sm:px-6 py-6 lg:px-8">
+            <div className="sm:flex sm:items-center">
+                <div className="sm:flex-auto">
+                <h1 className="text-base font-semibold leading-6 text-gray-900">Milestones</h1>
+                </div>
+                <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+                <button
+                    type='button'
+                    className='inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
+                    onClick={() => setShowModal(true)}
+                    >
+                    Create new Milestone
+                    <PlusIcon className='ml-2 -mr-1 h-5 w-5' aria-hidden='true' />
+                </button>
+                </div>
+            </div>
+            <div className="mt-8 flow-root">
+                <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                    <div className="relative">
+                    {selectedMilestones.length > 0 && (
+                        <div className="absolute top-0 left-14 flex h-12 items-center space-x-3 bg-white sm:left-12">
+                        <button
+                            type="button"
+                            className="inline-flex items-center rounded bg-white px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white"
+                        >
+                            Bulk edit
+                        </button>
+                        <button
+                            type="button"
+                            className="inline-flex items-center rounded bg-white px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white"
+                        >
+                            Mark all as complete
+                        </button>
+                        </div>
+                    )}
+                    <table className="min-w-full table-fixed divide-y divide-gray-300">
+                        <thead>
+                        <tr>
+                            <th scope="col" className="relative px-7 sm:w-12 sm:px-6">
+                            <input
+                                type="checkbox"
+                                className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                ref={checkbox}
+                                checked={checked}
+                                onChange={toggleAll}
+                            />
+                            </th>
+                            <th scope="col" className="min-w-[12rem] py-3.5 pr-3 text-left text-sm font-semibold text-gray-900">
+                            Title
+                            </th>
+                            <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                            Assingned to
+                            </th>
+                            <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                            Labels
+                            </th>
+                            <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                            Due Date
+                            </th>
+                            <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-3">
+                            <span className="sr-only">Edit</span>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200 bg-white">
+                        {milestones.map((milestone) => (
+                            <tr key={milestone.duedate} className={selectedMilestones.includes(milestone) ? 'bg-gray-50' : undefined}>
+                            <td className="relative px-7 sm:w-12 sm:px-6">
+                                {selectedMilestones.includes(milestone) && (
+                                <div className="absolute inset-y-0 left-0 w-0.5 bg-indigo-600" />
+                                )}
+                                <input
+                                type="checkbox"
+                                className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                value={milestone.duedate}
+                                checked={selectedMilestones.includes(milestone)}
+                                onChange={(e) =>
+                                    setSelectedMilestones(
+                                    e.target.checked
+                                        ? [...selectedMilestones, milestone]
+                                        : selectedMilestones.filter((p) => p !== milestone)
+                                    )
+                                }
+                                />
+                            </td>
+                            <td
+                                className={classNames(
+                                'whitespace-nowrap py-4 pr-3 text-sm font-medium',
+                                selectedMilestones.includes(milestone) ? 'text-indigo-600' : 'text-gray-900'
+                                )}
+                            >
+                                {milestone.title}
+                            </td>
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{milestone.assignedto}</td>
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{milestone.labels}</td>
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{milestone.duedate}</td>
+                            <td className="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
+                                <a href="#" className="text-indigo-600 hover:text-indigo-900">
+                                Edit<span className="sr-only">, {milestone.title}</span>
+                                </a>
+                            </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
         <MilestoneModal isVisible={showModal} onClose={() => setShowModal(false)}>
             <div>
               <form action="#" className="relative">
