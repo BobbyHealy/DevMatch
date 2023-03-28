@@ -44,6 +44,7 @@ type project struct {
 	ProjectDescription string   `json:"projectDes"`
 	ProjectType        string   `json:"type"`
 	Milestones         []string `json:"milestones"`
+	Tasks              []string `json:"tasks"`
 	//TaskBoard     Scrumboard `json: "board"`
 }
 
@@ -97,6 +98,9 @@ func main() {
 	router.POST("/updateProjectParts", updateProjectParts)
 	router.POST("/removeUserFromProject", removeUserFromProject)
 	router.POST("/removeProjectFromUser", removeProjectFromUser)
+
+	router.POST("/addTask", addTask)
+	router.GET("/getTasks", getTasks)
 
 	router.Run("localhost:8080")
 
@@ -1006,4 +1010,57 @@ func searchFilter(c *gin.Context) {
 
 	c.IndentedJSON(http.StatusOK, []interface{}{result})
 
+}
+
+func addTask(c *gin.Context) {
+	pid, exists := c.GetQuery("pid")
+	if !exists {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	} else {
+		fmt.Println(pid)
+	}
+	task, exists2 := c.GetQuery("task")
+	if !exists2 {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	} else {
+		fmt.Println(task)
+	}
+
+	var proj project = getProjectFromID(pid)
+	if proj.ProjectID == "" {
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	}
+	proj.Milestones = append(proj.Tasks, task)
+	updateProjectHelp(proj)
+}
+
+func getTasks(c *gin.Context) {
+	pid, exists := c.GetQuery("pid")
+	if !exists {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	} else {
+		fmt.Println(pid)
+	}
+	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Projects/" + pid
+	f := firego.New(path, nil)
+	var v project
+	if err := f.Value(&v); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%+v\n", v)
+
+	var tasks []string
+	for j := 0; j < len(v.Tasks); j++ {
+		task := v.Milestones[j]
+		tasks = append(tasks, task)
+	}
+
+	c.IndentedJSON(http.StatusOK, []interface{}{tasks})
 }
