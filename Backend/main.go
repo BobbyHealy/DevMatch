@@ -1035,7 +1035,7 @@ func addTask(c *gin.Context) {
 		c.IndentedJSON(http.StatusBadRequest, nil)
 		return
 	}
-	proj.Milestones = append(proj.Tasks, task)
+	proj.Tasks = append(proj.Tasks, task)
 	updateProjectHelp(proj)
 }
 
@@ -1058,7 +1058,7 @@ func getTasks(c *gin.Context) {
 
 	var tasks []string
 	for j := 0; j < len(v.Tasks); j++ {
-		task := v.Milestones[j]
+		task := v.Tasks[j]
 		tasks = append(tasks, task)
 	}
 
