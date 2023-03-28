@@ -57,6 +57,7 @@ type searchType struct {
 	Limit   int      `json:"limit"`
 	Ignore  []string `json:"ignore"`
 	Skills  []string `json:"skills"`
+	Name    string   `json:"name"`
 }
 
 func main() {
@@ -870,6 +871,7 @@ func searchIgnore(current []string, ignore []string) []string {
 				break
 			}
 		}
+
 		if match {
 			//fmt.Printf("here2, %s\n", current[i])
 		}
@@ -883,7 +885,7 @@ func searchIgnore(current []string, ignore []string) []string {
 }
 
 func searchSkill(current []string, skills []string, isProject bool) []string {
-	fmt.Println("here")
+	//fmt.Println("here")
 	if isProject {
 		var skilled []string
 		for i := 0; i < len(current); i++ {
@@ -931,6 +933,29 @@ func searchSkill(current []string, skills []string, isProject bool) []string {
 	}
 }
 
+func matchName(name string, ids []string, isProject bool) []string {
+	var matched []string
+	if isProject {
+		var check project
+		for i := 0; i < len(ids); i++ {
+			check = getProjectFromID(ids[i])
+			if check.ProjectName == name {
+				matched = append(matched, ids[i])
+			}
+		}
+		return matched
+	} else {
+		var check user
+		for i := 0; i < len(ids); i++ {
+			check = getUserFromID(ids[i])
+			if check.Name == name {
+				matched = append(matched, ids[i])
+			}
+		}
+		return matched
+	}
+}
+
 func getIDS(isProject bool) []string {
 	var projOrUser string
 	if isProject {
@@ -961,8 +986,13 @@ func searchFilter(c *gin.Context) {
 	limit := thisSearch.Limit
 	skills := thisSearch.Skills
 	ignore := thisSearch.Ignore
+	name := thisSearch.Name
 
 	var ids []string = getIDS(isProject)
+	if name != "" {
+		var matched []string = matchName(name, ids, isProject)
+		c.IndentedJSON(http.StatusOK, []interface{}{matched})
+	}
 	var ignored []string = searchIgnore(ids, ignore)
 	var skilled []string = searchSkill(ignored, skills, isProject)
 	var result []string
