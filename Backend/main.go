@@ -52,8 +52,10 @@ type project struct {
  * returned
  */
 type searchType struct {
-	Project bool `json:"project"`
-	Limit   int  `json:"limit"`
+	Project bool     `json:"project"`
+	Limit   int      `json:"limit"`
+	Ignore  []string `json:"ignore"`
+	Skills  []string `json:"skills"`
 }
 
 func main() {
@@ -83,6 +85,7 @@ func main() {
 	router.POST("/userToProject", userToProject)
 	router.DELETE("/removeUser", removeUser)
 	router.DELETE("/removeProject", removeProject)
+	router.GET("/searchFilter", searchFilter)
 
 	router.DELETE("/removeProjectComplete", removeProjectAll)
 	router.DELETE("/removeUserComplete", removeUserAll)
@@ -174,14 +177,19 @@ func getUsers(c *gin.Context) {
 	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Users/"
 	f := firego.New(path, nil)
 	//interfaceToStringSplice(in interface{})
-	var v interface{}
+	v := make(map[string]interface{})
 	//var b = interfaceToStringSplice(v)
 	if err := f.Value(&v); err != nil {
 		log.Fatal(err)
 	}
-	var b []string = interfaceToStringSplice(v)
-	b = append(b, "a")
-	//fmt.Printf("%s\n", b[1])
+	keys := make([]string, 0, len(v))
+	for k := range v {
+		keys = append(keys, k)
+	}
+
+	//var b []string = interfaceToStringSplice(v)
+	//var b string = v[1]
+	fmt.Printf("%s\n", keys[1])
 	//fmt.Printf("%+v\n", v)
 	c.IndentedJSON(http.StatusOK, v)
 }
@@ -790,15 +798,123 @@ func removeUserAll(c *gin.Context) {
 	removeUserHelper(uid)
 }
 
-func searchIgnore(ignore []string) []string {
-	return ignore
+func searchIgnore(current []string, ignore []string) []string {
+	var ignored []string
+	var match bool
+	for i := 0; i < len(current); i++ {
+		match = false
+		for j := 0; j < len(ignore); j++ {
+			if current[i] == ignore[j] {
+				//fmt.Printf("here, %s, %s, %d\n", current[i], ignore[j], j)
+				//fmt.Println()
+				match = true
+				break
+			}
+		}
+		if match {
+			//fmt.Printf("here2, %s\n", current[i])
+		}
+		if !match {
+			//fmt.Println("here3 " + current[i])
+			ignored = append(ignored, current[i])
+
+		}
+	}
+	return ignored
 }
 
-func searchSkill(skills []string) []string {
-	return skills
+func searchSkill(current []string, skills []string, isProject bool) []string {
+	fmt.Println("here")
+	if isProject {
+		var skilled []string
+		for i := 0; i < len(current); i++ {
+			var match bool = false
+			var p project = getProjectFromID(current[i])
+			var skillCheck []string = p.NeededSkills
+			for j := 0; j < len(skills); j++ {
+				for k := 0; k < len(skillCheck); k++ {
+					if skillCheck[k] == skills[j] {
+						match = true
+						break
+					}
+				}
+				if match {
+					break
+				}
+			}
+			if match {
+				skilled = append(skilled, current[i])
+			}
+		}
+		return skilled
+	} else {
+		var skilled []string
+		for i := 0; i < len(current); i++ {
+			var match bool = false
+			var u user = getUserFromID(current[i])
+			var skillCheck []string = u.Skills
+			for j := 0; j < len(skills); j++ {
+				for k := 0; k < len(skillCheck); k++ {
+					if skillCheck[k] == skills[j] {
+						match = true
+						break
+					}
+				}
+				if match {
+					break
+				}
+			}
+			if match {
+				skilled = append(skilled, current[i])
+			}
+		}
+		return skilled
+	}
+}
+
+func getIDS(isProject bool) []string {
+	var projOrUser string
+	if isProject {
+		projOrUser = "Projects"
+	} else {
+		projOrUser = "Users"
+	}
+	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/" + projOrUser + "/"
+	f := firego.New(path, nil)
+	v := make(map[string]interface{})
+	if err := f.Value(&v); err != nil {
+		log.Fatal(err)
+	}
+	keys := make([]string, 0, len(v))
+	for k := range v {
+		keys = append(keys, k)
+	}
+	return keys
 }
 
 func searchFilter(c *gin.Context) {
-	//var projects []project
+	var thisSearch searchType
+	if err := c.BindJSON(&thisSearch); err != nil {
+		return
+	}
+
+	isProject := thisSearch.Project
+	limit := thisSearch.Limit
+	skills := thisSearch.Skills
+	ignore := thisSearch.Ignore
+
+	var ids []string = getIDS(isProject)
+	var ignored []string = searchIgnore(ids, ignore)
+	var skilled []string = searchSkill(ignored, skills, isProject)
+	var result []string
+
+	for i := 0; i < len(skilled); i++ {
+		if len(result) == limit {
+			break
+		}
+		result = append(result, skilled[i])
+	}
+
+	c.IndentedJSON(http.StatusOK, []interface{}{result})
 
 }
