@@ -4,10 +4,16 @@ import { EnvelopeIcon } from "@heroicons/react/20/solid";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "@/context/AuthContext";
 import DeactivateModal from "./DeactivateModal";
-import {doc,updateDoc, deleteDoc, FieldValue, onSnapshot, deleteField} from "firebase/firestore";
+import {
+  doc,
+  updateDoc,
+  deleteDoc,
+  FieldValue,
+  onSnapshot,
+  deleteField,
+} from "firebase/firestore";
 import { db } from "@/config/firebase";
 import { deleteUser, getAuth } from "firebase/auth";
-
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -26,6 +32,7 @@ function Profile() {
     description: userInfo.description !== undefined ? userInfo.description : "",
   };
   const [showModal, setShowModal] = useState(false);
+  const [confirmation, setConfirmation] = useState("");
   const [completeUser, setCompleteUser] = useState({
     userId: "",
     name: "Foo Bar",
@@ -164,57 +171,49 @@ function Profile() {
       .catch((err) => {
         console.log(err);
       });
-      deleteDoc(doc(db, "userDocs", user.email))
+    deleteDoc(doc(db, "userDocs", user.email));
 
-        onSnapshot(doc(db, "userChats", user.uid), (doc) => {
-          if(doc.data())
-          {
-            Object.entries(doc.data()).forEach((id)=>{ 
-              console.log(id[0]);
-              deleteChat(id[0])})
-
-          }
-
+    onSnapshot(doc(db, "userChats", user.uid), (doc) => {
+      if (doc.data()) {
+        Object.entries(doc.data()).forEach((id) => {
+          console.log(id[0]);
+          deleteChat(id[0]);
         });
-        deleteDoc(doc(db, "users", user.uid));
+      }
+    });
+    deleteDoc(doc(db, "users", user.uid));
 
-      
+    deleteDoc(doc(db, "userChats", user.uid));
 
-        deleteDoc(doc(db, "userChats", user.uid))
-  
     currentUser
       .delete()
       .then(() => {
-        
         Router.push("/account/login");
         refreshPage();
       })
       .catch((error) => {});
   };
 
-
-  function deleteChat(chatID){
-    deleteDoc(doc(db, "chats", chatID))
-    const ids = chatID.split("-")
-    if(ids[0]===user.id)
-    {
-
-      updateDoc(doc(db,"userChats", ids[1]), {
-        "oe2tfh0K0hV6Q2P9X3fMV0RH3w82-g1Ujakr5NkbGLxwJaOZZ2YtwdEa2": deleteField(),
-      })
-      updateDoc(doc(db,"userChats", ids[1]), {
+  function deleteChat(chatID) {
+    deleteDoc(doc(db, "chats", chatID));
+    const ids = chatID.split("-");
+    if (ids[0] === user.id) {
+      updateDoc(doc(db, "userChats", ids[1]), {
+        "oe2tfh0K0hV6Q2P9X3fMV0RH3w82-g1Ujakr5NkbGLxwJaOZZ2YtwdEa2":
+          deleteField(),
+      });
+      updateDoc(doc(db, "userChats", ids[1]), {
         [chatID]: deleteField(),
-      })
-    }else
-    {
-      updateDoc(doc(db,"userChats", ids[0]), {
-        "oe2tfh0K0hV6Q2P9X3fMV0RH3w82-g1Ujakr5NkbGLxwJaOZZ2YtwdEa2": deleteField(),
-      })
-      updateDoc(doc(db,"userChats", ids[0]), {
+      });
+    } else {
+      updateDoc(doc(db, "userChats", ids[0]), {
+        "oe2tfh0K0hV6Q2P9X3fMV0RH3w82-g1Ujakr5NkbGLxwJaOZZ2YtwdEa2":
+          deleteField(),
+      });
+      updateDoc(doc(db, "userChats", ids[0]), {
         [chatID]: deleteField(),
-      })
+      });
     }
-    
   }
 
   const handleSubmit = async (e) => {
@@ -527,12 +526,37 @@ function Profile() {
                 action cannot be undone.
               </p>
             </div>
+
+            <div className='mt-2'>
+              <label
+                htmlFor='email'
+                className='block text-sm font-medium leading-6 text-gray-900'
+              >
+                Confirm by writting your full name
+              </label>
+              <div className='mt-2'>
+                <input
+                  type='text'
+                  name='confirm'
+                  className='block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+                  onChange={(e) => setConfirmation(e.target.value)}
+                  value={confirmation}
+                  placeholder={completeUser.name}
+                />
+              </div>
+            </div>
           </div>
         </div>
+
         <div className='mt-5 sm:mt-4 sm:flex sm:flex-row-reverse'>
           <button
+            disabled={confirmation !== completeUser.name}
             type='button'
-            className='inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto'
+            className={`inline-flex w-full justify-center rounded-md bg-${
+              confirmation !== completeUser.name
+                ? "gray-600"
+                : "red-600 hover:bg-red-500"
+            } px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto`}
             onClick={deleteUser}
           >
             Deactivate
