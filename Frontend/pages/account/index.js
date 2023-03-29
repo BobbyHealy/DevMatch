@@ -1,5 +1,6 @@
 import { Fragment, useState,useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
+import Router from "next/router";
 import {
   Bars3Icon,
   CalendarIcon,
@@ -35,6 +36,12 @@ export default function Example() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState("OverView");
   const {user} = useAuth();
+  useEffect(() => {
+    if(!user)
+    {
+      Router.push('/account/login')
+    }
+  }, [])
 
   useEffect(() => 
     {
@@ -49,7 +56,7 @@ export default function Example() {
           unSub();
         };
       }
-      user.email&&getLoc()
+      user&&user.email&&getLoc()
     }, [user]);
 
   const selectedTabContent = () => {
