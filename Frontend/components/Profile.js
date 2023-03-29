@@ -165,11 +165,20 @@ function Profile() {
         console.log(err);
       });
       deleteDoc(doc(db, "userDocs", user.email))
-      await onSnapshot(doc(db, "userChats", user.uid), (doc) => {
-        Object.entries(doc.data())?.forEach((id)=>{ 
-          console.log(id[0]);
-          deleteChat(id[0])})
-      });
+
+        onSnapshot(doc(db, "userChats", user.uid), (doc) => {
+          if(doc.data())
+          {
+            Object.entries(doc.data()).forEach((id)=>{ 
+              console.log(id[0]);
+              deleteChat(id[0])})
+
+          }
+
+        });
+
+      
+
       
     deleteDoc(doc(db, "userChats", user.uid))
     currentUser
