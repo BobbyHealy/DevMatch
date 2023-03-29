@@ -41,13 +41,25 @@ function classNames(...classes) {
 export default function Milestone() {
   const [showModal, setShowModal] = useState(false);
   const{ user }= useAuth();
-  const [assigned, setAssigned] = useState(assignees[0])
-  const [labelled, setLabelled] = useState(labels[0])
-  const [dated, setDated] = useState(dueDates[0])
-  const checkbox = useRef()
-  const [checked, setChecked] = useState(false)
-  const [indeterminate, setIndeterminate] = useState(false)
-  const [selectedMilestones, setSelectedMilestones] = useState([])
+  const [assigned, setAssigned] = useState(assignees[0]);
+  const [labelled, setLabelled] = useState(labels[0]);
+  const [dated, setDated] = useState(dueDates[0]);
+  const [title, setTitle] = useState();
+  const [description, setDescription] = useState();
+  const checkbox = useRef();
+  const [checked, setChecked] = useState(false);
+  const [indeterminate, setIndeterminate] = useState(false);
+  const [selectedMilestones, setSelectedMilestones] = useState([]);
+
+  const handleMilstones = async (e) => {
+    e.preventDefault();
+
+    try {
+        
+    } catch(err) {
+        console.log(err);
+    }
+  }
 
   useLayoutEffect(() => {
     const isIndeterminate = selectedMilestones.length > 0 && selectedMilestones.length < milestones.length
@@ -186,7 +198,7 @@ export default function Milestone() {
         </div>
         <MilestoneModal isVisible={showModal} onClose={() => setShowModal(false)}>
             <div>
-              <form action="#" className="relative">
+              <form className="relative" onSubmit={handleMilstones}>
                 <div className="overflow-hidden rounded-lg border border-gray-300 shadow-sm focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500">
                     <label htmlFor="title" className="sr-only">
                     Title
@@ -197,6 +209,8 @@ export default function Milestone() {
                     id="title"
                     className="block w-full border-0 pt-2.5 text-lg font-medium placeholder:text-gray-400 focus:ring-0"
                     placeholder="Title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
                     />
                     <label htmlFor="description" className="sr-only">
                     Description
@@ -208,6 +222,8 @@ export default function Milestone() {
                     className="block w-full resize-none border-0 py-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
                     placeholder="Write a description..."
                     defaultValue={''}
+                    value={description}
+                    onChange={(e) => setDescription(e.tartget.value)}
                     />
 
                     {/* Spacer element to match the height of the toolbar */}
