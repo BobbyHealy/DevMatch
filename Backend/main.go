@@ -983,14 +983,20 @@ func searchFilter(c *gin.Context) {
 		var matched []string = matchName(name, ids, isProject)
 		c.IndentedJSON(http.StatusOK, []interface{}{matched})
 	}
-	var ignored []string = searchIgnore(ids, ignore)
-	var skilled []string = searchSkill(ignored, skills, isProject)
+	if ignore[0] != "" {
+		ids = searchIgnore(ids, ignore)
+	}
+	//var ignored []string = searchIgnore(ids, ignore)
+	if skills[0] != "" {
+		ids = searchIgnore(ids, skills)
+	}
+	//var skilled []string = searchSkill(ignored, skills, isProject)
 	var result []string
-	for i := 0; i < len(skilled); i++ {
+	for i := 0; i < len(ids); i++ {
 		if len(result) == limit {
 			break
 		}
-		result = append(result, skilled[i])
+		result = append(result, ids[i])
 	}
 	if isProject {
 		var resultAndInfo []project
