@@ -18,7 +18,7 @@ export default function Chats({search}) {
     useEffect( () => {
       const getChat = () => {
         const unsub = onSnapshot(doc(db, "users", user.uid), (doc) => {
-          if (doc.data().currentChat)
+          if (doc.data()?.currentChat)
           {
             setReceiver(doc.data().currentChat.uid);
           }

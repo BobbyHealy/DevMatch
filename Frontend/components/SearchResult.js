@@ -19,8 +19,8 @@ export default function SearchResult({user2}) {
         //check whether the group(chats in firestore) exists, if not create
         const combinedId =
         currentUser.uid > user2.uid
-        ? currentUser.uid + user2.uid
-        : user2.uid + currentUser.uid;
+        ? user.uid + "-"+user2.uid
+        : user2.uid + "-"+user.uid;
         try {
             const res = await getDoc(doc(db, "chats", combinedId));
 

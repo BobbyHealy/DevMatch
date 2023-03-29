@@ -4,9 +4,10 @@ import { EnvelopeIcon } from "@heroicons/react/20/solid";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "@/context/AuthContext";
 import DeactivateModal from "./DeactivateModal";
-import { doc, updateDoc, deleteDoc } from "firebase/firestore";
+import {doc,updateDoc, deleteDoc, FieldValue, onSnapshot, deleteField} from "firebase/firestore";
 import { db } from "@/config/firebase";
 import { deleteUser, getAuth } from "firebase/auth";
+
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -163,7 +164,14 @@ function Profile() {
       .catch((err) => {
         console.log(err);
       });
-
+      deleteDoc(doc(db, "userDocs", user.email))
+      await onSnapshot(doc(db, "userChats", user.uid), (doc) => {
+        Object.entries(doc.data())?.forEach((id)=>{ 
+          console.log(id[0]);
+          deleteChat(id[0])})
+      });
+      
+    deleteDoc(doc(db, "userChats", user.uid))
     currentUser
       .delete()
       .then(() => {
@@ -176,8 +184,30 @@ function Profile() {
 
   const handleDelete = async () => {
     await deleteDoc(doc(db, "users", user.uid));
-    refreshPage();
   };
+  function deleteChat(chatID){
+    deleteDoc(doc(db, "chats", chatID))
+    const ids = chatID.split("-")
+    if(ids[0]===user.id)
+    {
+
+      updateDoc(doc(db,"userChats", ids[1]), {
+        "oe2tfh0K0hV6Q2P9X3fMV0RH3w82-g1Ujakr5NkbGLxwJaOZZ2YtwdEa2": deleteField(),
+      })
+      updateDoc(doc(db,"userChats", ids[1]), {
+        [chatID]: deleteField(),
+      })
+    }else
+    {
+      updateDoc(doc(db,"userChats", ids[0]), {
+        "oe2tfh0K0hV6Q2P9X3fMV0RH3w82-g1Ujakr5NkbGLxwJaOZZ2YtwdEa2": deleteField(),
+      })
+      updateDoc(doc(db,"userChats", ids[0]), {
+        [chatID]: deleteField(),
+      })
+    }
+    
+  }
 
   const handleSubmit = async (e) => {
     console.log(newName === "");
