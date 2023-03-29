@@ -75,9 +75,13 @@ function Profile() {
       });
     } else {
       setCompleteUser(currentUser);
-      setNewSkills(
-        userInfo.skills !== undefined ? userInfo.skills.join(",") : []
-      );
+      if(userInfo.skills)
+      {
+        setNewSkills(
+          userInfo.skills.join(",")
+        );
+
+      }
     }
     updateDoc(doc(db, "users", user.uid), {
       currentPage:"Overview"
