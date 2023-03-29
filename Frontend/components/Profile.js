@@ -4,7 +4,7 @@ import { EnvelopeIcon } from "@heroicons/react/20/solid";
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 import { useAuth } from "@/context/AuthContext";
 import DeactivateModal from "./DeactivateModal";
-import {doc,updateDoc,} from "firebase/firestore";
+import {doc,updateDoc, deleteDoc} from "firebase/firestore";
 import { db } from "@/config/firebase";
 import {deleteUser, getAuth} from "firebase/auth";
 
@@ -193,13 +193,22 @@ function Profile() {
         console.log(err);
       });
     
+      handleDelete()
     currentUser.delete().then(() => {
+      handleDelete()
       Router.push('/account/login')
       refreshPage()
     }).catch((error) => {
 
     });
   }
+
+  const handleDelete = async () => {
+    await deleteDoc(doc(db, "users", user.uid))
+    refreshPage()
+  };
+
+
 
   const handleSubmit = async (e) => {
     console.log(newName==="")
