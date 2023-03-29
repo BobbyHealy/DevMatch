@@ -39,8 +39,8 @@ export default function DMs() {
     if (receiver)
     {
       const dmID =  user.uid > receiver.uid
-      ? user.uid + receiver.uid
-      : receiver.uid + user.uid;
+      ? user.uid + "-"+receiver.uid
+      : receiver.uid + "-"+user.uid;
     setDMID(dmID);
     }
   }, [receiver]);

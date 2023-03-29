@@ -94,7 +94,7 @@ export default function ChatInput({ DMID, receiver }) {
           onChange={(e) => setText(e.target.value)}
           value={text}
           onKeyDown={handleKey}
-          className='bg-transparent textblack text-lg rounded-lg border-none outline-none placeholder-gray-400 w-[calc(100%-120px)]'
+          className='bg-transparent text-black text-lg rounded-lg border-none outline-none placeholder-gray-400 w-[calc(100%-120px)]'
         />
       )}
       {!receiver && (
