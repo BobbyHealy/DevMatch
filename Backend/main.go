@@ -184,21 +184,10 @@ func getUsers(c *gin.Context) {
 	//path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
 	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Users/"
 	f := firego.New(path, nil)
-	//interfaceToStringSplice(in interface{})
-	v := make(map[string]interface{})
-	//var b = interfaceToStringSplice(v)
+	var v user
 	if err := f.Value(&v); err != nil {
 		log.Fatal(err)
 	}
-	keys := make([]string, 0, len(v))
-	for k := range v {
-		keys = append(keys, k)
-	}
-
-	//var b []string = interfaceToStringSplice(v)
-	//var b string = v[1]
-	fmt.Printf("%s\n", keys[1])
-	//fmt.Printf("%+v\n", v)
 	c.IndentedJSON(http.StatusOK, v)
 }
 
