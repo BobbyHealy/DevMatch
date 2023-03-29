@@ -992,7 +992,23 @@ func searchFilter(c *gin.Context) {
 		}
 		result = append(result, skilled[i])
 	}
-	c.IndentedJSON(http.StatusOK, []interface{}{result})
+	if isProject {
+		var resultAndInfo []project
+		for j := 0; j < len(result); j++ {
+			resultAndInfo = append(resultAndInfo, getProjectFromID(result[j]))
+		}
+		c.IndentedJSON(http.StatusOK, []interface{}{resultAndInfo})
+		return
+	} else {
+		var resultAndInfo []user
+		for j := 0; j < len(result); j++ {
+			resultAndInfo = append(resultAndInfo, getUserFromID(result[j]))
+		}
+		c.IndentedJSON(http.StatusOK, []interface{}{resultAndInfo})
+		return
+	}
+	//c.IndentedJSON(http.StatusOK, []interface{}{result})
+
 }
 
 func addTask(c *gin.Context) {
