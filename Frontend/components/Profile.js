@@ -176,24 +176,23 @@ function Profile() {
           }
 
         });
+        deleteDoc(doc(db, "users", user.uid));
 
       
 
-      
-    deleteDoc(doc(db, "userChats", user.uid))
+        deleteDoc(doc(db, "userChats", user.uid))
+  
     currentUser
       .delete()
       .then(() => {
-        handleDelete();
+        
         Router.push("/account/login");
         refreshPage();
       })
       .catch((error) => {});
   };
 
-  const handleDelete = async () => {
-    await deleteDoc(doc(db, "users", user.uid));
-  };
+
   function deleteChat(chatID){
     deleteDoc(doc(db, "chats", chatID))
     const ids = chatID.split("-")
