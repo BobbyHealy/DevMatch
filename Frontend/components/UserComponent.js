@@ -8,15 +8,19 @@ import {
   StarIcon,
 } from "@heroicons/react/20/solid";
 import { useAuth } from "@/context/AuthContext";
+
 import Router from "next/router";
 import {
-  setDoc,
+  arrayUnion,
   doc,
-  updateDoc,
-  serverTimestamp,
   getDoc,
+  serverTimestamp,
+  Timestamp,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "@/config/firebase";
+import { v4 as uuid } from "uuid";
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
@@ -31,56 +35,118 @@ const default_user = {
   profile_picture: "",
 };
 
-
 export default function UserComponent(props) {
-  const { user = default_user } = props;
-  const {userInfo} =useAuth()
-  const handleSelect = async()=>{
+  const { user = default_user, inviteProjectID = null } = props;
+  const { userInfo } = useAuth();
+  const combinedId =
+    userInfo.userID > user.userID
+      ? userInfo.userID + user.userID
+      : user.userID + userInfo.userID;
+
+  const inviteMessage = `Come join the project! here is the link: http://localhost:3000/project?pid=${inviteProjectID}`;
+  const handleSelect = async () => {
     //check whether the group(chats in firestore) exists, if not create
-    const combinedId =
-    userInfo.userID> user.userID
-    ? userInfo.userID + user.userID
-    : user.userID + userInfo.userID;
     try {
-        const res = await getDoc(doc(db, "chats", combinedId));
-  
-        if (!res.exists()) {
+      const res = await getDoc(doc(db, "chats", combinedId));
+
+      if (!res.exists()) {
         //create a chat in chats collection
         await setDoc(doc(db, "chats", combinedId), { messages: [] });
-  
+
         await updateDoc(doc(db, "userChats", userInfo.userID), {
-    
-            [combinedId + ".userInfo"]: {
+          [combinedId + ".userInfo"]: {
             uid: user.userID,
             displayName: user.name,
             photoURL: user.profilePic,
-            },
-            [combinedId + ".date"]: serverTimestamp(),
+          },
+          [combinedId + ".date"]: serverTimestamp(),
         });
-  
+
         await updateDoc(doc(db, "userChats", user.userID), {
-            [combinedId + ".userInfo"]: {
+          [combinedId + ".userInfo"]: {
             uid: userInfo.userID,
             displayName: userInfo.name,
             photoURL: userInfo.profilePic,
-            },
-            [combinedId + ".date"]: serverTimestamp(),
+          },
+          [combinedId + ".date"]: serverTimestamp(),
         });
-        }
-        await updateDoc(doc(db, "users", userInfo.userID), {
-            currentChat:{
-                uid: user.userID,
-                displayName: user.name,
-                photoURL: user.profilePic,
-            },
-            currentPage: "DMs",
-        });
-        Router.push('/account')
+      }
+      await updateDoc(doc(db, "users", userInfo.userID), {
+        currentChat: {
+          uid: user.userID,
+          displayName: user.name,
+          photoURL: user.profilePic,
+        },
+        currentPage: "DMs",
+      });
+      Router.push("/account");
     } catch (err) {}
+  };
 
-    
-  
-  }
+  const handleInvite = async () => {
+    //check whether the group(chats in firestore) exists, if not create
+    try {
+      const res = await getDoc(doc(db, "chats", combinedId));
+
+      if (!res.exists()) {
+        //create a chat in chats collection
+        await setDoc(doc(db, "chats", combinedId), { messages: [] });
+
+        await updateDoc(doc(db, "userChats", userInfo.userID), {
+          [combinedId + ".userInfo"]: {
+            uid: user.userID,
+            displayName: user.name,
+            photoURL: user.profilePic,
+          },
+          [combinedId + ".date"]: serverTimestamp(),
+        });
+
+        await updateDoc(doc(db, "userChats", user.userID), {
+          [combinedId + ".userInfo"]: {
+            uid: userInfo.userID,
+            displayName: userInfo.name,
+            photoURL: userInfo.profilePic,
+          },
+          [combinedId + ".date"]: serverTimestamp(),
+        });
+      }
+      await updateDoc(doc(db, "users", userInfo.userID), {
+        currentChat: {
+          uid: user.userID,
+          displayName: user.name,
+          photoURL: user.profilePic,
+        },
+        currentPage: "DMs",
+      });
+      const msgID = uuid();
+      await updateDoc(doc(db, "chats", combinedId), {
+        messages: arrayUnion({
+          id: msgID,
+          text: inviteMessage,
+          senderId: userInfo.userID,
+          date: Timestamp.now(),
+        }),
+      });
+      await updateDoc(doc(db, "userChats", userInfo.userID), {
+        [combinedId + ".lastMessage"]: {
+          text: inviteMessage,
+        },
+        [combinedId + ".date"]: serverTimestamp(),
+      });
+
+      await updateDoc(doc(db, "userChats", user.userID), {
+        [combinedId + ".lastMessage"]: {
+          text: inviteMessage,
+        },
+        [combinedId + ".date"]: serverTimestamp(),
+      });
+
+      Router.push("/account");
+    } catch (err) {
+      console.log("THERE WAS AN ERROR " + err);
+    }
+  };
+
   return (
     <div className='bg-white px-4 py-5 sm:px-6 rounded-lg'>
       <div className='flex space-x-3'>
@@ -121,14 +187,25 @@ export default function UserComponent(props) {
           </p>
         </div>
         <div className='flex flex-shrink-0 self-center'>
-          <button
-           onClick={handleSelect}
-            type='button'
-            className='inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
-          >
-            Message
-            <EnvelopeIcon className='ml-2 -mr-1 h-5 w-5' aria-hidden='true' />
-          </button>
+          {inviteProjectID === null ? (
+            <button
+              onClick={handleSelect}
+              type='button'
+              className='inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
+            >
+              Message
+              <EnvelopeIcon className='ml-2 -mr-1 h-5 w-5' aria-hidden='true' />
+            </button>
+          ) : (
+            <button
+              onClick={handleInvite}
+              type='button'
+              className='inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
+            >
+              Invite to Project
+              <EnvelopeIcon className='ml-2 -mr-1 h-5 w-5' aria-hidden='true' />
+            </button>
+          )}
         </div>
       </div>
     </div>
