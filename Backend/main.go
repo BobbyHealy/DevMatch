@@ -182,7 +182,7 @@ func getUsers(c *gin.Context) {
 		fmt.Println(uid)
 	}
 	//path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Hold" + "/l/" + "hello"
-	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Users/"
+	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Users/" + uid
 	f := firego.New(path, nil)
 	var v user
 	if err := f.Value(&v); err != nil {
@@ -864,7 +864,6 @@ func searchIgnore(current []string, ignore []string) []string {
 				break
 			}
 		}
-
 		if match {
 			//fmt.Printf("here2, %s\n", current[i])
 		}
@@ -878,7 +877,6 @@ func searchIgnore(current []string, ignore []string) []string {
 }
 
 func searchSkill(current []string, skills []string, isProject bool) []string {
-	//fmt.Println("here")
 	if isProject {
 		var skilled []string
 		for i := 0; i < len(current); i++ {
@@ -974,7 +972,6 @@ func searchFilter(c *gin.Context) {
 	if err := c.BindJSON(&thisSearch); err != nil {
 		return
 	}
-
 	isProject := thisSearch.Project
 	limit := thisSearch.Limit
 	skills := thisSearch.Skills
@@ -989,16 +986,13 @@ func searchFilter(c *gin.Context) {
 	var ignored []string = searchIgnore(ids, ignore)
 	var skilled []string = searchSkill(ignored, skills, isProject)
 	var result []string
-
 	for i := 0; i < len(skilled); i++ {
 		if len(result) == limit {
 			break
 		}
 		result = append(result, skilled[i])
 	}
-
 	c.IndentedJSON(http.StatusOK, []interface{}{result})
-
 }
 
 func addTask(c *gin.Context) {
@@ -1018,7 +1012,6 @@ func addTask(c *gin.Context) {
 	} else {
 		fmt.Println(task)
 	}
-
 	var proj project = getProjectFromID(pid)
 	if proj.ProjectID == "" {
 		c.IndentedJSON(http.StatusBadRequest, nil)
