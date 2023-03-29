@@ -6,11 +6,14 @@ import { useAuth } from "@/context/AuthContext";
 import DeactivateModal from "./DeactivateModal";
 import {doc,updateDoc,} from "firebase/firestore";
 import { db } from "@/config/firebase";
+import {deleteUser, getAuth} from "firebase/auth";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 function Profile() {
+
+
   const { user, login, logout, userInfo } = useAuth();
   const currentUser ={
     userID: user.userID !== undefined ? userInfo.userID : "",
@@ -165,6 +168,34 @@ function Profile() {
   const handleEdit = () => {
     setEdit(true);
   };
+  const deleteUser = async () => {
+
+    const currentUser = getAuth().currentUser
+    setShowModal(false)
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    var raw = JSON.stringify({
+      userID: user.uid,
+    });
+    var requestOptions = {
+      method: "DELETE",
+      headers: myHeaders,
+      body: raw,
+    };
+    fetch("http://localhost:3000/api/deleteUser", requestOptions)
+      .then((response) => response.text())
+      .then((result) => console.log(result))
+      .catch((err) => {
+        console.log(err);
+      });
+    
+    currentUser.delete().then(() => {
+      Router.push('/account/login')
+      refreshPage()
+    }).catch((error) => {
+
+    });
+  }
 
   const handleSubmit = async (e) => {
     console.log(newName==="")
@@ -463,6 +494,7 @@ function Profile() {
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                    onClick={deleteUser}
                   >
                     Deactivate
                   </button>
