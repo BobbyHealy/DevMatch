@@ -20,7 +20,7 @@ function classNames(...classes) {
 export default function Feed() {
   const [posts, setPosts] = useState(null);
   const [enabled, setEnabled] = useState(false);
-  const [skillArr, setSkillArr] = useState("");
+  const [skillArr, setSkillArr] = useState([""]);
   const { user } = useAuth();
   useEffect(() => {
     if (!user) {
