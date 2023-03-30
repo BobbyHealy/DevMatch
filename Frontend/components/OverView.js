@@ -354,6 +354,10 @@ useEffect(() => {
     setEdit(false);
   };
 
+  const handleLeaveProj = () => {
+    refreshPage()
+  }
+
   return (
     <>
       <div>
@@ -515,7 +519,11 @@ useEffect(() => {
                       </div>
                       <div className='sm:col-span-1'>
                           <dt >
-                          <span className='text-red-600  cursor-pointer hover:text-red-200'>Leave Project</span>
+                          <button 
+                            className='text-red-600  cursor-pointer hover:text-red-200'
+                            onClick={handleLeaveProj}
+                          >Leave Project
+                          </button>
                           </dt>
                         </div>
                     </dl>
