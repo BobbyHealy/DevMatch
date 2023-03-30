@@ -7,7 +7,7 @@ import MilestoneModal from "./MilestoneModal";
 import { Listbox, Transition } from '@headlessui/react'
 import { CalendarIcon, PaperClipIcon, TagIcon, UserCircleIcon } from '@heroicons/react/20/solid'
 
-const assignees = [
+const defaultAssignees = [
   { name: 'Unassigned', value: null },
   // More items...
 ]
@@ -30,11 +30,10 @@ function refreshPage() {
     window.location.reload(false);
   }
 
-
-export default function Milestone(pid) {
+export default function Milestone({pid, project}) {
   const [showModal, setShowModal] = useState(false);
   const{ user }= useAuth();
-  const [assigned, setAssigned] = useState(assignees[0])
+  const [assigned, setAssigned] = useState(defaultAssignees[0])
   const [labelled, setLabelled] = useState(labels[0])
   const [dated, setDated] = useState(dueDates[0])
   const checkbox = useRef()
@@ -43,11 +42,14 @@ export default function Milestone(pid) {
   const [selectedMilestones, setSelectedMilestones] = useState([])
   const[milestones, setMilestones] = useState([])
   const [title, setTitle] = useState("")
+  const [assignees, setAsignees] =useState(defaultAssignees)
+  const [members, setMembers] = useState()
   useEffect(() => {
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
+    console.log(pid)
     var raw = JSON.stringify({
-      pid: pid.pid,
+      pid: pid,
     });
     var requestOptions = {
       method: "POST",
@@ -64,7 +66,52 @@ export default function Milestone(pid) {
       .catch((err) => {
         console.log(err);
       });
+
 }, []);
+useEffect(() => {
+    if(members)
+    {
+        const data =[
+            ...assignees,
+            ...members
+        ]
+        console.log(data)
+        setAsignees(data)
+    }
+  }, [members]);
+
+useEffect(() => {
+    if (project)
+    {
+        var tmem = []
+        project.tmembers.map((mem)=>{
+            var myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+            var raw = JSON.stringify({
+                userID: mem,
+            });
+            var requestOptions = {
+              method: "POST",
+              headers: myHeaders,
+              body: raw,
+            };
+            fetch("http://localhost:3000/api/getUser", requestOptions)
+              .then((response) => response.text())
+              .then((result) => 
+              {
+                tmem.push(JSON.parse(result))
+                if(project.tmembers.length===tmem.length)
+                {
+                  setMembers(tmem)
+                }
+              }
+              )
+              .catch((err) => {
+                console.log(err);
+              });
+          })
+    }
+}, [project]);
 
   useLayoutEffect(() => {
     const isIndeterminate = selectedMilestones?.length > 0 && selectedMilestones.length < milestones.length
@@ -79,17 +126,12 @@ export default function Milestone(pid) {
     setIndeterminate(false)
   }
   const addMilestone= async ()=>{
-    if(title.trim())
+    if(pid&&title.trim())
     {
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
-        console.log(pid)
-
-        console.log(assigned.name)
-        console.log(labelled)
-        console.log(dated)
         var raw = JSON.stringify({
-        pid: pid.pid,
+        pid: pid,
         "milestone":  {
             title: title.trim(),
             assignedto: assigned.name,
@@ -116,6 +158,14 @@ export default function Milestone(pid) {
         }
         
     }
+    useEffect(() => {
+    if(user.uid)
+    {
+      updateDoc(doc(db, "users", user.uid), {
+        currentProjPage:"#MS"
+      })
+    }
+  }, []);
 
   useEffect(() => {
     if(user.uid)
@@ -289,10 +339,10 @@ export default function Milestone(pid) {
                             <Listbox.Label className="sr-only"> Assign </Listbox.Label>
                             <div className="relative">
                             <Listbox.Button className="relative inline-flex items-center whitespace-nowrap rounded-full bg-gray-50 py-2 px-2 text-sm font-medium text-gray-500 hover:bg-gray-100 sm:px-3">
-                                {assigned.value? (
+                                {assigned.profilePic? (
                                 <UserCircleIcon className="h-5 w-5 flex-shrink-0 text-gray-300 sm:-ml-1" aria-hidden="true" />
                                 ) : (
-                                <img src={assigned.avatar} alt="" className="h-5 w-5 flex-shrink-0 rounded-full" />
+                                <img src={assigned.profilePic} alt="" className="h-5 w-5 flex-shrink-0 rounded-full" />
                                 )}
 
                                 <span
@@ -315,7 +365,7 @@ export default function Milestone(pid) {
                                 <Listbox.Options className="absolute right-0 z-10 mt-1 max-h-56 w-52 overflow-auto rounded-lg bg-white py-3 text-base shadow ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                                 {assignees.map((assignee) => (
                                     <Listbox.Option
-                                    key={assignee.value}
+                                    key={assignee?.value}
                                     className={({ active }) =>
                                         classNames(
                                         active ? 'bg-gray-100' : 'bg-white',
@@ -325,13 +375,13 @@ export default function Milestone(pid) {
                                     value={assignee}
                                     >
                                     <div className="flex items-center">
-                                        {assignee.avatar ? (
-                                        <img src={assignee.avatar} alt="" className="h-5 w-5 flex-shrink-0 rounded-full" />
+                                        {assignee?.avatar ? (
+                                        <img src={assignee?.avatar} alt="" className="h-5 w-5 flex-shrink-0 rounded-full" />
                                         ) : (
                                         <UserCircleIcon className="h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
                                         )}
 
-                                        <span className="ml-3 block truncate font-medium">{assignee.name}</span>
+                                        <span className="ml-3 block truncate font-medium">{assignee?.name}</span>
                                     </div>
                                     </Listbox.Option>
                                 ))}

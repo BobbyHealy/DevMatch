@@ -300,7 +300,8 @@ export default function ProjectSpace() {
             ) : section === "#Explore" ? (
                 <Explore project={project}/>
             ) : section === "#MS" ? (
-                <Milestone pid={pid}/>
+              
+              project&&<Milestone pid={pid} project= {project}/>
             )  : (
               <></>
             )}
