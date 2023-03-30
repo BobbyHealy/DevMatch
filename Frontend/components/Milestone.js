@@ -57,7 +57,6 @@ export default function Milestone(pid) {
         console.log(JSON.parse(result))
 
         setMilestones(JSON.parse(result)[0])
-        milestones.map((m)=>{console.log(m.split(",")[0],m.split(",")[1],m.split(",")[2],m.split(",")[3])})
     })
       .catch((err) => {
         console.log(err);
@@ -192,7 +191,7 @@ export default function Milestone(pid) {
                         </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200 bg-white">
-                        {milestones.map((milestone) => (
+                        {milestones?.map((milestone) => (
                             <tr key={milestone.split(",")[3]} className={selectedMilestones.includes(milestone) ? 'bg-gray-50' : undefined}>
                             <td className="relative px-7 sm:w-12 sm:px-6">
                                 {selectedMilestones.includes(milestone) && (
