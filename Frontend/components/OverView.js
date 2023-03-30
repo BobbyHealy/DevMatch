@@ -379,6 +379,30 @@ useEffect(() => {
     //refreshPage()
   }
 
+
+  const handleDeleteProj = () => {
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    var raw = JSON.stringify({
+      pid: pid,
+    });
+    var requestOptions = {
+      method: "DELETE",
+      headers: myHeaders,
+      body: raw,
+    };
+
+    fetch("http://localhost:3000/api/deleteProject", requestOptions)
+      .then((response) => response.text())
+      .then((result) => console.log(result))
+      .catch((err) => {
+        console.log(err);
+      });    
+
+    Router.push("/")
+
+  }
+
   return (
     <>
       <div>
@@ -638,7 +662,8 @@ useEffect(() => {
                       </div>
                       <div className='sm:col-span-1'>
                         <dt>
-                      <span className=' text-red-600 cursor-pointer hover:text-red-900'>Delete Project</span>
+                      <span onClick={handleDeleteProj}
+                      className=' text-red-600 cursor-pointer hover:text-red-900'>Delete Project</span>
                           </dt>
                       </div>
                     </dl>

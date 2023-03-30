@@ -5,7 +5,7 @@ export default async function (req, res) {
         redirect: "follow",
       };
   
-      fetch(`http://localhost:8080/removeUserComplete?uid=${req.body.userID}`, requestOptions)
+      fetch(`http://localhost:8080/removeProjectComplete?pid=${req.body.pid}`, requestOptions)
         .then((response) => response.text())
         .then((result) => {
           res.statusCode = 200;
