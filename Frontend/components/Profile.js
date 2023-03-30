@@ -199,17 +199,9 @@ function Profile() {
     const ids = chatID.split("-");
     if (ids[0] === user.id) {
       updateDoc(doc(db, "userChats", ids[1]), {
-        "oe2tfh0K0hV6Q2P9X3fMV0RH3w82-g1Ujakr5NkbGLxwJaOZZ2YtwdEa2":
-          deleteField(),
-      });
-      updateDoc(doc(db, "userChats", ids[1]), {
         [chatID]: deleteField(),
       });
     } else {
-      updateDoc(doc(db, "userChats", ids[0]), {
-        "oe2tfh0K0hV6Q2P9X3fMV0RH3w82-g1Ujakr5NkbGLxwJaOZZ2YtwdEa2":
-          deleteField(),
-      });
       updateDoc(doc(db, "userChats", ids[0]), {
         [chatID]: deleteField(),
       });

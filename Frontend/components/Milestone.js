@@ -27,7 +27,9 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-
+function refreshPage() {
+    window.location.reload(false);
+  }
 
 export default function Milestone(pid) {
   const [showModal, setShowModal] = useState(false);
@@ -104,7 +106,7 @@ export default function Milestone(pid) {
         setUserInfo(JSON.parse(result));
       })
       .catch((error) => console.log("error", error));
-
+    refreshPage()
   }
 
   useEffect(() => {
