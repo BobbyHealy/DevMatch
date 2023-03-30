@@ -8,12 +8,11 @@ import {
   doc,
   updateDoc,
   deleteDoc,
-  FieldValue,
   onSnapshot,
   deleteField,
 } from "firebase/firestore";
 import { db } from "@/config/firebase";
-import { deleteUser, getAuth } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -173,25 +172,30 @@ function Profile() {
       });
     deleteDoc(doc(db, "userDocs", user.email));
 
+    console.log(1)
     onSnapshot(doc(db, "userChats", user.uid), (doc) => {
       if (doc.data()) {
         Object.entries(doc.data()).forEach((id) => {
-          console.log(id[0]);
+
           deleteChat(id[0]);
         });
       }
     });
+    
     deleteDoc(doc(db, "users", user.uid));
+  
 
     deleteDoc(doc(db, "userChats", user.uid));
+
 
     currentUser
       .delete()
       .then(() => {
+       
         Router.push("/account/login");
         refreshPage();
       })
-      .catch((error) => {});
+      .catch((error) => {console.log(error)});
   };
 
   function deleteChat(chatID) {
