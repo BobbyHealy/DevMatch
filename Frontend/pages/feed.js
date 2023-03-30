@@ -17,6 +17,10 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
+function refreshPage() {
+  window.location.reload(false)
+}
+
 export default function Feed() {
   const [posts, setPosts] = useState(null);
   const [enabled, setEnabled] = useState(false);
@@ -32,6 +36,7 @@ export default function Feed() {
           currentProjPage: "#Overview",
         });
       }
+      //refreshPage()
     }
   }, []);
 
