@@ -885,12 +885,16 @@ func searchSkill(current []string, skills []string, isProject bool) []string {
 			var skillCheck []string = p.NeededSkills
 			for j := 0; j < len(skills); j++ {
 				for k := 0; k < len(skillCheck); k++ {
+					//fmt.Println(skillCheck[k])
+					//fmt.Println(skills[j])
 					if skillCheck[k] == skills[j] {
+						fmt.Println("here k")
 						match = true
 						break
 					}
 				}
 				if match {
+					fmt.Println("here j")
 					break
 				}
 			}
@@ -988,8 +992,9 @@ func searchFilter(c *gin.Context) {
 	}
 	//var ignored []string = searchIgnore(ids, ignore)
 	if skills[0] != "" {
-		ids = searchIgnore(ids, skills)
+		ids = searchSkill(ids, skills, isProject)
 	}
+	//fmt.Println(len(ids))
 	//var skilled []string = searchSkill(ignored, skills, isProject)
 	var result []string
 	for i := 0; i < len(ids); i++ {
