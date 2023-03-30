@@ -154,7 +154,7 @@ useEffect(() => {
     
     
   }
-}, [])
+}, [project?.owners, project?.tmembers])
 
 
   const handleJoinProject = async () => {
