@@ -1,9 +1,10 @@
-import {useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import UserComponent from "@/components/UserComponent";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/config/firebase";
+
 import { useAuth } from "@/context/AuthContext";
-export default function Explore({project}) {
+export default function Explore({ project }) {
   const [posts, setPosts] = useState(null);
   const { user } = useAuth();
 
@@ -34,13 +35,12 @@ export default function Explore({project}) {
     redirect: "follow",
   };
   useEffect(() => {
-    if(user.uid)
-    {
+    if (user.uid) {
       updateDoc(doc(db, "users", user.uid), {
-        currentProjPage:"#Explore"
-      })
+        currentProjPage: "#Explore",
+      });
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
     setPosts(null);
@@ -75,9 +75,9 @@ export default function Explore({project}) {
       {posts &&
         posts.map((e, i) => {
           return (
-            e.userID !== user.uid &&e.skills.filter(element => project.skills.includes(element)).length>0 && (
+            e.userID !== user.uid && (
               <div key={e.toString() + i} className='pb-6'>
-                <UserComponent user={e} />
+                <UserComponent user={e} inviteProjectID={project.pid} />
               </div>
             )
           );

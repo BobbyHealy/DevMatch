@@ -43,6 +43,8 @@ type project struct {
 	ProjectBannerPic   string   `json:"projectBannerPic"`
 	ProjectDescription string   `json:"projectDes"`
 	ProjectType        string   `json:"type"`
+	Milestones         []string `json:"milestones"`
+	Tasks              []string `json:"tasks"`
 	//TaskBoard     Scrumboard `json: "board"`
 }
 
@@ -52,8 +54,11 @@ type project struct {
  * returned
  */
 type searchType struct {
-	Project bool `json:"project"`
-	Limit   int  `json:"limit"`
+	Project bool     `json:"project"`
+	Limit   int      `json:"limit"`
+	Ignore  []string `json:"ignore"`
+	Skills  []string `json:"skills"`
+	Name    string   `json:"name"`
 }
 
 func main() {
@@ -71,18 +76,21 @@ func main() {
 	router.POST("/updateProject", updateProject)
 	router.POST("/search", search)
 
-	router.POST("/addDM", postDirectMessage)
-	router.POST("/updateDM", updateDirectMessage)
-	router.GET("/directmessages", getDirectMessage)
-	router.POST("/addGC", postGroupChat)
-	router.POST("/updateGC", updateGroupChat)
-	router.GET("/groupchats", getGroupChat)
+	//router.POST("/addDM", postDirectMessage)
+	//router.POST("/updateDM", updateDirectMessage)
+	//router.GET("/directmessages", getDirectMessage)
+	//router.POST("/addGC", postGroupChat)
+	//router.POST("/updateGC", updateGroupChat)
+	//router.GET("/groupchats", getGroupChat)
 
 	router.GET("/prettyProject", getPrettyProject)
 	router.GET("/prettyUser", getPrettyUser)
 	router.POST("/userToProject", userToProject)
 	router.DELETE("/removeUser", removeUser)
 	router.DELETE("/removeProject", removeProject)
+	router.POST("/searchFilter", searchFilter)
+	router.POST("/addMilestone", addMilestone)
+	router.GET("/getMilestones", getMilestones)
 
 	router.DELETE("/removeProjectComplete", removeProjectAll)
 	router.DELETE("/removeUserComplete", removeUserAll)
@@ -90,6 +98,9 @@ func main() {
 	router.POST("/updateProjectParts", updateProjectParts)
 	router.POST("/removeUserFromProject", removeUserFromProject)
 	router.POST("/removeProjectFromUser", removeProjectFromUser)
+
+	router.POST("/addTask", addTask)
+	router.GET("/getTasks", getTasks)
 
 	router.Run("localhost:8080")
 
@@ -177,7 +188,6 @@ func getUsers(c *gin.Context) {
 	if err := f.Value(&v); err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("%+v\n", v)
 	c.IndentedJSON(http.StatusOK, v)
 }
 
@@ -283,7 +293,7 @@ func search(c *gin.Context) {
 		if err := f.OrderBy("$key").LimitToFirst(int64(limit)).Value(&v); err != nil {
 			log.Fatal(err)
 		}
-		fmt.Printf("%+v\n", v)
+		//fmt.Printf("%+v\n", v)
 		c.IndentedJSON(http.StatusOK, v)
 		return
 	}
@@ -541,7 +551,8 @@ func updateProjectParts(c *gin.Context) {
 	var newProj project
 	fmt.Println(c)
 
-	projFields := []string{"owners", "name", "tmembers", "skills", "projectProfile", "projectBannerPic", "projectDes", "type"}
+	projFields := []string{"owners", "name", "tmembers", "skills", "projectProfile",
+		"projectBannerPic", "projectDes", "type", "milestones", "tasks"}
 	// projFieldsPair := []string{"OwnersID",
 	// 	"ProjectName",
 	// 	"MembersID",
@@ -588,7 +599,10 @@ func updateProjectParts(c *gin.Context) {
 				newProj.ProjectDescription = fmt.Sprintf("%v", hold)
 			case projFields[7]:
 				newProj.ProjectType = fmt.Sprintf("%v", hold)
-
+			case projFields[8]:
+				newProj.Milestones = interfaceToStringSplice(hold)
+			case projFields[9]:
+				newProj.Tasks = interfaceToStringSplice(hold)
 			}
 		}
 	}
@@ -681,6 +695,15 @@ func removeUserFromProj(pid string, uid string) {
 	for i := 0; i < len(owns); i++ {
 		if !(owns[i] == uid) {
 			owns2 = append(owns2, owns[i])
+		} else { //Is owner
+			if len(owns) == 1 { //sole owner
+				if len(mems2) >= 1 { //at least one more user
+					owns2 = append(owns2, mems2[0]) //takes the first user on the list
+				} else {
+					removeProjHelper(pid) //remove it if no users left
+					return
+				}
+			}
 		}
 	}
 	proj.MembersID = mems2
@@ -697,6 +720,7 @@ func removeProjectFromUser(c *gin.Context) {
 	} else {
 		fmt.Println(pid)
 	}
+
 	uid, exists := c.GetQuery("uid")
 	if !exists {
 		fmt.Println("Request with pid")
@@ -783,4 +807,282 @@ func removeUserAll(c *gin.Context) {
 	}
 
 	removeUserHelper(uid)
+
+}
+
+func addMilestone(c *gin.Context) {
+	pid, exists := c.GetQuery("pid")
+	if !exists {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	} else {
+		fmt.Println(pid)
+	}
+	milestone, exists2 := c.GetQuery("milestone")
+	if !exists2 {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	} else {
+		fmt.Println(milestone)
+	}
+
+	var proj project = getProjectFromID(pid)
+	if proj.ProjectID == "" {
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	}
+	proj.Milestones = append(proj.Milestones, milestone)
+	updateProjectHelp(proj)
+}
+
+func getMilestones(c *gin.Context) {
+	pid, exists := c.GetQuery("pid")
+	if !exists {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	} else {
+		fmt.Println(pid)
+	}
+	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Projects/" + pid
+	f := firego.New(path, nil)
+	var v project
+	if err := f.Value(&v); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%+v\n", v)
+
+	var milestones []string
+	for j := 0; j < len(v.Milestones); j++ {
+		milestone := v.Milestones[j]
+		milestones = append(milestones, milestone)
+	}
+
+	c.IndentedJSON(http.StatusOK, []interface{}{milestones})
+
+}
+
+func searchIgnore(current []string, ignore []string) []string {
+	var ignored []string
+	var match bool
+	for i := 0; i < len(current); i++ {
+		match = false
+		for j := 0; j < len(ignore); j++ {
+			if current[i] == ignore[j] {
+				//fmt.Printf("here, %s, %s, %d\n", current[i], ignore[j], j)
+				//fmt.Println()
+				match = true
+				break
+			}
+		}
+		if match {
+			//fmt.Printf("here2, %s\n", current[i])
+		}
+		if !match {
+			//fmt.Println("here3 " + current[i])
+			ignored = append(ignored, current[i])
+
+		}
+	}
+	return ignored
+}
+
+func searchSkill(current []string, skills []string, isProject bool) []string {
+	if isProject {
+		var skilled []string
+		for i := 0; i < len(current); i++ {
+			var match bool = false
+			var p project = getProjectFromID(current[i])
+			var skillCheck []string = p.NeededSkills
+			for j := 0; j < len(skills); j++ {
+				for k := 0; k < len(skillCheck); k++ {
+					//fmt.Println(skillCheck[k])
+					//fmt.Println(skills[j])
+					if skillCheck[k] == skills[j] {
+						//fmt.Println("here k")
+						match = true
+						break
+					}
+				}
+				if match {
+					//fmt.Println("here j")
+					break
+				}
+			}
+			if match {
+				skilled = append(skilled, current[i])
+			}
+		}
+		return skilled
+	} else {
+		var skilled []string
+		for i := 0; i < len(current); i++ {
+			var match bool = false
+			var u user = getUserFromID(current[i])
+			var skillCheck []string = u.Skills
+			for j := 0; j < len(skills); j++ {
+				for k := 0; k < len(skillCheck); k++ {
+					if skillCheck[k] == skills[j] {
+						match = true
+						break
+					}
+				}
+				if match {
+					break
+				}
+			}
+			if match {
+				skilled = append(skilled, current[i])
+			}
+		}
+		return skilled
+	}
+}
+
+func matchName(name string, ids []string, isProject bool) []string {
+	var matched []string
+	if isProject {
+		var check project
+		for i := 0; i < len(ids); i++ {
+			check = getProjectFromID(ids[i])
+			if check.ProjectName == name {
+				matched = append(matched, ids[i])
+			}
+		}
+		return matched
+	} else {
+		var check user
+		for i := 0; i < len(ids); i++ {
+			check = getUserFromID(ids[i])
+			if check.Name == name {
+				matched = append(matched, ids[i])
+			}
+		}
+		return matched
+	}
+}
+
+func getIDS(isProject bool) []string {
+	var projOrUser string
+	if isProject {
+		projOrUser = "Projects"
+	} else {
+		projOrUser = "Users"
+	}
+	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/" + projOrUser + "/"
+	f := firego.New(path, nil)
+	v := make(map[string]interface{})
+	if err := f.Value(&v); err != nil {
+		log.Fatal(err)
+	}
+	keys := make([]string, 0, len(v))
+	for k := range v {
+		keys = append(keys, k)
+	}
+	return keys
+}
+
+func searchFilter(c *gin.Context) {
+	var thisSearch searchType
+	if err := c.BindJSON(&thisSearch); err != nil {
+		return
+	}
+	isProject := thisSearch.Project
+	limit := thisSearch.Limit
+	skills := thisSearch.Skills
+	ignore := thisSearch.Ignore
+	name := thisSearch.Name
+
+	var ids []string = getIDS(isProject)
+	if name != "" {
+		var matched []string = matchName(name, ids, isProject)
+		c.IndentedJSON(http.StatusOK, []interface{}{matched})
+	}
+	if ignore[0] != "" {
+		ids = searchIgnore(ids, ignore)
+	}
+	//var ignored []string = searchIgnore(ids, ignore)
+	if skills[0] != "" {
+		ids = searchSkill(ids, skills, isProject)
+	}
+	//fmt.Println(len(ids))
+	//var skilled []string = searchSkill(ignored, skills, isProject)
+	var result []string
+	for i := 0; i < len(ids); i++ {
+		if len(result) == limit {
+			break
+		}
+		result = append(result, ids[i])
+	}
+	if isProject {
+		var resultAndInfo []project
+		for j := 0; j < len(result); j++ {
+			resultAndInfo = append(resultAndInfo, getProjectFromID(result[j]))
+		}
+		c.IndentedJSON(http.StatusOK, []interface{}{resultAndInfo})
+		return
+	} else {
+		var resultAndInfo []user
+		for j := 0; j < len(result); j++ {
+			resultAndInfo = append(resultAndInfo, getUserFromID(result[j]))
+		}
+		c.IndentedJSON(http.StatusOK, []interface{}{resultAndInfo})
+		return
+	}
+	//c.IndentedJSON(http.StatusOK, []interface{}{result})
+
+}
+
+func addTask(c *gin.Context) {
+	pid, exists := c.GetQuery("pid")
+	if !exists {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	} else {
+		fmt.Println(pid)
+	}
+	task, exists2 := c.GetQuery("task")
+	if !exists2 {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	} else {
+		fmt.Println(task)
+	}
+	var proj project = getProjectFromID(pid)
+	if proj.ProjectID == "" {
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	}
+	proj.Tasks = append(proj.Tasks, task)
+	updateProjectHelp(proj)
+}
+
+func getTasks(c *gin.Context) {
+	pid, exists := c.GetQuery("pid")
+	if !exists {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	} else {
+		fmt.Println(pid)
+	}
+	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Projects/" + pid
+	f := firego.New(path, nil)
+	var v project
+	if err := f.Value(&v); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%+v\n", v)
+
+	var tasks []string
+	for j := 0; j < len(v.Tasks); j++ {
+		task := v.Tasks[j]
+		tasks = append(tasks, task)
+	}
+
+	c.IndentedJSON(http.StatusOK, []interface{}{tasks})
 }

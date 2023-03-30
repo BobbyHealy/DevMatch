@@ -1,4 +1,4 @@
-import React ,{useState}from 'react'
+import React ,{useEffect, useState}from 'react'
 import Router from "next/router";
 import {
     DocumentTextIcon,
@@ -11,13 +11,13 @@ import {
 
 function DocumentRow({id, fileName, lastEdit,date}) {
   const  dateTime =lastEdit?.toDate().toLocaleString('en-US').split(",")
-  const  times= dateTime[1].split(":")
-  const  time= times[0]+":"+times[1] +" "+times[2].split(" ")[1]
+  const [time, setTime] = useState()
   const today = new Date(Timestamp.now().toDate().toLocaleString('en-US').split(",")[0])
-  const diff =(lastEdit.toDate()- today)
+  const diff =(lastEdit?.toDate()- today)
   const [open ,setOpen] = useState(false)
   const {user}=useAuth()
   
+  useEffect
   function refreshPage() {
     window.location.reload(false);
   }
@@ -26,6 +26,14 @@ function DocumentRow({id, fileName, lastEdit,date}) {
     refreshPage()
 
   };
+  useEffect(() => {
+    if(dateTime)
+    {
+      const  times = dateTime[1].split(":")
+      setTime(times[0]+":"+times[1]+" "+times[2].split(" ")[1])
+    }
+
+  }, [dateTime])
   
   
 

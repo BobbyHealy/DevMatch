@@ -25,7 +25,7 @@ export default function Messages({DMID}) {
     }, [DMID]);
   return (
     
-    <div className='bg-orange-500 text-gray-400 p-2 overflow-scroll h-[calc(100vh-231px)] '>
+    <div className='bg-zinc-700 text-gray-400 p-2 overflow-scroll h-[calc(100vh-166px)] lg:h-[calc(100vh-110px)] '>
         {messages.map((m) => (
         <Message message={m} key={m.id} />
         ))}
