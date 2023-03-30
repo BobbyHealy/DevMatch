@@ -6,7 +6,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useAuth } from "@/context/AuthContext";
 import {doc,updateDoc,} from "firebase/firestore";
 import { db } from "@/config/firebase";
-
+import Router from "next/router";
 
 export default function Overview({pid, projectD}) {
   const project = {
@@ -355,7 +355,28 @@ useEffect(() => {
   };
 
   const handleLeaveProj = () => {
-    refreshPage()
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    var raw = JSON.stringify({
+      pid: pid,
+      uid: user.uid
+    });
+    var requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+    };
+
+    fetch("http://localhost:3000/api/leaveProject", requestOptions)
+      .then((response) => response.text())
+      .then((result) => console.log(result))
+      .catch((err) => {
+        console.log(err);
+      });    
+
+    Router.push("./")
+
+    //refreshPage()
   }
 
   return (
