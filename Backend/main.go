@@ -88,7 +88,7 @@ func main() {
 	router.POST("/userToProject", userToProject)
 	router.DELETE("/removeUser", removeUser)
 	router.DELETE("/removeProject", removeProject)
-	router.GET("/searchFilter", searchFilter)
+	router.POST("/searchFilter", searchFilter)
 	router.POST("/addMilestone", addMilestone)
 	router.GET("/getMilestones", getMilestones)
 
