@@ -26,7 +26,9 @@ const dueDates = [
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
-
+function refreshPage() {
+    window.location.reload(false);
+  }
 
 
 export default function Milestone(pid) {
@@ -39,7 +41,8 @@ export default function Milestone(pid) {
   const [checked, setChecked] = useState(false)
   const [indeterminate, setIndeterminate] = useState(false)
   const [selectedMilestones, setSelectedMilestones] = useState([])
-  const[milestones, setMilestones] =useState([])
+  const[milestones, setMilestones] = useState([])
+  const [title, setTitle] = useState("")
   useEffect(() => {
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
@@ -64,8 +67,8 @@ export default function Milestone(pid) {
 }, []);
 
   useLayoutEffect(() => {
-    const isIndeterminate = selectedMilestones.length > 0 && selectedMilestones.length < milestones.length
-    setChecked(selectedMilestones.length === milestones.length)
+    const isIndeterminate = selectedMilestones?.length > 0 && selectedMilestones.length < milestones.length
+    setChecked(selectedMilestones?.length === milestones?.length)
     setIndeterminate(isIndeterminate)
     checkbox.current.indeterminate = isIndeterminate
   }, [selectedMilestones])
@@ -75,36 +78,44 @@ export default function Milestone(pid) {
     setChecked(!checked && !indeterminate)
     setIndeterminate(false)
   }
-  const addMilestone= ()=>{
-    var myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    console.log(pid)
+  const addMilestone= async ()=>{
+    if(title.trim())
+    {
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        console.log(pid)
 
-    var raw = JSON.stringify({
-      pid: pid.pid,
-      "milestone":  {
-        title: 'Create login UI',
-        assignedto: 'Lindsay Walton',
-        labels: 'Frontend',
-        duedate: '10/14/2022',
-        complete:false
-      },
-    });
+        console.log(assigned.name)
+        console.log(labelled)
+        console.log(dated)
+        var raw = JSON.stringify({
+        pid: pid.pid,
+        "milestone":  {
+            title: title.trim(),
+            assignedto: assigned.name,
+            labels: labelled.name,
+            duedate: dated.name,
+            complete:false
+        },
+        });
 
-    var requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-    };
+        var requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+        };
 
-    fetch("http://localhost:3000/api/addMilestone", requestOptions)
-      .then((response) => response.text())
-      .then((result) => {
-        setUserInfo(JSON.parse(result));
-      })
-      .catch((error) => console.log("error", error));
-
-  }
+        fetch("http://localhost:3000/api/addMilestone", requestOptions)
+        .then((response) => response.text())
+        .then((result) => {
+            console.log(JSON.parse(result));
+        })
+        .catch((error) => console.log("error", error));
+        await setShowModal(false)
+        refreshPage()
+        }
+        
+    }
 
   useEffect(() => {
     if(user.uid)
@@ -126,14 +137,6 @@ export default function Milestone(pid) {
                 <button
                     type='button'
                     className='inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
-                    onClick={addMilestone}
-                    >
-                    AddMileStone
-                    <PlusIcon className='ml-2 -mr-1 h-5 w-5' aria-hidden='true' />
-                </button>
-                <button
-                    type='button'
-                    className='inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
                     onClick={() => setShowModal(true)}
                     >
                     Create new Milestone
@@ -145,7 +148,7 @@ export default function Milestone(pid) {
                 <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                     <div className="relative">
-                    {selectedMilestones.length > 0 && (
+                    {selectedMilestones?.length > 0 && (
                         <div className="absolute top-0 left-14 flex h-12 items-center space-x-3 bg-white sm:left-12">
                         <button
                             type="button"
@@ -192,21 +195,21 @@ export default function Milestone(pid) {
                         </thead>
                         <tbody className="divide-y divide-gray-200 bg-white">
                         {milestones?.map((milestone) => (
-                            <tr key={milestone.split(",")[3]} className={selectedMilestones.includes(milestone) ? 'bg-gray-50' : undefined}>
+                            <tr key={milestone.split(",")[3]} className={selectedMilestones?.includes(milestone) ? 'bg-gray-50' : undefined}>
                             <td className="relative px-7 sm:w-12 sm:px-6">
-                                {selectedMilestones.includes(milestone) && (
+                                {selectedMilestones?.includes(milestone) && (
                                 <div className="absolute inset-y-0 left-0 w-0.5 bg-indigo-600" />
                                 )}
                                 <input
                                 type="checkbox"
                                 className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
                                 value={milestone.split(",")[3]}
-                                checked={selectedMilestones.includes(milestone)}
+                                checked={selectedMilestones?.includes(milestone)}
                                 onChange={(e) =>
                                     setSelectedMilestones(
                                     e.target.checked
                                         ? [...selectedMilestones, milestone]
-                                        : selectedMilestones.filter((p) => p !== milestone)
+                                        : selectedMilestones?.filter((p) => p !== milestone)
                                     )
                                 }
                                 />
@@ -214,7 +217,7 @@ export default function Milestone(pid) {
                             <td
                                 className={classNames(
                                 'whitespace-nowrap py-4 pr-3 text-sm font-medium',
-                                selectedMilestones.includes(milestone) ? 'text-indigo-600' : 'text-gray-900'
+                                selectedMilestones?.includes(milestone) ? 'text-indigo-600' : 'text-gray-900'
                                 )}
                             >
                                 {milestone.split(",")[0]}
@@ -224,7 +227,7 @@ export default function Milestone(pid) {
                             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{milestone.split(",")[3]}</td>
                             <td className="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                                 <a href="#" className="text-indigo-600 hover:text-indigo-900">
-                                Edit<span className="sr-only">, {milestone.title}</span>
+                                Edit<span className="sr-only">, {milestone.split(",")[0]}</span>
                                 </a>
                             </td>
                             </tr>
@@ -238,7 +241,7 @@ export default function Milestone(pid) {
         </div>
         <MilestoneModal isVisible={showModal} onClose={() => setShowModal(false)}>
             <div>
-              <form action="#" className="relative">
+              <form className="relative">
                 <div className="overflow-hidden rounded-lg border border-gray-300 shadow-sm focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500">
                     <label htmlFor="title" className="sr-only">
                     Title
@@ -249,6 +252,7 @@ export default function Milestone(pid) {
                     id="title"
                     className="block w-full border-0 pt-2.5 text-lg font-medium placeholder:text-gray-400 focus:ring-0"
                     placeholder="Title"
+                    onChange={(e) => setTitle(e.target.value)}
                     />
                     <label htmlFor="description" className="sr-only">
                     Description
@@ -285,7 +289,7 @@ export default function Milestone(pid) {
                             <Listbox.Label className="sr-only"> Assign </Listbox.Label>
                             <div className="relative">
                             <Listbox.Button className="relative inline-flex items-center whitespace-nowrap rounded-full bg-gray-50 py-2 px-2 text-sm font-medium text-gray-500 hover:bg-gray-100 sm:px-3">
-                                {assigned.value === null ? (
+                                {assigned.value? (
                                 <UserCircleIcon className="h-5 w-5 flex-shrink-0 text-gray-300 sm:-ml-1" aria-hidden="true" />
                                 ) : (
                                 <img src={assigned.avatar} alt="" className="h-5 w-5 flex-shrink-0 rounded-full" />
@@ -293,11 +297,11 @@ export default function Milestone(pid) {
 
                                 <span
                                 className={classNames(
-                                    assigned.value === null ? '' : 'text-gray-900',
+                                    assigned.value? '' : 'text-gray-900',
                                     'hidden truncate sm:ml-2 sm:block'
                                 )}
                                 >
-                                {assigned.value === null ? 'Assign' : assigned.name}
+                                {assigned.value? 'Assign' : assigned.name}
                                 </span>
                             </Listbox.Button>
 
@@ -458,7 +462,8 @@ export default function Milestone(pid) {
                     </div>
                     <div className="flex-shrink-0 space-x-3">
                         <button
-                        type="submit"
+                        type="button"
+                        onClick={addMilestone}
                         className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                         >
                         Create
