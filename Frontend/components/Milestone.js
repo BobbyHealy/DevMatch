@@ -27,9 +27,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-function refreshPage() {
-    window.location.reload(false);
-  }
+
 
 export default function Milestone(pid) {
   const [showModal, setShowModal] = useState(false);
@@ -106,7 +104,7 @@ export default function Milestone(pid) {
         setUserInfo(JSON.parse(result));
       })
       .catch((error) => console.log("error", error));
-    refreshPage()
+
   }
 
   useEffect(() => {
@@ -241,7 +239,7 @@ export default function Milestone(pid) {
         </div>
         <MilestoneModal isVisible={showModal} onClose={() => setShowModal(false)}>
             <div>
-              <form className="relative" onSubmit={handleMilstones}>
+              <form action="#" className="relative">
                 <div className="overflow-hidden rounded-lg border border-gray-300 shadow-sm focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500">
                     <label htmlFor="title" className="sr-only">
                     Title
@@ -252,8 +250,6 @@ export default function Milestone(pid) {
                     id="title"
                     className="block w-full border-0 pt-2.5 text-lg font-medium placeholder:text-gray-400 focus:ring-0"
                     placeholder="Title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
                     />
                     <label htmlFor="description" className="sr-only">
                     Description
@@ -265,8 +261,6 @@ export default function Milestone(pid) {
                     className="block w-full resize-none border-0 py-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
                     placeholder="Write a description..."
                     defaultValue={''}
-                    value={description}
-                    onChange={(e) => setDescription(e.tartget.value)}
                     />
 
                     {/* Spacer element to match the height of the toolbar */}

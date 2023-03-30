@@ -173,7 +173,7 @@ useEffect(() => {
       body: raw,
     };
 
-    fetch("http://localhost:3000/api/joinProject", requestOptions)
+    await fetch("http://localhost:3000/api/joinProject", requestOptions)
       .then((response) => response.text())
       .then((result) => {
         setUserInfo(JSON.parse(result));
