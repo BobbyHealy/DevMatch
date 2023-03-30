@@ -551,7 +551,8 @@ func updateProjectParts(c *gin.Context) {
 	var newProj project
 	fmt.Println(c)
 
-	projFields := []string{"owners", "name", "tmembers", "skills", "projectProfile", "projectBannerPic", "projectDes", "type"}
+	projFields := []string{"owners", "name", "tmembers", "skills", "projectProfile",
+		"projectBannerPic", "projectDes", "type", "milestones", "tasks"}
 	// projFieldsPair := []string{"OwnersID",
 	// 	"ProjectName",
 	// 	"MembersID",
@@ -598,7 +599,10 @@ func updateProjectParts(c *gin.Context) {
 				newProj.ProjectDescription = fmt.Sprintf("%v", hold)
 			case projFields[7]:
 				newProj.ProjectType = fmt.Sprintf("%v", hold)
-
+			case projFields[8]:
+				newProj.Milestones = interfaceToStringSplice(hold)
+			case projFields[9]:
+				newProj.Tasks = interfaceToStringSplice(hold)
 			}
 		}
 	}
@@ -691,6 +695,15 @@ func removeUserFromProj(pid string, uid string) {
 	for i := 0; i < len(owns); i++ {
 		if !(owns[i] == uid) {
 			owns2 = append(owns2, owns[i])
+		} else { //Is owner
+			if len(owns) == 1 { //sole owner
+				if len(mems2) >= 1 { //at least one more user
+					owns2 = append(owns2, mems2[0]) //takes the first user on the list
+				} else {
+					removeProjHelper(pid) //remove it if no users left
+					return
+				}
+			}
 		}
 	}
 	proj.MembersID = mems2
