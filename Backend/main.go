@@ -888,13 +888,13 @@ func searchSkill(current []string, skills []string, isProject bool) []string {
 					//fmt.Println(skillCheck[k])
 					//fmt.Println(skills[j])
 					if skillCheck[k] == skills[j] {
-						fmt.Println("here k")
+						//fmt.Println("here k")
 						match = true
 						break
 					}
 				}
 				if match {
-					fmt.Println("here j")
+					//fmt.Println("here j")
 					break
 				}
 			}
