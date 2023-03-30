@@ -296,7 +296,7 @@ export default function ProjectSpace() {
             ) : section === "#Docs" ? (
               <ProjectDocs pid={pid}/>
             ) : section === "#Scrum" ? (
-              <Scrumboard />
+              <Scrumboard pid={pid}/>
             ) : section === "#Explore" ? (
                 <Explore project={project}/>
             ) : section === "#MS" ? (

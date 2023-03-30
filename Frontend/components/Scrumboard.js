@@ -15,13 +15,69 @@ function createGuidId() {
   });
 }
 
-export default function Scrumboard() {
+export default function Scrumboard({pid}) {
   const [ready, setReady] = useState(false);
   const [boardData, setBoardData] = useState(ScrumData);
   const [showForm, setShowForm] = useState(false);
   const [selectedBoard, setSelectedBoard] = useState(0);
+  const[tasks,setTasks] =useState();
   
   const{user}= useAuth();
+  useEffect(() => {
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    var raw = JSON.stringify({
+      pid: pid,
+    });
+    var requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+    };
+    fetch("http://localhost:3000/api/getTasks", requestOptions)
+      .then((response) => response.text())
+      .then((result) => {
+        console.log(JSON.parse(result))
+
+        setTasks(JSON.parse(result)[0])
+    })
+      .catch((err) => {
+        console.log(err);
+      });
+    
+}, []);
+
+const addTask= async ()=>{
+  if(pid)
+  {
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+      var raw = JSON.stringify({
+      pid: pid,
+      "task":  {
+        progress: "Completed",
+        id:3,
+        category: 2,
+        title: "Update Sprint 2 document",
+        assignees: "{\"assignees\": Steve, David, Jason}"
+      },
+      });
+
+      var requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+      };
+
+      fetch("http://localhost:3000/api/addTask", requestOptions)
+      .then((response) => response.text())
+      .then((result) => {
+          console.log(JSON.parse(result));
+      })
+      .catch((error) => console.log("error", error));
+      }
+  }
+
   useEffect(() => {
     if(user.uid)
     {
@@ -74,6 +130,8 @@ export default function Scrumboard() {
   }
   return (
     <div className="p-10 flex flex-col h-screen">
+      <button onClick={addTask}>AddTaskTest</button>
+      <span>{tasks}</span>
       {ready && (
           <DragDropContext onDragEnd={onDragEnd}>
             <div className="grid grid-cols-3 gap-7 my-3">
