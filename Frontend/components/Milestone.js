@@ -22,15 +22,6 @@ const dueDates = [
   { name: 'Today', value: 'today' },
 ]
 
-const milestones = [
-  {
-    title: 'Create login UI',
-    assignedto: 'Lindsay Walton',
-    labels: 'Frontend',
-    duedate: 'Today',
-  },
-  // More people...
-]
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -38,7 +29,7 @@ function classNames(...classes) {
 
 
 
-export default function Milestone() {
+export default function Milestone(pid) {
   const [showModal, setShowModal] = useState(false);
   const{ user }= useAuth();
   const [assigned, setAssigned] = useState(assignees[0])
@@ -48,6 +39,30 @@ export default function Milestone() {
   const [checked, setChecked] = useState(false)
   const [indeterminate, setIndeterminate] = useState(false)
   const [selectedMilestones, setSelectedMilestones] = useState([])
+  const[milestones, setMilestones] =useState([])
+  useEffect(() => {
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    var raw = JSON.stringify({
+      pid: pid.pid,
+    });
+    var requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+    };
+    fetch("http://localhost:3000/api/getMilestones", requestOptions)
+      .then((response) => response.text())
+      .then((result) => {
+        console.log(JSON.parse(result))
+
+        setMilestones(JSON.parse(result)[0])
+        milestones.map((m)=>{console.log(m.split(",")[0],m.split(",")[1],m.split(",")[2],m.split(",")[3])})
+    })
+      .catch((err) => {
+        console.log(err);
+      });
+}, []);
 
   useLayoutEffect(() => {
     const isIndeterminate = selectedMilestones.length > 0 && selectedMilestones.length < milestones.length
@@ -60,6 +75,36 @@ export default function Milestone() {
     setSelectedMilestones(checked || indeterminate ? [] : milestones)
     setChecked(!checked && !indeterminate)
     setIndeterminate(false)
+  }
+  const addMilestone= ()=>{
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    console.log(pid)
+
+    var raw = JSON.stringify({
+      pid: pid.pid,
+      "milestone":  {
+        title: 'Create login UI',
+        assignedto: 'Lindsay Walton',
+        labels: 'Frontend',
+        duedate: '10/14/2022',
+        complete:false
+      },
+    });
+
+    var requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+    };
+
+    fetch("http://localhost:3000/api/addMilestone", requestOptions)
+      .then((response) => response.text())
+      .then((result) => {
+        setUserInfo(JSON.parse(result));
+      })
+      .catch((error) => console.log("error", error));
+
   }
 
   useEffect(() => {
@@ -79,6 +124,14 @@ export default function Milestone() {
                 <h1 className="text-base font-semibold leading-6 text-gray-900">Milestones</h1>
                 </div>
                 <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+                <button
+                    type='button'
+                    className='inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
+                    onClick={addMilestone}
+                    >
+                    AddMileStone
+                    <PlusIcon className='ml-2 -mr-1 h-5 w-5' aria-hidden='true' />
+                </button>
                 <button
                     type='button'
                     className='inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
@@ -140,7 +193,7 @@ export default function Milestone() {
                         </thead>
                         <tbody className="divide-y divide-gray-200 bg-white">
                         {milestones.map((milestone) => (
-                            <tr key={milestone.duedate} className={selectedMilestones.includes(milestone) ? 'bg-gray-50' : undefined}>
+                            <tr key={milestone.split(",")[3]} className={selectedMilestones.includes(milestone) ? 'bg-gray-50' : undefined}>
                             <td className="relative px-7 sm:w-12 sm:px-6">
                                 {selectedMilestones.includes(milestone) && (
                                 <div className="absolute inset-y-0 left-0 w-0.5 bg-indigo-600" />
@@ -148,7 +201,7 @@ export default function Milestone() {
                                 <input
                                 type="checkbox"
                                 className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                                value={milestone.duedate}
+                                value={milestone.split(",")[3]}
                                 checked={selectedMilestones.includes(milestone)}
                                 onChange={(e) =>
                                     setSelectedMilestones(
@@ -165,11 +218,11 @@ export default function Milestone() {
                                 selectedMilestones.includes(milestone) ? 'text-indigo-600' : 'text-gray-900'
                                 )}
                             >
-                                {milestone.title}
+                                {milestone.split(",")[0]}
                             </td>
-                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{milestone.assignedto}</td>
-                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{milestone.labels}</td>
-                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{milestone.duedate}</td>
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{milestone.split(",")[1]}</td>
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{milestone.split(",")[2]}</td>
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{milestone.split(",")[3]}</td>
                             <td className="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                                 <a href="#" className="text-indigo-600 hover:text-indigo-900">
                                 Edit<span className="sr-only">, {milestone.title}</span>
