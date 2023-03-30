@@ -59,6 +59,7 @@ export default function Searchbar({search}) {
           
           setUsers(result)
         } catch (err) {
+          console.log(err)
           setErr(true);
         }
       };
@@ -66,6 +67,7 @@ export default function Searchbar({search}) {
     {
       setUsers([])
       console.log("set false")
+      setUsername("")
       setResult(false)
     }
     const handleKey = async e=>{

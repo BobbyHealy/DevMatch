@@ -44,8 +44,8 @@ export default function ProjComponent(props) {
     //check whether the group(chats in firestore) exists, if not create
     const combinedId =
     userInfo.userID> user2.userID
-    ? userInfo.userID + user2.userID
-    : user2.userID + userInfo.userID;
+    ? userInfo.userID +"-"+ user2.userID
+    : user2.userID +"-"+ userInfo.userID;
     try {
         const res = await getDoc(doc(db, "chats", combinedId));
   

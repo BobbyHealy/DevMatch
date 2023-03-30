@@ -41,8 +41,8 @@ export default function UserComponent(props) {
   const { userInfo } = useAuth();
   const combinedId =
     userInfo.userID > user.userID
-      ? userInfo.userID + user.userID
-      : user.userID + userInfo.userID;
+      ? userInfo.userID +"-"+ user.userID
+      : user.userID +"-"+ userInfo.userID;
 
   const inviteMessage = `Come join the project! here is the link: http://localhost:3000/project?pid=${inviteProjectID}`;
   const handleSelect = async () => {
