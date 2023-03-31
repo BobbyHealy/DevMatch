@@ -67,7 +67,7 @@ describe("Documents Tests (User Story #3)", () => {
     expect(querySnapshot.docs[0].data().fileName).toBe(data.fileName);
   }, 10000);
 
-  test("Delete dock", async () => {
+  test("Delete doc", async () => {
     deleteDoc(doc(db, "userDocs", email, "docs", docID))
       .then(() => {
         expect(email).toBe(email);
