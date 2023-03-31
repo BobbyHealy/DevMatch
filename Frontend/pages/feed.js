@@ -25,7 +25,7 @@ export default function Feed() {
   const [posts, setPosts] = useState(null);
   const [enabled, setEnabled] = useState(false);
   const [skillArr, setSkillArr] = useState([""]);
-  const [searchName, setSearchName] = useState("Roberto");
+  const [searchName, setSearchName] = useState("");
   const { user } = useAuth();
 
   useEffect(() => {
