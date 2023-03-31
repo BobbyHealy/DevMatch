@@ -17,7 +17,7 @@ const userNavigation = [
   { name: "Sign out", href: "#" },
 ];
 
-export default function Header() {
+export default function Header({ updateSeachName = null }) {
   const { user, login, logout, userInfo } = useAuth();
   const [completeUser, setCompleteUser] = useState({
     userId: "",
@@ -31,7 +31,7 @@ export default function Header() {
   });
 
   useEffect(() => {
-    if (user === null ) {
+    if (user === null) {
       Router.push("/account/login");
     } else if (userInfo === null) {
       setCompleteUser({
@@ -106,13 +106,24 @@ export default function Header() {
                           aria-hidden='true'
                         />
                       </div>
-                      <input
-                        id='search'
-                        name='search'
-                        className='block w-full rounded-md border border-gray-300 bg-white py-2 pl-10 pr-3 text-sm placeholder-gray-500 focus:border-indigo-500 focus:text-gray-900 focus:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm'
-                        placeholder='Search'
-                        type='search'
-                      />
+                      {updateSeachName !== null ? (
+                        <input
+                          id='search'
+                          onChange={(e) => updateSeachName(e.target.value)}
+                          name='search'
+                          className='block w-full rounded-md border border-gray-300 bg-white py-2 pl-10 pr-3 text-sm placeholder-gray-500 focus:border-indigo-500 focus:text-gray-900 focus:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm'
+                          placeholder='Search'
+                          type='search'
+                        />
+                      ) : (
+                        <input
+                          id='search'
+                          name='search'
+                          className='block w-full rounded-md border border-gray-300 bg-white py-2 pl-10 pr-3 text-sm placeholder-gray-500 focus:border-indigo-500 focus:text-gray-900 focus:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm'
+                          placeholder='Search'
+                          type='search'
+                        />
+                      )}
                     </div>
                   </div>
                 </div>

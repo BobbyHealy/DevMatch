@@ -18,14 +18,16 @@ function classNames(...classes) {
 }
 
 function refreshPage() {
-  window.location.reload(false)
+  window.location.reload(false);
 }
 
 export default function Feed() {
   const [posts, setPosts] = useState(null);
   const [enabled, setEnabled] = useState(false);
   const [skillArr, setSkillArr] = useState([""]);
+  const [searchName, setSearchName] = useState("Roberto");
   const { user } = useAuth();
+
   useEffect(() => {
     if (!user) {
       Router.push("/account/login");
@@ -56,13 +58,6 @@ export default function Feed() {
     name: "",
   });
 
-  var requestOptions = {
-    method: "POST",
-    headers: myHeaders,
-    body: raw,
-    redirect: "follow",
-  };
-
   var requestOptions2 = {
     method: "POST",
     headers: myHeaders,
@@ -72,30 +67,10 @@ export default function Feed() {
 
   useEffect(() => {
     setPosts(null);
-    // fetch("http://localhost:3000/api/getSearch", requestOptions)
-    //   .then((response) => response.text())
-    //   .then((result) => {
-    //     setPosts(
-    //       Object.entries(JSON.parse(result)).map((e) => {
-    //         const obj = JSON.parse(JSON.stringify(e[1]));
-    //         obj.pid = e[0];
-    //         return obj;
-    //       })
-    //     );
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
+
     fetch("http://localhost:3000/api/getSearchFilter", requestOptions2)
       .then((response) => response.text())
       .then((result) => {
-        // setPosts(
-        //   Object.entries(JSON.parse(result)).map((e) => {
-        //     const obj = JSON.parse(JSON.stringify(e[1]));
-        //     obj.pid = e[0];
-        //     return obj;
-        //   })
-        // );
         const resultArr = JSON.parse(result)[0];
         setPosts(resultArr);
       })
@@ -148,10 +123,14 @@ export default function Feed() {
     setSelectedSkills(cpy);
   };
 
+  const updateSeachName = (name) => {
+    setSearchName(name);
+  };
+
   return (
     <div className='min-h-screen bg-gray-100'>
       <div className='sticky top-0 z-30'>
-        <Header />
+        <Header updateSeachName={updateSeachName} />
       </div>
 
       {user && (
@@ -219,32 +198,40 @@ export default function Feed() {
             <main className='lg:col-span-9 xl:col-span-6'>
               {/* Update this to use API + map to generate a bunch of enties of either User or Project components */}
               {/* ProjComponent on feed example */}
-              {posts&&!enabled ? (
-                posts.map((e, i) => {
-                  return (
-                    e.owners &&
-                    !e.owners.includes(user.uid) &&
-                    !e.tmembers.includes(user.uid) && (
-                      <div key={e.toString() + i} className='pb-6'>
-                        <ProjComponent project={e} />
-                      </div>
-                    )
-                  );
-                })
+              {posts && !enabled ? (
+                posts
+                  .filter((e) =>
+                    searchName == "" ? true : e.name.includes(searchName)
+                  )
+                  .map((e, i) => {
+                    return (
+                      e.owners &&
+                      !e.owners.includes(user.uid) &&
+                      !e.tmembers.includes(user.uid) && (
+                        <div key={e.toString() + i} className='pb-6'>
+                          <ProjComponent project={e} />
+                        </div>
+                      )
+                    );
+                  })
               ) : (
                 <></>
               )}
               {/* UserComponent on feed example */}
               {posts !== null && enabled ? (
-                posts.map((e, i) => {
-                  return (
-                    e.userID !== user.uid && (
-                      <div key={e.toString() + i} className='pb-6'>
-                        <UserComponent user={e} />
-                      </div>
-                    )
-                  );
-                })
+                posts
+                  .filter((e) =>
+                    searchName == "" ? true : e.name.includes(searchName)
+                  )
+                  .map((e, i) => {
+                    return (
+                      e.userID !== user.uid && (
+                        <div key={e.toString() + i} className='pb-6'>
+                          <UserComponent user={e} />
+                        </div>
+                      )
+                    );
+                  })
               ) : (
                 <></>
               )}
