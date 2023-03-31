@@ -246,7 +246,7 @@ function Profile() {
           : userInfo.name,
     });
 
-    fetch("http://localhost:3000/api/addUser", requestOptions)
+    await fetch("http://localhost:3000/api/addUser", requestOptions)
       .then((response) => response.text())
       .then((result) => {
         setEdit(false);
