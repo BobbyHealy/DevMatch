@@ -339,11 +339,6 @@ useEffect(() => {
                             <Listbox.Label className="sr-only"> Assign </Listbox.Label>
                             <div className="relative">
                             <Listbox.Button className="relative inline-flex items-center whitespace-nowrap rounded-full bg-gray-50 py-2 px-2 text-sm font-medium text-gray-500 hover:bg-gray-100 sm:px-3">
-                                {assigned.profilePic? (
-                                <UserCircleIcon className="h-5 w-5 flex-shrink-0 text-gray-300 sm:-ml-1" aria-hidden="true" />
-                                ) : (
-                                <img src={assigned.profilePic} alt="" className="h-5 w-5 flex-shrink-0 rounded-full" />
-                                )}
 
                                 <span
                                 className={classNames(
@@ -375,11 +370,6 @@ useEffect(() => {
                                     value={assignee}
                                     >
                                     <div className="flex items-center">
-                                        {assignee?.avatar ? (
-                                        <img src={assignee?.avatar} alt="" className="h-5 w-5 flex-shrink-0 rounded-full" />
-                                        ) : (
-                                        <UserCircleIcon className="h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-                                        )}
 
                                         <span className="ml-3 block truncate font-medium">{assignee?.name}</span>
                                     </div>
@@ -501,15 +491,6 @@ useEffect(() => {
                     </Listbox>
                     </div>
                     <div className="flex items-center justify-between space-x-3 border-t border-gray-200 px-2 py-2 sm:px-3">
-                    <div className="flex">
-                        <button
-                        type="button"
-                        className="group -my-2 -ml-2 inline-flex items-center rounded-full px-3 py-2 text-left text-gray-400"
-                        >
-                        <PaperClipIcon className="-ml-1 mr-2 h-5 w-5 group-hover:text-gray-500" aria-hidden="true" />
-                        <span className="text-sm italic text-gray-500 group-hover:text-gray-600">Additional files</span>
-                        </button>
-                    </div>
                     <div className="flex-shrink-0 space-x-3">
                         <button
                         type="button"
