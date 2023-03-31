@@ -2,46 +2,19 @@
     {
         "name":"Backlog Tasks",
         "items": [
-            {
-                "id":1,
-                "category": 0,
-                "title": "UI redesign.",
-                "assignees": "David"
-            },
-            {
-                "id":2,
-                "category": 1,
-                "title": "API rework.",
-                "assignees": "Jason"
-            }
+
         ]
     },
     {
         "name":"In Progress",
         "items": [
-            {
-                "id":3,
-                "category": 2,
-                "title": "Update Sprint 2 document",
-                "assignees": "Steve, David, Jason"
-            }
+
         ]
     },
     {
         "name":"Completed",
         "items": [
-            {
-                "id":4,
-                "category": 1,
-                "title": "New API.",
-                "assignees": "Jason, Steve"
-            },
-            {
-                "id":5,
-                "category": 0,
-                "title": "New UI.",
-                "assignees": "David, Steve"
-            }
+
         ]
     }
 ]

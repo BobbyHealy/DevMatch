@@ -22,6 +22,7 @@ export default function Scrumboard({pid}) {
   const [showForm, setShowForm] = useState(false);
   const [selectedBoard, setSelectedBoard] = useState(0);
   const[tasks,setTasks] =useState();
+  const [tasksObj, setTasksObj] = useState([]);
   
   const{user}= useAuth();
   useEffect(() => {
@@ -38,8 +39,6 @@ export default function Scrumboard({pid}) {
     fetch("http://localhost:3000/api/getTasks", requestOptions)
       .then((response) => response.text())
       .then((result) => {
-        console.log(JSON.parse(result))
-
         setTasks(JSON.parse(result)[0])
     })
       .catch((err) => {
@@ -47,6 +46,62 @@ export default function Scrumboard({pid}) {
       });
     
 }, []);
+useEffect(() => {
+
+  var tObj = []
+  tasks?.forEach((task)=>{
+
+    tObj.push(JSON.parse(task))
+    if (tObj.length ===tasks.length)
+    {
+      setTasksObj(tObj)
+    }
+  })
+  
+}, [tasks]);
+useEffect(() => {
+
+  if(tasksObj){
+    var bItems = []
+    var pItems = []
+    var cItems = []
+    tasksObj.forEach((task)=>{console.log(task.progress)
+      if(task.progress === 0)
+      {
+        bItems.push(task)
+      }else if (task.progress === 1)
+      {
+        pItems.push(task)
+      }else
+      {
+        cItems.push(task)
+      }
+    })
+    if(bItems.length+pItems.length+cItems.length=== tasks?.length)
+    {
+      const data =[
+        {
+            "name":"Backlog Tasks",
+            "items": bItems
+        },
+        {
+            "name":"In Progress",
+            "items": pItems
+        },
+        {
+            "name":"Completed",
+            "items": cItems
+        }
+    ]
+    setBoardData(data)
+
+      
+    }
+
+  }
+
+  
+}, [tasksObj]);
 
 const addTask= (e) =>{
   if(pid)
@@ -54,15 +109,25 @@ const addTask= (e) =>{
       //const val = e.target.value;
       var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
+      // var raw = JSON.stringify({
+      //   pid: pid,
+      //   "task":  "{"+
+      //     "progress:'"+ e.progress+"',"+
+      //     "id:'"+ e.id+"',"+
+      //     "category:'"+ e.category+"',"+
+      //     "title:'"+ e.title+"',"+
+      //     "assignees:'"+ e.assignees +
+      //   "'}",
+      //   });
       var raw = JSON.stringify({
         pid: pid,
-        "task":  {
-          progress: e.progress,
-          id: e.id,
-          category: e.category,
-          title: e.title,
-          assignees: e.assignees
-        },
+        "task":  "{"+
+          "\"progress\":"+ e.progress+","+
+          "\"id\":\""+ e.id+"\","+
+          "\"category\":"+ e.category+","+
+          "\"title\":\""+ e.title+"\","+
+          "\"assignees\":\""+ e.assignees +
+        "\"}",
         });
 
       var requestOptions = {
@@ -170,6 +235,8 @@ const addTask= (e) =>{
   }
   return (
     <div className="p-10 flex flex-col h-screen">
+    
+      {/* {tasks?.map((task)=>console.log( task))} */}
       {ready && (
           <DragDropContext onDragEnd={onDragEnd}>
             <div className="grid grid-cols-3 gap-7 my-3">
