@@ -7,6 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import ProjectDocs from "@/components/ProjectDocs";
 import GroupChat from "@/components/GroupChat";
 import Overview from "@/components/OverView";
+import NoAccessPage from "@/components/NoAccessPage";
 import { onSnapshot, doc } from "firebase/firestore";
 import { db } from "@/config/firebase";
 
@@ -298,7 +299,7 @@ export default function ProjectSpace() {
             ) : section === "#Scrum" ? (
               <Scrumboard pid={pid}/>
             ) : section === "#Explore" ? (
-                <Explore project={project}/>
+              project.owners?.includes(user.uid)?<Explore project={project}/>: <NoAccessPage/>
             ) : section === "#MS" ? (
               
               project&&<Milestone pid={pid} project= {project}/>
