@@ -87,6 +87,8 @@ export default function Documents() {
     }
     const createDocument =async ()=>
     {
+      if(input.trim())
+      {
         if(!input) return;
         const data =
         {
@@ -101,6 +103,10 @@ export default function Documents() {
         Router.push(`/doc/${docID}`)
         setInput("")
         setShowModal(false)
+      }
+      else{
+        setInput("")
+      }
       
 
     };
