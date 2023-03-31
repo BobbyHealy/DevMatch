@@ -101,7 +101,7 @@ export default function ChatInput({ DMID, receiver }) {
         <input
           type='text'
           placeholder='Please Select a Receiver'
-          className='w-full bg-transparent text-gray-600 text-lg border-none outline-none placeholder-gray-400'
+          className='bg-transparent text-gray-600 text-lg border-none outline-none placeholder-gray-400 w-[calc(100%-120px)]'
         />
       )}
       <div className='flex items-center gap-2'>

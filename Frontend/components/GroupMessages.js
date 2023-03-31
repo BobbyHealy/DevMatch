@@ -22,7 +22,7 @@ export default function GroupMessages({channel}) {
     }
   }, [channel]);
   return (
-    <div className='bg-gray-600 text-gray-400 p-2 overflow-scroll h-[calc(100vh-110px)] '>
+    <div className='bg-gray-600 text-gray-400 p-2 overflow-scroll h-[calc(100vh-166px)] lg:h-[calc(100vh-110px)]  '>
        {messages.map((m) => 
         (
           <GroupMessage message={m} key={m.id} />
