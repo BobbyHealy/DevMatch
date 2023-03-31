@@ -216,7 +216,7 @@ useEffect(() => {
     }
     else if(!banner)
     {
-      var imageRef = ref(storage, name+"Icon")
+      var imageRef = ref(storage, name+pid+"Icon")
       uploadBytes(imageRef, icon).then(()=>{
         getDownloadURL(imageRef).then((url)=>{
           const skillsArr = newSkills.split(",");
@@ -258,7 +258,7 @@ useEffect(() => {
     else if(!icon)
     {
  
-      var imageRef = ref(storage, name+"Banner")
+      var imageRef = ref(storage, name+pid+"Banner")
       uploadBytes(imageRef, banner).then(()=>{
         getDownloadURL(imageRef).then((url)=>{
           const skillsArr = newSkills.split(",");
@@ -299,8 +299,8 @@ useEffect(() => {
     }
     else{
 
-      var imageRef = ref(storage, name+"Icon")
-      var imageRef2 = ref(storage, name+"Banner")
+      var imageRef = ref(storage, name+pid+"Icon")
+      var imageRef2 = ref(storage, name+pid+"Banner")
       uploadBytes(imageRef, icon).then(()=>{
         uploadBytes(imageRef2, banner).then(()=>{
           getDownloadURL(imageRef).then((url1)=>{
