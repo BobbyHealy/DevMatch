@@ -201,7 +201,9 @@ export default function Feed() {
               {posts && !enabled ? (
                 posts
                   .filter((e) =>
-                    searchName == "" ? true : e.name.includes(searchName)
+                    searchName == ""
+                      ? true
+                      : e.name.toLowerCase().includes(searchName.toLowerCase())
                   )
                   .map((e, i) => {
                     return (
@@ -221,7 +223,9 @@ export default function Feed() {
               {posts !== null && enabled ? (
                 posts
                   .filter((e) =>
-                    searchName == "" ? true : e.name.includes(searchName)
+                    searchName == ""
+                      ? true
+                      : e.name.toLowerCase().includes(searchName.toLowerCase())
                   )
                   .map((e, i) => {
                     return (
