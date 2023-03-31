@@ -5,7 +5,7 @@ import Head from "next/head";
 import Router from "next/router";
 import { useEffect, useState } from "react";
 import { InputText } from "primereact/inputtext";
-import { db} from "@/config/firebase";
+import { db } from "@/config/firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { storage } from "@/config/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -15,8 +15,8 @@ export default function FollowUp() {
   const [name, setName] = useState("");
   const [skills, setSkills] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const[image, setimage] = useState(null)
-  const[url, setUrl] = useState(null)
+  const [image, setimage] = useState(null);
+  const [url, setUrl] = useState(null);
 
   //   useEffect(() => {
   //     console.log(skills.split(","));
@@ -29,104 +29,103 @@ export default function FollowUp() {
   //   }, [skills]);
   useEffect(() => {
     if (!image) {
-        setUrl(undefined)
-        return
+      setUrl(undefined);
+      return;
     }
 
-    const objectUrl = URL.createObjectURL(image)
-    setUrl(objectUrl)
+    const objectUrl = URL.createObjectURL(image);
+    setUrl(objectUrl);
 
     // free memory when ever this component is unmounted
-    return () => URL.revokeObjectURL(objectUrl)
-}, [image])
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [image]);
 
   const handleSumbit = async (e) => {
     e.preventDefault();
-    if(image)
-    {
-    var imageRef = ref(storage, name+user.uid +"ProfilePic")
-    uploadBytes(imageRef, image)
-    .then(() => {
+    if (image) {
+      var imageRef = ref(storage, name + user.uid + "ProfilePic");
+      uploadBytes(imageRef, image).then(() => {
         getDownloadURL(imageRef)
-        .then((url) => {
-            setUrl(url)
+          .then((url) => {
+            setUrl(url);
 
             var raw = JSON.stringify({
-                userID: user.uid,
-                name: name,
-                rating: 100,
-                skills: skillsArr,
-                pOwned: userInfo.pOwned !== undefined ?  userInfo.pOwned : undefined,
-                pJoined: userInfo.pJoined !== undefined ?  userInfo.pOwned : undefined,
-                profilePic: url,
-              });
-              
-              var myHeaders = new Headers();
-              myHeaders.append("Content-Type", "application/json");
-          
-              var requestOptions = {
-                method: "POST",
-                headers: myHeaders,
-                body: raw,
-              };
-              setDoc(doc(db, "users", user.uid), {
-                uid: user.uid,
-                email: user.email,
-                displayName: name,
-                photoURL: url,
-              });
-          
-              fetch("http://localhost:3000/api/addUser", requestOptions)
-                .then((response) => response.text())
-                .then((result) => {
-                  console.log(result);
-                })
-                .catch((error) => console.log("error", error));
+              userID: user.uid,
+              name: name,
+              rating: 100,
+              skills: skillsArr,
+              pOwned:
+                userInfo.pOwned !== undefined ? userInfo.pOwned : undefined,
+              pJoined:
+                userInfo.pJoined !== undefined ? userInfo.pOwned : undefined,
+              profilePic: url,
+            });
 
-          
-        })
-        .catch((error) => {
+            var myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+
+            var requestOptions = {
+              method: "POST",
+              headers: myHeaders,
+              body: raw,
+            };
+            setDoc(doc(db, "users", user.uid), {
+              uid: user.uid,
+              email: user.email,
+              displayName: name,
+              photoURL: url,
+            });
+
+            fetch("http://localhost:3000/api/addUser", requestOptions)
+              .then((response) => response.text())
+              .then((result) => {
+                console.log(result);
+              })
+              .catch((error) => console.log("error", error));
+          })
+          .catch((error) => {
             console.log(error.message, "error getting the image url");
-        })
+          });
         setimage(null);
         setUrl(undefined);
-    
-      })}
-      else
-      {
+      });
+    } else {
+      const skillsArr = skills.split(",").map((e) => e.trim());
+      var raw = JSON.stringify({
+        userID: user.uid,
+        name: name,
+        rating: 100,
+        skills: skillsArr,
+        ProfilePic: url !== undefined ? url : userInfo.profilePic,
+      });
+      setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        email: user.email,
+        displayName: name,
+        photoURL:
+          url !== undefined
+            ? url
+            : "https://www.nicepng.com/png/detail/73-730154_open-default-profile-picture-png.png",
+      });
 
-        const skillsArr = skills.split(",");
-        var raw = JSON.stringify({
-          userID: user.uid,
-          name: name,
-          rating: 100,
-          skills: skillsArr,
-          ProfilePic: url !== undefined ? url : userInfo.profilePic,
-        });
-        setDoc(doc(db, "users", user.uid), {
-          uid: user.uid,
-          email: user.email,
-          displayName: name,
-          photoURL:url !== undefined ? url : "https://www.nicepng.com/png/detail/73-730154_open-default-profile-picture-png.png",
-        });
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
 
-        var myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
+      var requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+      };
 
-        var requestOptions = {
-          method: "POST",
-          headers: myHeaders,
-          body: raw,
-        };
-
-        fetch("http://localhost:3000/api/addUser", requestOptions)
-          .then((response) => response.text())
-          .then((result) => {
-            console.log(result);
-            Router.push("../feed");
-          })
-          .catch((error) => console.log("error", error));}
-        setUrl(undefined);
+      fetch("http://localhost:3000/api/addUser", requestOptions)
+        .then((response) => response.text())
+        .then((result) => {
+          console.log(result);
+          Router.push("../feed");
+        })
+        .catch((error) => console.log("error", error));
+    }
+    setUrl(undefined);
   };
 
   return (
@@ -197,26 +196,29 @@ export default function FollowUp() {
                         Profile photo
                       </label>
                       <div className='mt-1 flex items-center'>
-                        <div className='flex h-12 p-2 gap-2  items-center gap-2' > 
-                       
-                            {<img
-                            style={{
+                        <div className='flex h-12 p-2 gap-2  items-center gap-2'>
+                          {
+                            <img
+                              style={{
                                 width: "40px",
                                 height: "40px",
                                 borderRadius: "50%",
-                                objectFit:"cover",
-                                border: "1px solid grey"
+                                objectFit: "cover",
+                                border: "1px solid grey",
+                              }}
+                              src={url}
+                              alt=''
+                            />
+                          }
+
+                          <InputText
+                            type='file'
+                            accept='*.jpg'
+                            onChange={(event) => {
+                              const file = event.target.files[0];
+                              setimage(file);
                             }}
-                            src={url} alt=""/>}
-                       
-                          <InputText type = "file" 
-                          accept="*.jpg"
-                          onChange={(event)=>{
-                          const file = event.target.files[0];
-                          setimage(file)
-                          }}
                           />
-     
                         </div>
                       </div>
                     </div>
