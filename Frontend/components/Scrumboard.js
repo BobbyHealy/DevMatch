@@ -6,6 +6,7 @@ import { PlusCircleIcon } from "@heroicons/react/24/outline";
 import ScrumData from '../mockup_data/scrum-data.json'
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { useEffect, useState } from "react";
+//import updateSingleTask from "@/pages/api/updateSingleTask";
 
 
 function createGuidId() {
@@ -47,19 +48,52 @@ export default function Scrumboard({pid}) {
     
 }, []);
 
-const addTask= async ()=>{
+const addTask= (e) =>{
   if(pid)
   {
+      //const val = e.target.value;
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+      var raw = JSON.stringify({
+        pid: pid,
+        "task":  {
+          progress: e.progress,
+          id: e.id,
+          category: e.category,
+          title: e.title,
+          assignees: e.assignees
+        },
+        });
+
+      var requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+      };
+
+      fetch("http://localhost:3000/api/addTask", requestOptions)
+      .then((response) => response.text())
+      .then((result) => {
+          console.log(JSON.parse(result));
+      })
+      .catch((error) => console.log("error", error));
+      }
+  }
+
+  /*const updateTask= (e) => {
+    if(pid)
+  {
+      //const val = e.target.value;
       var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
       var raw = JSON.stringify({
       pid: pid,
       "task":  {
-        progress: "Completed",
-        id:3,
-        category: 2,
-        title: "Update Sprint 2 document",
-        assignees: "{\"assignees\": Steve, David, Jason}"
+        progress: e.progress,
+        id: e.id,
+        category: e.category,
+        title: e.title,
+        assignees: e.assignees
       },
       });
 
@@ -76,7 +110,9 @@ const addTask= async ()=>{
       })
       .catch((error) => console.log("error", error));
       }
-  }
+
+
+  }*/
 
   useEffect(() => {
     if(user.uid)
@@ -109,17 +145,21 @@ const addTask= async ()=>{
     if(e.keyCode === 13) //Enter
     {
       const val = e.target.value;
+      const fields = val.split("-");
       if(val.length === 0) {
         setShowForm(false);
       }
       else {
+        
         const boardId = e.target.attributes['data-id'].value;
         const item = {
+          progress: boardId,
           id: createGuidId(),
-          title: val,
-          category: 2,
-          assignees: ["Placeholder"]
+          title: fields[0],
+          category: parseInt(fields[1]),
+          assignees: [fields[2]]
         }
+        addTask(item)
         let newBoardData = boardData;
         newBoardData[boardId].items.push(item);
         setBoardData(newBoardData);
@@ -130,8 +170,6 @@ const addTask= async ()=>{
   }
   return (
     <div className="p-10 flex flex-col h-screen">
-      <button onClick={addTask}>AddTaskTest</button>
-      <span>{tasks}</span>
       {ready && (
           <DragDropContext onDragEnd={onDragEnd}>
             <div className="grid grid-cols-3 gap-7 my-3">
@@ -186,7 +224,7 @@ const addTask= async ()=>{
                               showForm && selectedBoard === bIndex ? (
                                 <div className="p-3">
                                   <textarea className="border-gray-300 rounded focus:ring-purple-400 w-full" 
-                                  rows={3} placeholder="Task info" 
+                                  rows={3} placeholder="Format: 'Task Name-Category-Assignees' Categories: 0 is Frontend, 1 is Backend, 2 is Other" 
                                   data-id={bIndex}
                                   onKeyDown={(e) => onTextAreaKeyPress(e)}/>
                                 </div>

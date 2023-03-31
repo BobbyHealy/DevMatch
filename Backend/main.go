@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"gopkg.in/zabawaba99/firego.v1"
+	//"encoding/json"
 )
 
 const URL = "https://devmatch-8f074-default-rtdb.firebaseio.com"
@@ -46,6 +47,15 @@ type project struct {
 	Milestones         []string `json:"milestones"`
 	Tasks              []string `json:"tasks"`
 	//TaskBoard     Scrumboard `json: "board"`
+}
+
+
+type Task struct {
+	Progress     	string `json:"progress"`
+	ID          	string `json:"id"`
+	Category 		string `json:"category"`
+	Title 			string `json:"title"`
+	Assignees 		[]string `json:"assignees"`
 }
 
 /*
@@ -101,6 +111,7 @@ func main() {
 
 	router.POST("/addTask", addTask)
 	router.GET("/getTasks", getTasks)
+	//router.POST("/updateSingleTask", updateSingleTask)
 
 	router.Run("localhost:8080")
 
@@ -1086,3 +1097,68 @@ func getTasks(c *gin.Context) {
 
 	c.IndentedJSON(http.StatusOK, []interface{}{tasks})
 }
+
+/*
+The following is meant to update the task when we drag and drop to a new progress column, but not sure if it works since 
+its hard update the progress field right now. Leaving it out for now
+*/
+
+/*
+
+func updateSingleTask(c *gin.Context) {
+	pid, exists := c.GetQuery("pid")
+	if !exists {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	} else {
+		fmt.Println(pid)
+	}
+	task, exists2 := c.GetQuery("task")
+	if !exists2 {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	} else {
+		fmt.Println(task)
+	}
+	var proj project = getProjectFromID(pid)
+	if proj.ProjectID == "" {
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	}
+
+	byteStr := []byte(task)
+	var taskRemove Task
+	json.Unmarshal(byteStr, &taskRemove)
+
+	removeTaskFromProj(pid, taskRemove.ID)
+
+	proj.Tasks = append(proj.Tasks, task)
+	updateProjectHelp(proj)
+}
+
+func removeTaskFromProj(pid string, taskID string) {
+
+	var proj project = getProjectFromID(pid)
+	if proj.ProjectID == "" {
+		return
+	}
+	var tasks []string = proj.Tasks
+	var tasks2 []string = make([]string, 0)
+
+	for i := 0; i < len(tasks); i++ {
+		byteStr := []byte(tasks[i])
+		var taskRemove Task
+		json.Unmarshal(byteStr, &taskRemove)
+
+		if !(taskRemove.ID == taskID) {
+			tasks2 = append(tasks2, tasks[i])
+		}
+	}
+
+	proj.Tasks = tasks2
+	updateProjectHelp(proj)
+}
+
+*/
