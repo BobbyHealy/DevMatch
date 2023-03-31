@@ -28,7 +28,7 @@ const navigation = [
   { name: "Overview", href: "#Overview", icon: HomeIcon, current: true },
   { name: "GroupChat", href: "#GC", icon: InboxIcon, current: false },
   { name: "Documents", href: "#Docs", icon: DocumentDuplicateIcon, current: false },
-  { name: "ScrumBoard", href: "#Scrum", icon: ClipboardIcon, current: false },
+  { name: "Taskboard", href: "#Scrum", icon: ClipboardIcon, current: false },
   { name: "Milestones", href: "#MS", icon: CalendarIcon, current: false },
   { name: "Explore", href: "#Explore", icon: UserGroupIcon, current: false },
 ];
