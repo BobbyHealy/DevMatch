@@ -4,10 +4,10 @@ export default async function (req, res) {
         method: "POST",
         redirect: "follow",
       };
-
+      console.log(req.body)
       const task = req.body.task
       fetch(
-        `http://localhost:8080/addTask?pid=${req.body.pid}&task=${task.progress},${task.id},${task.category},${task.title},${task.assignees}`,
+        `http://localhost:8080/addTask?pid=${req.body.pid}&task=${task}`,
         requestOptions
       )
         .then((response) => response.text())    
