@@ -200,7 +200,7 @@ setEdit2(false)
                   {/* Voice channels */}
                   {!expend2&&<span className='flex-grow  pl-1 w-5 text-gray-500 cursor-pointer hover:text-white ' onClick={()=>{setExpend2(true); setEdit2(false); setTitle2("")}}>{">"}</span>}
                   {expend2&&<span className='flex-grow  pl-1 w-5 text-gray-500 cursor-pointer hover:text-white ' onClick={()=>{setExpend2(false); setEdit2(false);setTitle2("")}}>v</span>}
-                  <span onClick={()=>{setEdit2(false); setTitle2("")}} className='flex-grow pl-2 w-10 pr-2 text-gray-500 '>TEXT CHANNELS</span>
+                  <span onClick={()=>{setEdit2(false); setTitle2("")}} className='flex-grow pl-2 w-10 pr-2 text-gray-500 '>VOICE CHANNELS</span>
                   {project.owners?.includes(userInfo.userID)&&<span
                     onClick={()=>setEdit2(true)}
                     className='flex-col text-gray-400 hover:text-white cursor-pointer'>+</span>}
