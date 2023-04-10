@@ -30,7 +30,12 @@ import Explore from "@/components/Explore";
 const navigation = [
   { name: "Overview", href: "#Overview", icon: HomeIcon, current: true },
   { name: "GroupChat", href: "#GC", icon: InboxIcon, current: false },
-  { name: "Documents", href: "#Docs", icon: DocumentDuplicateIcon, current: false },
+  {
+    name: "Documents",
+    href: "#Docs",
+    icon: DocumentDuplicateIcon,
+    current: false,
+  },
   { name: "Taskboard", href: "#Scrum", icon: ClipboardIcon, current: false },
   { name: "Manage Members", href: "#Manage", icon: Bars4Icon, current: false },
   { name: "Milestones", href: "#MS", icon: CalendarIcon, current: false },
@@ -61,7 +66,7 @@ export default function ProjectSpace() {
     user.email && getLoc();
   }, [user]);
   const { pid } = Router.query;
-  const [project, setProject] = useState(""); 
+  const [project, setProject] = useState("");
   useEffect(() => {
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
@@ -79,7 +84,7 @@ export default function ProjectSpace() {
       .catch((err) => {
         console.log(err);
       });
-}, []);
+  }, []);
 
   return (
     <>
@@ -144,7 +149,6 @@ export default function ProjectSpace() {
                       >
                         DevMatch
                       </h2>
-
                     </div>
                     <nav className='mt-5 space-y-1 px-2'>
                       {navigation.map((item) => (
@@ -223,7 +227,6 @@ export default function ProjectSpace() {
                 >
                   DevMatch
                 </h2>
-
               </div>
               <nav className='mt-5 flex-1 space-y-1 bg-black px-2'>
                 {navigation.map((item) => (
@@ -294,21 +297,28 @@ export default function ProjectSpace() {
           </div>
           <main className='flex-1'>
             {section === "#Overview" ? (
-              <Overview pid={pid} projectD={project}/>
+              <Overview pid={pid} projectD={project} />
             ) : section === "#GC" ? (
-              project&&<GroupChat pid={pid} project={project}/>
+              project && <GroupChat pid={pid} project={project} />
             ) : section === "#Docs" ? (
-              <ProjectDocs pid={pid}/>
+              <ProjectDocs pid={pid} />
             ) : section === "#Scrum" ? (
-              <Scrumboard pid={pid}/>
+              <Scrumboard pid={pid} />
             ) : section === "#Manage" ? (
-              project.owners?.includes(user.uid)?<ManageMember project={project}/>: <NoAccessPage/>
+              project.owners?.includes(user.uid) ? (
+                <ManageMember project={project} />
+              ) : (
+                <NoAccessPage />
+              )
             ) : section === "#Explore" ? (
-              project.owners?.includes(user.uid)?<Explore project={project}/>: <NoAccessPage/>
+              project.owners?.includes(user.uid) ? (
+                <Explore project={project} />
+              ) : (
+                <NoAccessPage />
+              )
             ) : section === "#MS" ? (
-              
-              project&&<Milestone pid={pid} project= {project}/>
-            )  : (
+              project && <Milestone pid={pid} project={project} />
+            ) : (
               <></>
             )}
           </main>

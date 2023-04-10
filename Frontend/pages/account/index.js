@@ -1,4 +1,4 @@
-import { Fragment, useState,useEffect } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import Router from "next/router";
 import {
@@ -17,14 +17,18 @@ import DMs from "../../components/DMs";
 import ManageProjects from "@/components/ManageProjects";
 import Documents from "@/components/Documents";
 import { useAuth } from "@/context/AuthContext";
-import {  onSnapshot,doc, updateDoc,} from "firebase/firestore";
+import { onSnapshot, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/config/firebase";
-
 
 const navigation = [
   { name: "Overview", href: "#", icon: HomeIcon, current: true },
   { name: "DMs", href: "#", icon: EnvelopeIcon, current: false },
-  { name: "Manage Projects", href: "#", icon: RectangleStackIcon, current: false },
+  {
+    name: "Manage Projects",
+    href: "#",
+    icon: RectangleStackIcon,
+    current: false,
+  },
   { name: "Documents", href: "#", icon: DocumentIcon, current: false },
 ];
 
@@ -35,29 +39,24 @@ function classNames(...classes) {
 export default function Example() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState("OverView");
-  const {user} = useAuth();
+  const { user } = useAuth();
   useEffect(() => {
-    if(!user)
-    {
-      Router.push('/account/login')
+    if (!user) {
+      Router.push("/account/login");
     }
-  }, [])
+  }, []);
 
-  useEffect(() => 
-    {
-      const getLoc  = () => 
-      {
-        const unSub = onSnapshot(doc(db, "users", user.uid), (doc) => 
-        {
-          doc.exists() && setSelectedTab(doc.data().currentPage);
-        });
-        return () => 
-        {
-          unSub();
-        };
-      }
-      user&&user.email&&getLoc()
-    }, [user]);
+  useEffect(() => {
+    const getLoc = () => {
+      const unSub = onSnapshot(doc(db, "users", user.uid), (doc) => {
+        doc.exists() && setSelectedTab(doc.data().currentPage);
+      });
+      return () => {
+        unSub();
+      };
+    };
+    user && user.email && getLoc();
+  }, [user]);
 
   const selectedTabContent = () => {
     switch (selectedTab) {
@@ -68,10 +67,10 @@ export default function Example() {
         <DMs />;
         break;
       case "Manage Projects":
-        <ManageProjects/>;
+        <ManageProjects />;
         break;
       case "Documents":
-        <Documents/>;
+        <Documents />;
         break;
 
       default:
@@ -248,10 +247,10 @@ export default function Example() {
             ) : selectedTab === "DMs" ? (
               <DMs />
             ) : selectedTab === "Manage Projects" ? (
-                <ManageProjects />
+              <ManageProjects />
             ) : selectedTab === "Documents" ? (
-                <Documents />
-            ): (
+              <Documents />
+            ) : (
               <></>
             )}
           </main>

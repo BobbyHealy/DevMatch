@@ -1,10 +1,9 @@
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
-import { createUserWithEmailAndPassword} from "firebase/auth";
-import { db, auth} from "@/config/firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { db, auth } from "@/config/firebase";
 import { doc, setDoc } from "firebase/firestore";
 import Router from "next/router";
-
 
 export default function SignUp() {
   const { user, signup } = useAuth();
@@ -19,7 +18,7 @@ export default function SignUp() {
       // await signup(email, password);
       await setDoc(doc(db, "users", res.user.uid), {
         uid: res.user.uid,
-        email: email
+        email: email,
       });
       await setDoc(doc(db, "userChats", res.user.uid), {});
       await setDoc(doc(db, "userDocs", res.user.email), {});
