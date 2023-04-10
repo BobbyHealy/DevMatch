@@ -8,6 +8,7 @@ import ProjectDocs from "@/components/ProjectDocs";
 import GroupChat from "@/components/GroupChat";
 import Overview from "@/components/OverView";
 import NoAccessPage from "@/components/NoAccessPage";
+import ManageMember from "@/components/ManageMember";
 import { onSnapshot, doc } from "firebase/firestore";
 import { db } from "@/config/firebase";
 
@@ -20,6 +21,7 @@ import {
   HomeIcon,
   XMarkIcon,
   UserGroupIcon,
+  Bars4Icon,
 } from "@heroicons/react/24/outline";
 import { useSearchParams } from "react-router-dom";
 import ManageProjects from "@/components/ManageProjects";
@@ -30,6 +32,7 @@ const navigation = [
   { name: "GroupChat", href: "#GC", icon: InboxIcon, current: false },
   { name: "Documents", href: "#Docs", icon: DocumentDuplicateIcon, current: false },
   { name: "Taskboard", href: "#Scrum", icon: ClipboardIcon, current: false },
+  { name: "Manage Members", href: "#Manage", icon: Bars4Icon, current: false },
   { name: "Milestones", href: "#MS", icon: CalendarIcon, current: false },
   { name: "Explore", href: "#Explore", icon: UserGroupIcon, current: false },
 ];
@@ -298,6 +301,8 @@ export default function ProjectSpace() {
               <ProjectDocs pid={pid}/>
             ) : section === "#Scrum" ? (
               <Scrumboard pid={pid}/>
+            ) : section === "#Manage" ? (
+              project.owners?.includes(user.uid)?<ManageMember project={project}/>: <NoAccessPage/>
             ) : section === "#Explore" ? (
               project.owners?.includes(user.uid)?<Explore project={project}/>: <NoAccessPage/>
             ) : section === "#MS" ? (
