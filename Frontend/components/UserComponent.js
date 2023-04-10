@@ -201,7 +201,7 @@ export default function UserComponent(props) {
             </a>
           </p>
         </div>
-        <div className='flex flex-shrink-0 self-center'>
+        <div className='flex flex-shrink-0  space-x-3 self-center'>
           {inviteProjectID === null && removeID === null ? (
             <button
               onClick={handleSelect}
@@ -224,13 +224,20 @@ export default function UserComponent(props) {
             <button
               onClick={() => setShowModal(true)}
               type='button'
-              className='inline-flex items-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2'
+              className='inline-flex items-center rounded-md border border-transparent bg-red-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2'
             >
               Remove from Project
             </button>
           ) : (
             <></>
           )}
+          <button
+              type='button'
+              className='inline-flex items-center rounded-md border border-transparent bg-red-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2'
+            >
+              Report User
+              <FlagIcon className='ml-2 -mr-1 h-5 w-5' aria-hidden='true' />
+            </button>
         </div>
       </div>
       <DeactivateModal
