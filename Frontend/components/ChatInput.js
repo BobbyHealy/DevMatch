@@ -7,6 +7,7 @@ import {
   serverTimestamp,
   Timestamp,
   updateDoc,
+  setDoc
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useAuth } from "@/context/AuthContext";
@@ -30,15 +31,14 @@ export default function ChatInput({ DMID, receiver }) {
         const storageRef = ref(storage, userInfo.name + "DM" + msgID);
         uploadBytes(storageRef, img).then(() => {
           getDownloadURL(storageRef).then(async (downloadURL) => {
-            await updateDoc(doc(db, "chats", DMID), {
-              messages: arrayUnion({
-                id: msgID,
-                text: text.trim(),
-                senderId: user.uid,
-                date: Timestamp.now(),
-                img: downloadURL,
-              }),
-            });
+            const data ={
+              text: text.trim(),
+              senderId: user.uid,
+              date: Timestamp.now(),
+              img: downloadURL,
+              pinned: false
+            }
+            await setDoc(doc(db, "chats", DMID, "messages", msgID ), data);
           });
         });
         await updateDoc(doc(db, "userChats", user.uid), {
@@ -57,14 +57,13 @@ export default function ChatInput({ DMID, receiver }) {
           [DMID + ".date"]: serverTimestamp(),
         });
       } else if (text.trim()) {
-        await updateDoc(doc(db, "chats", DMID), {
-          messages: arrayUnion({
-            id: msgID,
-            text: text.trim(),
-            senderId: user.uid,
-            date: Timestamp.now(),
-          }),
-        });
+        const data = {
+          text: text.trim(),
+          senderId: user.uid,
+          date: Timestamp.now(),
+          pinned: false
+        }
+        await setDoc(doc(db, "chats", DMID, "messages", msgID ), data);
         await updateDoc(doc(db, "userChats", user.uid), {
           [DMID + ".lastMessage"]: {
             text: text.trim(),

@@ -11,6 +11,7 @@ import {
   updateDoc,
   serverTimestamp,
   getDoc,
+  collection,
 } from "firebase/firestore";
 import { db } from "@/config/firebase";
 
@@ -51,7 +52,7 @@ export default function ProjComponent(props) {
   
         if (!res.exists()) {
         //create a chat in chats collection
-        await setDoc(doc(db, "chats", combinedId), { messages: [] });
+        await setDoc(doc(db, "chats", combinedId),{});
   
         await updateDoc(doc(db, "userChats", userInfo.userID), {
     
