@@ -1,16 +1,9 @@
 import { useState, useEffect } from "react";
-import { db, storage } from "@/config/firebase";
+import { storage } from "@/config/firebase";
 import { v4 as uuid } from "uuid";
-import {
-  arrayUnion,
-  doc,
-  serverTimestamp,
-  Timestamp,
-  updateDoc,
-  setDoc
-} from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useAuth } from "@/context/AuthContext";
+import { sendMsgWithImage, sendMsg } from "@/fireStoreBE/DmMsg";
 
 export default function ChatInput({ DMID, receiver }) {
   const [text, setText] = useState("");
@@ -25,58 +18,18 @@ export default function ChatInput({ DMID, receiver }) {
 
   const handleSend = async () => {
     if (receiver) {
-      console.log(DMID);
       const msgID = uuid();
       if (img) {
-        const storageRef = ref(storage, userInfo.name + "DM" + msgID);
+        const storageRef = await ref(storage, userInfo.name + "DM" + msgID);
+        console.log(storageRef)
         uploadBytes(storageRef, img).then(() => {
           getDownloadURL(storageRef).then(async (downloadURL) => {
-            const data ={
-              text: text.trim(),
-              senderId: user.uid,
-              date: Timestamp.now(),
-              img: downloadURL,
-              pinned: false
-            }
-            await setDoc(doc(db, "chats", DMID, "messages", msgID ), data);
+            sendMsgWithImage(DMID,msgID,user.uid,receiver.uid,text.trim(),downloadURL)
           });
         });
-        await updateDoc(doc(db, "userChats", user.uid), {
-          [DMID + ".lastMessage"]: {
-            text: text.trim(),
-            img: true,
-          },
-          [DMID + ".date"]: serverTimestamp(),
-        });
-
-        await updateDoc(doc(db, "userChats", receiver.uid), {
-          [DMID + ".lastMessage"]: {
-            text: text.trim(),
-            img: true,
-          },
-          [DMID + ".date"]: serverTimestamp(),
-        });
+       
       } else if (text.trim()) {
-        const data = {
-          text: text.trim(),
-          senderId: user.uid,
-          date: Timestamp.now(),
-          pinned: false
-        }
-        await setDoc(doc(db, "chats", DMID, "messages", msgID ), data);
-        await updateDoc(doc(db, "userChats", user.uid), {
-          [DMID + ".lastMessage"]: {
-            text: text.trim(),
-          },
-          [DMID + ".date"]: serverTimestamp(),
-        });
-
-        await updateDoc(doc(db, "userChats", receiver.uid), {
-          [DMID + ".lastMessage"]: {
-            text: text.trim(),
-          },
-          [DMID + ".date"]: serverTimestamp(),
-        });
+        await sendMsg(DMID,msgID,user.uid,receiver.uid,text.trim())
       }
     } else {
       console.log("no receiver");
@@ -104,8 +57,6 @@ export default function ChatInput({ DMID, receiver }) {
         />
       )}
       <div className='flex items-center gap-2'>
-        {/* <img className='h-6 cursor-pointer' src={'https://firebasestorage.googleapis.com/v0/b/devmatch-8f074.appspot.com/o/file.png?alt=media&token=e9e8d8d1-4b4b-45c5-bfac-5da48be277cd'}/> */}
-        {/* attach icon */}
         <input
           type='file'
           style={{ display: "none" }}
@@ -119,7 +70,6 @@ export default function ChatInput({ DMID, receiver }) {
               "https://firebasestorage.googleapis.com/v0/b/devmatch-8f074.appspot.com/o/img.png?alt=media&token=e9e8d8d1-4b4b-45c5-bfac-5da48be277cd"
             }
           />
-          {/* image icon*/}
         </label>
         <button
           className='border-none text-black rounded-lg bg-zinc-700 cursor-pointer px-4 py-2'

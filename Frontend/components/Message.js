@@ -1,21 +1,13 @@
-import React, { useState, useEffect, useRef, Fragment } from "react";
+import { useState, useEffect, useRef, Fragment } from "react";
 import { Menu, Transition } from '@headlessui/react'
 import { 
   EllipsisVerticalIcon, 
-  TrashIcon, 
   PencilIcon 
 } from '@heroicons/react/20/solid'
 
-import {
-    onSnapshot,
-    setDoc,
-    doc,
-    updateDoc,
-    deleteDoc,
-    deleteField
-  } from "firebase/firestore";
-  import { db } from "@/config/firebase";
+import { unpinMsg,pinMsg,deleteMsg } from "@/fireStoreBE/DmMsg";
 import { useAuth } from "@/context/AuthContext";
+
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -25,48 +17,23 @@ export default function Message({DMID, id, message, receiver}) {
     const date = message.date.toDate().toLocaleString('en-US').split(",")
     const time = date[1].split(":")
     const sign = time[2].split(" ")
+
     
     useEffect(() => {
         ref.current?.scrollIntoView({ behavior: "smooth" });
       }, [message]);
     const { user, userInfo} = useAuth();
+    const [pinner, setPinner] = useState();
+    useEffect(()=>{
+      setPinner(user.uid)
+    },[user])
+    
     const currentUser = {
         uid: user.uid,
         name: userInfo.name,
         photoURL: userInfo.profilePic, 
     }
     const [onEdit, setEdit] = useState(false);
-    const handlePin= async () =>
-    {
-     
-      await updateDoc(doc(db, "chats", DMID, "messages", id),
-      {
-        pinned: true
-      })
-      await setDoc(doc(db, "chats", DMID, "pinnedMsg", id), message)
-      updateDoc(doc(db, "chats", DMID, "pinnedMsg", id),
-      {
-        pinned: deleteField(),
-        pinnedBy: user.uid
-      })
-
-    }
-    const handleUnpin = async () =>
-    {
-      updateDoc(doc(db, "chats", DMID, "messages", id),
-      {
-        pinned: false
-      })
-      deleteDoc(doc(db, "chats", DMID, "pinnedMsg", id))
-    }
-    const handleDelete = async () =>
-    {
-      if(message.pinned)
-      {
-        deleteDoc(doc(db, "chats", DMID, "pinnedMsg", id))
-      }
-      await deleteDoc(doc(db, "chats", DMID, "messages", id));
-    }
   return (
     <div className="group hover:bg-zinc-600">
         {/* if it is receiver */}
@@ -101,7 +68,8 @@ export default function Message({DMID, id, message, receiver}) {
                         {({ active }) => (
                           <a
                             href="#"
-                            onClick={handlePin}
+                            // onClick={handlePin}
+                            onClick={()=>{pinMsg(DMID,id,message,user.uid)}}
                             className={classNames(
                               active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
                               'block px-4 py-2 text-sm'
@@ -115,7 +83,8 @@ export default function Message({DMID, id, message, receiver}) {
                         {({ active }) => (
                           <a
                             href="#"
-                            onClick={handleUnpin}
+                            onClick={()=>unpinMsg(DMID,id)}
+                            // onClick={handleUnpin}
                             className={classNames(
                               active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
                               'block px-4 py-2 text-sm'
@@ -174,7 +143,8 @@ export default function Message({DMID, id, message, receiver}) {
                         {({ active }) => (
                           <a
                             href="#"
-                            onClick={handlePin}
+                            // onClick={handlePin}
+                            onClick={()=>pinMsg(DMID,id,message,user.uid)}
                             className={classNames(
                               active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
                               'block px-4 py-2 text-sm'
@@ -188,7 +158,8 @@ export default function Message({DMID, id, message, receiver}) {
                         {({ active }) => (
                           <a
                             href="#"
-                            onClick={handleUnpin}
+                            // onClick={handleUnpin}
+                            onClick={()=>unpinMsg(DMID,id)}
                             className={classNames(
                               active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
                               'block px-4 py-2 text-sm'
@@ -202,7 +173,7 @@ export default function Message({DMID, id, message, receiver}) {
                         {({ active }) => (
                           <a
                             href="#"
-                            onClick={handleDelete}
+                            onClick={()=>deleteMsg(DMID,id,message)}
                             className={classNames(
                               active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
                               'block px-4 py-2 text-sm'

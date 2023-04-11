@@ -1,16 +1,8 @@
-import{ useState, useEffect, useRef } from "react";
+import{ useEffect, useRef } from "react";
 import { Timestamp } from "firebase/firestore";
-import {
-    doc,
-    updateDoc,
-    deleteDoc
-  } from "firebase/firestore";
-  
-  import { db } from "@/config/firebase";
+
 import { useAuth } from "@/context/AuthContext";
-import { 
-  XMarkIcon
-} from '@heroicons/react/20/solid'
+import { unpinMsg } from "@/fireStoreBE/DmMsg";
 
 function PinnedMsg({DMID, id, message, receiver}) {
   const ref = useRef(); 
@@ -24,20 +16,11 @@ function PinnedMsg({DMID, id, message, receiver}) {
         ref.current?.scrollIntoView({ behavior: "smooth" });
       }, [message]);
     const { user, userInfo} = useAuth();
-    const handleUnpin = async () =>
-    {
-      updateDoc(doc(db, "chats", DMID, "messages", id),
-      {
-        pinned: false
-      })
-      deleteDoc(doc(db, "chats", DMID, "pinnedMsg", id))
-    }
 
   return (
     <div className="group">
-        {/* if it is receiver */}
         {<div className='flex-col mb-5  '> 
-        <span className='text-yellow-300'>{message.senderId===user.uid?userInfo.name: receiver.displayName}</span>
+        <span className='text-yellow-300'>{message.senderId===user.uid?userInfo.name+" (You)": receiver.displayName}</span>
     
           <div>
             {diff<0&&<span className='text-xs text-gray-400 pl-2'>{date[0]}</span>}
@@ -49,13 +32,10 @@ function PinnedMsg({DMID, id, message, receiver}) {
           {message.text&&<p className='text-white '>{message.text}</p>}  
           <div>
            {diff>0&&<span className='text-xs text-zinc-700 pl-2'>Pinned by</span>}
-           <span className='text-xs text-zinc-700 pl-1'>{message.pinnedBy===user.uid?userInfo.name: receiver.displayName }</span>
+           <span className='text-xs text-zinc-700 pl-1'>{message.pinnedBy===user.uid?userInfo.name +" (You)": receiver.displayName }</span>
          </div>
-         <div className="pl-[calc(344px)]">
-          <XMarkIcon className="hidden group-hover:block h-5 w-5 text-red-900 hover:text-red-700"
-          onClick={handleUnpin}
-          />
-          </div>
+          <div className="hidden group-hover:block text-red-900 hover:text-red-700"
+          onClick={()=>unpinMsg(DMID,id)}>x</div>
         </div> 
         }
     </div>
