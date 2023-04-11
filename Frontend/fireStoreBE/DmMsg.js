@@ -13,12 +13,7 @@ export async function pinMsg(DMID, id, message,pinner )
 {
   await updateDoc(doc(db, "chats", DMID, "messages", id),
   {
-    pinned: true
-  })
-  await setDoc(doc(db, "chats", DMID, "pinnedMsg", id), message)
-  updateDoc(doc(db, "chats", DMID, "pinnedMsg", id),
-  {
-    pinned: deleteField(),
+    pinned: true,
     pinnedBy: pinner
   })
 }
@@ -27,17 +22,13 @@ export async function unpinMsg(DMID, id)
 {
   updateDoc(doc(db, "chats", DMID, "messages", id),
   {
-    pinned: false
+    pinned: false,
+    pinnedBy: deleteField()
   })
-  deleteDoc(doc(db, "chats", DMID, "pinnedMsg", id))
 }
 
-export async function deleteMsg(DMID, id, message) 
+export async function deleteMsg(DMID, id) 
 {
-  if(message.pinned)
-  {
-    deleteDoc(doc(db, "chats", DMID, "pinnedMsg", id))
-  }
   await deleteDoc(doc(db, "chats", DMID, "messages", id));
 }
 

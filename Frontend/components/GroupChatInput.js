@@ -1,24 +1,17 @@
 import {useState} from "react";
 import { db,storage } from "@/config/firebase";
 import { v4 as uuid } from "uuid";
-import {
-  arrayUnion,
-  doc,
-  Timestamp,
-  updateDoc,
-} from "firebase/firestore";
+
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useAuth } from "@/context/AuthContext";
 import Router from "next/router";
+import { sendMsg,sendMsgWithImage} from "@/fireStoreBE/GCMsg";
 
 export default function GroupChatInput({channel}) {
     const [text, setText] = useState("");
     const [img, setImg] = useState(null);
     const { userInfo} = useAuth();
     const {pid} = Router.query;
-
-
-
     const handleKey = e=>{
         e.code ==="Enter" &&handleSend(); 
     }
@@ -32,33 +25,12 @@ export default function GroupChatInput({channel}) {
           {
             getDownloadURL(storageRef).then(async (downloadURL) => 
             {
-              await updateDoc(doc(db, "GCs", pid,"channels", channel), 
-              {
-                messages: arrayUnion(
-                {
-                  id: msgID,
-                  text: text.trim(),
-                  sender: userInfo.name,
-                  photoURL: userInfo.profilePic,
-                  date: Timestamp.now(),
-                  img: downloadURL,
-                }),
-              });
+              sendMsgWithImage(pid,channel,msgID,userInfo,text,downloadURL)
             });
           })
         } else if (text.trim())
         {
-          await updateDoc(doc(db, "GCs", pid,"channels", channel), 
-          {
-            messages: arrayUnion(
-            {
-                id: msgID,
-                text: text.trim(),
-                sender: userInfo.name,
-                photoURL: userInfo.profilePic,
-                date: Timestamp.now(),
-            }),
-          });
+          sendMsg(pid,channel,msgID,userInfo,text.trim())
         }
     
         setText("");

@@ -23,10 +23,7 @@ export default function Message({DMID, id, message, receiver}) {
         ref.current?.scrollIntoView({ behavior: "smooth" });
       }, [message]);
     const { user, userInfo} = useAuth();
-    const [pinner, setPinner] = useState();
-    useEffect(()=>{
-      setPinner(user.uid)
-    },[user])
+
     
     const currentUser = {
         uid: user.uid,
@@ -173,7 +170,7 @@ export default function Message({DMID, id, message, receiver}) {
                         {({ active }) => (
                           <a
                             href="#"
-                            onClick={()=>deleteMsg(DMID,id,message)}
+                            onClick={()=>deleteMsg(DMID,id)}
                             className={classNames(
                               active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
                               'block px-4 py-2 text-sm'
