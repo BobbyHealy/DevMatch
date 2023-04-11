@@ -23,11 +23,11 @@ export default function SearchResult({user2}) {
         : user2.uid + "-"+user.uid;
         try {
             const res = await getDoc(doc(db, "chats", combinedId));
-
+  
             if (!res.exists()) {
             //create a chat in chats collection
-            await setDoc(doc(db, "chats", combinedId), { messages: [] });
-
+            await setDoc(doc(db, "chats", combinedId),{});
+      
             await updateDoc(doc(db, "userChats", currentUser.uid), {
         
                 [combinedId + ".userInfo"]: {

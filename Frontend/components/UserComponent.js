@@ -93,10 +93,10 @@ export default function UserComponent(props) {
     //check whether the group(chats in firestore) exists, if not create
     try {
       const res = await getDoc(doc(db, "chats", combinedId));
-
-      if (!res.exists()) {
+  
+        if (!res.exists()) {
         //create a chat in chats collection
-        await setDoc(doc(db, "chats", combinedId), { messages: [] });
+        await setDoc(doc(db, "chats", combinedId),{});
 
         await updateDoc(doc(db, "userChats", userInfo.userID), {
           [combinedId + ".userInfo"]: {
