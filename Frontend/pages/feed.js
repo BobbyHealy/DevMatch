@@ -5,7 +5,7 @@ import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import UserComponent from "@/components/UserComponent";
 import ProjComponent from "@/components/ProjectComponent";
 import Router from "next/router";
-import ProjectDashBoard from "@/components/projectDashBoard";
+import ProjectDashBoard from "@/components/ProjectDashBoard";
 import Header from "@/components/header";
 import { projectExamplesArray } from "@/mockup_data/project_array";
 import { userExampleArray } from "@/mockup_data/user_array";
@@ -243,7 +243,7 @@ export default function Feed() {
             <aside className='hidden xl:col-span-4 xl:block'>
               <div className='sticky top-6 space-y-4 h-full'>
                 {/* Right */}
-                <div className='sticky top-24 z-30'>
+                <div className='sticky top-24'>
                   <ProjectDashBoard />
                 </div>
               </div>

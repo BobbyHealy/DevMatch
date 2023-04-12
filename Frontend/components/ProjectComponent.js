@@ -242,6 +242,12 @@ useEffect(() => {
                 : <p>N/a</p>
                 }
             </div>
+            <div className='text-sm text-gray-500'>
+              <span className="font-bold">
+                Max Number of Members
+              </span>
+              <p>{project.maxNum}</p>
+            </div>
           </div>
           <div className='flex flex-shrink-0 self-center'>
             <button

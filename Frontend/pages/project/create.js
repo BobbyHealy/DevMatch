@@ -36,6 +36,7 @@ export default function Create() {
   const [query, setQuery] = useState("");
   const defaultType = { name: "Personal" };
   const [selectedType, setSelectedType] = useState(defaultType);
+  const [maxNum, setMax] = useState(null);
 
   const filteredType =
     query === ""
@@ -88,7 +89,9 @@ export default function Create() {
         tmembers: [user.uid],
         skills: skillsArr,
         type: selectedType.name,
+        maxNum: Number(maxNum)?Number(maxNum)>2?Number(maxNum):2:2
       });
+      console.log(raw)
 
       var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
@@ -151,6 +154,7 @@ export default function Create() {
             skills: skillsArr,
             projectProfile: url,
             type: selectedType.name,
+            maxNum: Number(maxNum)?Number(maxNum)>2?Number(maxNum):2:2
           });
 
           var myHeaders = new Headers();
@@ -208,6 +212,7 @@ export default function Create() {
       uploadBytes(imageRef, banner).then(() => {
         getDownloadURL(imageRef).then((url) => {
           const skillsArr = skills.split(",").map((e) => e.trim());
+
           var raw = JSON.stringify({
             a: "a",
             pid: projectID,
@@ -217,6 +222,7 @@ export default function Create() {
             skills: skillsArr,
             projectBannerPic: url,
             type: selectedType.name,
+            maxNum: Number(maxNum)?Number(maxNum)>2?Number(maxNum):2:2
           });
 
           var myHeaders = new Headers();
@@ -286,6 +292,7 @@ export default function Create() {
                 projectProfile: url1,
                 projectBannerPic: url2,
                 type: selectedType.name,
+                maxNum: Number(maxNum)?Number(maxNum)>2?Number(maxNum):2:2
               });
 
               var myHeaders = new Headers();
@@ -465,6 +472,24 @@ export default function Create() {
                           const file = event.target.files[0];
                           setBanner(file);
                         }}
+                      />
+                    </div>
+                    <div className='col-span-6 sm:col-span-3'>
+                      <label
+                        htmlFor='maxNum'
+                        className='block text-sm font-medium text-gray-700 pb-2'
+                      >
+                        {"Maximum Number of Member"}
+                      </label>
+                      <input
+                        placeholder="The minumum is 2 (default as 2)"
+                        type='text'
+                        name='maxNum'
+                        id='maxNum'
+                        value={maxNum}
+                        onChange={(e) => setMax(e.target.value)}
+                        autoComplete='maxNum'
+                        className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm'
                       />
                     </div>
 

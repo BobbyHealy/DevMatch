@@ -558,6 +558,17 @@ export default function Overview({ pid, projectD }) {
                         : "N/a"}
                     </dd>
                   </div>
+
+                  <div className='sm:col-span-1'>
+                    <dt className='text-sm font-medium text-gray-500'>
+                      Max Numberber of Members
+                    </dt>
+                    <dd className='mt-1 max-w-prose space-y-5 text-sm text-gray-900'>
+                      {projectD.maxNum?projectD.maxNum:0}
+                    
+                      {console.log(projectD)}
+                    </dd>
+                  </div>
                   <div className='sm:col-span-1'>
                     <dt>
                       <button

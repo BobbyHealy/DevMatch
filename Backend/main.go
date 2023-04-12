@@ -46,16 +46,17 @@ type project struct {
 	ProjectType        string   `json:"type"`
 	Milestones         []string `json:"milestones"`
 	Tasks              []string `json:"tasks"`
+	MaxNum             int      `json:"maxNum"`
+	CurrentNum         int      `json:"currentNum"`
 	//TaskBoard     Scrumboard `json: "board"`
 }
 
-
 type Task struct {
-	Progress     	string `json:"progress"`
-	ID          	string `json:"id"`
-	Category 		string `json:"category"`
-	Title 			string `json:"title"`
-	Assignees 		[]string `json:"assignees"`
+	Progress  string   `json:"progress"`
+	ID        string   `json:"id"`
+	Category  string   `json:"category"`
+	Title     string   `json:"title"`
+	Assignees []string `json:"assignees"`
 }
 
 /*
@@ -563,7 +564,7 @@ func updateProjectParts(c *gin.Context) {
 	fmt.Println(c)
 
 	projFields := []string{"owners", "name", "tmembers", "skills", "projectProfile",
-		"projectBannerPic", "projectDes", "type", "milestones", "tasks"}
+		"projectBannerPic", "projectDes", "type", "milestones", "tasks", "maxNum", "currentNum"}
 	// projFieldsPair := []string{"OwnersID",
 	// 	"ProjectName",
 	// 	"MembersID",
@@ -1099,7 +1100,7 @@ func getTasks(c *gin.Context) {
 }
 
 /*
-The following is meant to update the task when we drag and drop to a new progress column, but not sure if it works since 
+The following is meant to update the task when we drag and drop to a new progress column, but not sure if it works since
 its hard update the progress field right now. Leaving it out for now
 */
 
