@@ -35,6 +35,7 @@ export default function Overview({ pid, projectD }) {
   const [members, setMembers] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [confirmation, setConfirmation] = useState("");
+  const [maxNum, setMax] = useState(null)
 
   useEffect(() => {
     if (user.uid) {
@@ -181,6 +182,7 @@ export default function Overview({ pid, projectD }) {
             : undefined,
         projectDes: des !== undefined ? des : projectD.projectDes,
         type: projectD.type !== undefined ? projectD.type : undefined,
+        maxNum: Number(maxNum)?Number(maxNum)>=2?Number(maxNum):projectD.maxNum:projectD.maxNum
       });
 
       var myHeaders = new Headers();
@@ -218,6 +220,7 @@ export default function Overview({ pid, projectD }) {
                 : undefined,
             projectDes: des !== undefined ? des : projectD.projectDes,
             type: projectD.type !== undefined ? projectD.type : undefined,
+            maxNum: Number(maxNum)?Number(maxNum)>=2?Number(maxNum):projectD.maxNum:projectD.maxNum
           });
 
           var myHeaders = new Headers();
@@ -257,6 +260,7 @@ export default function Overview({ pid, projectD }) {
             projectBannerPic: url,
             projectDes: des !== undefined ? des : projectD.projectDes,
             type: projectD.type !== undefined ? projectD.type : undefined,
+            maxNum: Number(maxNum)?Number(maxNum)>=2?Number(maxNum):projectD.maxNum:projectD.maxNum
           });
 
           var myHeaders = new Headers();
@@ -299,6 +303,7 @@ export default function Overview({ pid, projectD }) {
                 projectBannerPic: url2,
                 projectDes: des !== undefined ? des : projectD.projectDes,
                 type: projectD.type !== undefined ? projectD.type : undefined,
+                maxNum: Number(maxNum)?Number(maxNum)>=2?Number(maxNum):projectD.maxNum:projectD.maxNum
               });
 
               var myHeaders = new Headers();
@@ -677,6 +682,20 @@ export default function Overview({ pid, projectD }) {
                         placeholder={projectD.skills}
                         value={newSkills}
                         onChange={(e) => setNewSkills(e.target.value)}
+                      />
+                    </dd>
+                  </div>
+                  <div className='sm:col-span-1'>
+                    <dt className='text-sm font-medium text-gray-500'>
+                    Max Numberber of Members
+                    </dt>
+                    <dd className='mt-1 text-sm text-gray-900'>
+                      <input
+                        type='text'
+                        className='bg-transparent border-none outline-none text-black placeholder-gray-300'
+                        placeholder={projectD.maxNum}
+                        value={maxNum}
+                        onChange={(e) => setMax(e.target.value)}
                       />
                     </dd>
                   </div>

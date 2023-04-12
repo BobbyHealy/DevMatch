@@ -5,7 +5,7 @@ import {
   EllipsisVerticalIcon, 
   PencilIcon 
 } from '@heroicons/react/20/solid'
-import { pinMsg,unpinMsg,deleteMsg } from "@/fireStoreBE/GCMsg";
+import { pinMsg,unpinMsg,deleteMsg,editMsg } from "@/fireStoreBE/GCMsg";
 import { useAuth } from "@/context/AuthContext";
 
 function classNames(...classes) 
@@ -21,11 +21,33 @@ export default function GroupMessage({pid, channel, message, id}) {
     const diff =(message.date.toDate()- today)
     const {user, userInfo} = useAuth();
     const [onEdit, setEdit] = useState(false);
+    const [text, setText]= useState(message.text)
   
     
     useEffect(() => {
         ref.current?.scrollIntoView({ behavior: "smooth" });
       }, [message]);
+    const handleKey = e=>{
+        e.code ==="Enter" &&handleSend(); 
+    }
+    const handleSend = async () => {
+        if(!message.img)
+        {
+            if (text.trim()&&text.trim()!==message.text)
+            {
+                await editMsg(pid,channel,id,text.trim())   
+            }
+        }
+        else
+        {
+            if(text.trim()!==message.text)
+            {
+                await editMsg(pid,channel,id,text.trim())
+            }
+        }
+        setEdit(false)
+
+    }
 
   return (
     <div className="group hover:bg-zinc-500 p-1 rounded-lg">
@@ -36,17 +58,35 @@ export default function GroupMessage({pid, channel, message, id}) {
             </div>
             <div className='content flex flex-col w-[calc(90%-40px)]'>
                 <div>
-                    <span className='text-yellow-300'>{message.sender}</span>
+                    <span className='text-yellow-300'>{message.senderID===user.uid?message.sender+" (You)":message.sender}</span>
                     {diff<0&&<span className='text-xs pl-2'>{date[0]}</span>}
                     {diff>0&&<span className='text-xs pl-2'>Today at</span>}
                     <span className='text-xs pl-1'>{time[0].trim()+":"+time[1]+" "+sign[1]}</span>
                 </div>
-                <img className='w-60 object-cover' src={message.img}/>
-                {message.text&&<p className='text-white  max-w-max'>{message.text}</p>}  
+                {onEdit&&<div>
+                    <img className='w-60 object-cover' src={message.img}/>
+                    <input 
+                    type="text" 
+                    multiline 
+                    placeholder={message.text}  
+                    onChange={(e) => setText(e.target.value)}  
+                    value={text}    
+                    onKeyDown={handleKey} 
+                    className='w-full bg-transparent text-white border-none outline-none placeholder-gray-400'
+                    />
+                    <span className="text-sm text-blue-400"
+                    onClick={()=>{setText(message.text);setEdit(false);}}>cancel
+                </span>
+                </div>}
+                {!onEdit&&<div className = "">
+                    <img className='w-60 object-cover py-1' src={message.img}/>
+                    {message.text&&<p className='text-white  max-w-max'>{message.text}</p>} 
+                </div>}
             </div>
             <div className="flex h-8 bg-gray-700 rounded-lg">
                 {message.senderID===user.uid&&<button className="hidden group-hover:block text-gray-400 hover:text-gray-600 p-1">
-                    <PencilIcon className="h-5 w-5 "/>
+                    <PencilIcon className="h-5 w-5" 
+                    onClick={()=>setEdit(true)}/>
                 </button>}
             
                 <Menu as="div" className="hidden group-hover:block relative inline-block text-left">
@@ -71,7 +111,6 @@ export default function GroupMessage({pid, channel, message, id}) {
                                     {({ active }) => (
                                     <a
                                         href="#"
-                                        // onClick={handlePin}
                                         onClick={()=>pinMsg(pid,channel,id, user.uid, userInfo.name)}
                                         className={classNames(
                                         active ? 'bg-gray-600 text-white' : 'text-gray-300',
@@ -86,7 +125,6 @@ export default function GroupMessage({pid, channel, message, id}) {
                                     {({ active }) => (
                                     <a
                                         href="#"
-                                        // onClick={handleUnpin}
                                         onClick={()=>unpinMsg(pid,channel,id)}
                                         className={classNames(
                                         active ? 'bg-gray-600 text-white' : 'text-gray-300',

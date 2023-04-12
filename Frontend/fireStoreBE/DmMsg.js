@@ -84,3 +84,10 @@ export async function sendMsgWithImage(DMID, msgID,senderID, receiverID, text, d
     [DMID + ".date"]: serverTimestamp(),
   });
 }
+
+export async function editMsg(DMID, msgID, text){
+  updateDoc(doc(db, "chats", DMID, "messages", msgID),
+  {
+    text: text,
+  })
+}

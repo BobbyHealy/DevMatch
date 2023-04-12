@@ -59,4 +59,13 @@ import {
     }
     await setDoc(doc(db, "GCs", pid,"channels", channel, "messages", msgID), data);
   }
+
+  export async function editMsg(pid, channel,msgID, text){
+    updateDoc(doc(db, "GCs", pid,"channels", channel, "messages", msgID),
+    {
+      text: text
+    })
+  }
+
+  
   
