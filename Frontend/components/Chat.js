@@ -1,13 +1,5 @@
-import  { useEffect, useState} from "react";
 import Messages from './Messages'
 import ChatInput from './ChatInput'
-import {
-  onSnapshot,
-  doc,
-} from "firebase/firestore";
-import { db } from "@/config/firebase";
-import { useAuth } from "@/context/AuthContext";
-
 
 export default function Chat({receiver,DMID, open}) {
 

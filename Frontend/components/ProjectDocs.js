@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import {
     doc,
-    updateDoc,
     serverTimestamp,
     setDoc,
     collection,
@@ -13,6 +12,7 @@ import { v4 as uuid } from "uuid";
 import Router from 'next/router';
 import ProjDocRow from "./ProjDocRow";
 import {EditorState,convertToRaw} from 'draft-js';
+import { switchProjPage } from "@/fireStoreBE/User";
 export default function ProjectDocs({pid}) {
     const {user, userInfo} = useAuth()
     const [showModal, setShowModal] = useState(false);
@@ -29,9 +29,7 @@ export default function ProjectDocs({pid}) {
     useEffect(() => {
         if(user.uid)
         {
-          updateDoc(doc(db, "users", user.uid), {
-            currentProjPage:"#Docs"
-          })
+          switchProjPage(user.uid, "#Docs")
         }
       }, [])
     const fetchDoc  = async () => 

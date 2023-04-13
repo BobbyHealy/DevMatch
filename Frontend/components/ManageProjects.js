@@ -1,10 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
-import Input from "./Input";
+import { useEffect, useState } from "react";
 import Router from "next/router";
 import { useAuth } from "@/context/AuthContext";
-import { resolve } from "styled-jsx/css";
-import {doc,updateDoc,} from "firebase/firestore";
-import { db } from "@/config/firebase";
+import { switchPage, switchProjPage } from "@/fireStoreBE/User";
 
 
 
@@ -19,10 +16,8 @@ export default function ManageProjects() {
     const [owner, setOwner]=useState("")
     const [members, setMembers]=useState([]);
     useEffect(() => {
-        updateDoc(doc(db, "users", user.uid), {
-          currentPage:"Manage Projects",
-          currentProjPage:"#Overview"
-        })
+        switchPage(user.uid,"Manage Projects")
+        switchProjPage(user.uid, "#Overview")
       }, [user.uid])
     useEffect(() => {
         if (user === null && userInfo === null) {

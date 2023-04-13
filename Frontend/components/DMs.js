@@ -1,7 +1,7 @@
-import React, {useEffect,useState, Fragment} from "react";
+import {useEffect,useState, Fragment} from "react";
 import Chat from "@/components/Chat";
 import { useAuth } from "@/context/AuthContext";
-import {doc,updateDoc,onSnapshot} from "firebase/firestore";
+import {doc,onSnapshot} from "firebase/firestore";
 import { db } from "@/config/firebase";
 import Searchbar from "./Searchbar";
 import Chats from "@/components/Chats";
@@ -9,6 +9,7 @@ import { Menu, Transition } from '@headlessui/react'
 import { 
   EllipsisVerticalIcon, 
 } from '@heroicons/react/20/solid'
+import { switchPage } from "@/fireStoreBE/User";
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
@@ -20,9 +21,7 @@ export default function DMs() {
   const [DMID, setDMID] = useState()
   const [open, setOpen] = useState(false)
   useEffect(() => {
-    updateDoc(doc(db, "users", user.uid), {
-      currentPage:"DMs"
-    })
+    switchPage(user.uid, "DMs")
   }, [user.uid])
 
   useEffect( () => {

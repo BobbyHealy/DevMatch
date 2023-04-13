@@ -1,9 +1,9 @@
 
-import React, { useContext, useEffect, useState } from "react";
-import { doc, onSnapshot,updateDoc,} from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { doc, onSnapshot} from "firebase/firestore";
 import { useAuth } from "@/context/AuthContext";
 import { db } from "@/config/firebase";
-
+import { switchChat } from "@/fireStoreBE/User";
 
 export default function Chats({search}) {
     const [chats, setChats] = useState([]);
@@ -45,12 +45,8 @@ export default function Chats({search}) {
       currentUser.uid && getChats();
     }, [currentUser.uid]);
 
-    const handleSelect = async (data) => {
-        
-        await updateDoc(doc(db, "users", currentUser.uid), {
-            currentChat:data
-        });
-        console.log(data)
+    const handleSelect = async (chat) => {
+        switchChat(currentUser.uid,chat)
     };
   return (
     <div>

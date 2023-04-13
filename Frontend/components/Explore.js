@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import UserComponent from "@/components/UserComponent";
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from "@/config/firebase";
 
 import { useAuth } from "@/context/AuthContext";
+import { switchProjPage } from "@/fireStoreBE/User";
 export default function Explore({ project }) {
   const [posts, setPosts] = useState(null);
   const { user } = useAuth();
@@ -36,9 +35,7 @@ export default function Explore({ project }) {
   };
   useEffect(() => {
     if (user.uid) {
-      updateDoc(doc(db, "users", user.uid), {
-        currentProjPage: "#Explore",
-      });
+      switchProjPage(user.uid, "#Explore")
     }
   }, []);
 

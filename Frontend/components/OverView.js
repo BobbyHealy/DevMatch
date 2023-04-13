@@ -1,14 +1,12 @@
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { InputText } from "primereact/inputtext";
-import { useRouter } from "next/router";
 import { storage } from "@/config/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useAuth } from "@/context/AuthContext";
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from "@/config/firebase";
 import Router from "next/router";
 import DeactivateModal from "./DeactivateModal";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { switchPage, switchProjPage } from "@/fireStoreBE/User";
 
 export default function Overview({ pid, projectD }) {
   const project = {
@@ -39,20 +37,14 @@ export default function Overview({ pid, projectD }) {
 
   useEffect(() => {
     if (user.uid) {
-      updateDoc(doc(db, "users", user.uid), {
-        currentProjPage: "#Overview",
-      });
+      switchPage(user.uid,"Overview")
+      switchProjPage(user.uid, "#Overview")
     }
   }, []);
 
   function refreshPage() {
     window.location.reload(false);
   }
-  useEffect(() => {
-    updateDoc(doc(db, "users", user.uid), {
-      currentPage: "Overview",
-    });
-  }, [user.uid]);
 
   useEffect(() => {
     var myHeaders = new Headers();

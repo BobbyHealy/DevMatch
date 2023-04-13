@@ -1,5 +1,5 @@
 
-import React,{useState,useEffect}from 'react'
+import {useState,useEffect}from 'react'
 import { db } from '@/config/firebase';
 import { useAuth } from '@/context/AuthContext';
 import DocumentRow from './DocumentRow';
@@ -9,13 +9,11 @@ import Router from 'next/router';
 import {
     doc,
     serverTimestamp,
-    updateDoc,
     setDoc,
     onSnapshot,
-    getDocs,
     collection,
-    query, orderBy, limit 
   } from "firebase/firestore";
+import { switchPage } from '@/fireStoreBE/User';
 
 export default function Documents() {
     const {user, userInfo} = useAuth()
@@ -112,9 +110,7 @@ export default function Documents() {
     };
     
     useEffect(() => {
-      updateDoc(doc(db, "users", user.uid), {
-        currentPage:"Documents"
-      })
+      switchPage(user.uid,"Documents")
     }, [user.uid])
 
     const fetchDoc  = async () => 

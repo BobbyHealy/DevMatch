@@ -1,11 +1,10 @@
-import React,{Fragment, useEffect, useState, useLayoutEffect, useRef} from "react";
+import {Fragment, useEffect, useState, useLayoutEffect, useRef} from "react";
 import { useAuth } from "@/context/AuthContext";
-import {doc,updateDoc,} from "firebase/firestore";
-import { db } from "@/config/firebase";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import MilestoneModal from "./MilestoneModal";
 import { Listbox, Transition } from '@headlessui/react'
 import { CalendarIcon, PaperClipIcon, TagIcon, UserCircleIcon } from '@heroicons/react/20/solid'
+import { switchProjPage } from "@/fireStoreBE/User";
 
 const defaultAssignees = [
   { name: 'Unassigned', value: null },
@@ -161,20 +160,10 @@ useEffect(() => {
     useEffect(() => {
     if(user.uid)
     {
-      updateDoc(doc(db, "users", user.uid), {
-        currentProjPage:"#MS"
-      })
+        switchProjPage(user.uid, "#MS")
     }
   }, []);
 
-  useEffect(() => {
-    if(user.uid)
-    {
-      updateDoc(doc(db, "users", user.uid), {
-        currentProjPage:"#MS"
-      })
-    }
-  }, []);
   return (
     <div>
 

@@ -1,11 +1,10 @@
 import { useAuth } from "@/context/AuthContext";
-import {doc,updateDoc,} from "firebase/firestore";
-import { db } from "@/config/firebase";
 import ScrumTask from "./ScrumTask";
 import { PlusCircleIcon } from "@heroicons/react/24/outline";
 import ScrumData from '../mockup_data/scrum-data.json'
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { useEffect, useState } from "react";
+import { switchProjPage } from "@/fireStoreBE/User";
 //import updateSingleTask from "@/pages/api/updateSingleTask";
 
 
@@ -182,9 +181,7 @@ const addTask= (e) =>{
   useEffect(() => {
     if(user.uid)
     {
-      updateDoc(doc(db, "users", user.uid), {
-        currentProjPage:"#Scrum"
-      })
+      switchProjPage(user.uid, "#Scrum")
       setReady(true);
     }
   }, []);

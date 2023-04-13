@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Router from "next/router";
 import { EnvelopeIcon } from "@heroicons/react/20/solid";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/config/firebase";
 import { getAuth } from "firebase/auth";
+import { switchPage } from "@/fireStoreBE/User";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -81,9 +82,7 @@ function Profile() {
         setNewSkills(userInfo.skills.join(","));
       }
     }
-    updateDoc(doc(db, "users", user.uid), {
-      currentPage: "Overview",
-    });
+    switchPage(user.uid, "Overview")
   }, [user, userInfo]);
 
   const tabs = [{ name: "Profile", href: "#", current: true }];

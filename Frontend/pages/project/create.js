@@ -12,8 +12,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import ProjType from "@/components/ProjTypeComboBox";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { Combobox } from "@headlessui/react";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
-import { db } from "@/config/firebase";
+import { createProject } from "@/fireStoreBE/Project";
 
 export default function Create() {
   const types = [
@@ -73,12 +72,7 @@ export default function Create() {
   const handleSumbit = async (e) => {
     e.preventDefault();
     const projectID = uuidv4();
-    const data = {
-      name: "main",
-      messages: [],
-      dateCreated: serverTimestamp(),
-    };
-    await setDoc(doc(db, "GCs", projectID, "channels", "main"), data);
+    createProject(projectID)
     if (!icon && !banner) {
       const skillsArr = skills.split(",").map((e) => e.trim());
       var raw = JSON.stringify({
