@@ -37,6 +37,7 @@ type user struct {
 type project struct {
 	ProjectID          string   `json:"pid"`
 	OwnersID           []string `json:"owners"`
+	AdminsID           []string `json:"admins"`
 	ProjectName        string   `json:"name"`
 	MembersID          []string `json:"tmembers"`
 	NeededSkills       []string `json:"skills"`
@@ -1097,6 +1098,51 @@ func getTasks(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, []interface{}{tasks})
+}
+
+func storeRole(c *gin.Context) {
+	pid, exists1 := c.GetQuery("pid")
+	if !exists1 {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+	}
+	uid, exists2 := c.GetQuery("uid")
+	if !exists2 {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+	}
+	role, exists3 := c.GetQuery("role")
+	if !exists3 {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+	}
+	var proj project = getProjectFromID(pid)
+	if proj.ProjectID == "" {
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	}
+
+	if role == "teamMember" {
+		proj.MembersID = append(proj.MembersID, uid)
+		updateProjectHelp(proj)
+		return
+	}
+	if role == "admin" {
+		proj.AdminsID = append(proj.AdminsID, uid)
+		updateProjectHelp(proj)
+		return
+	}
+	if role == "owner" {
+		proj.OwnersID = append(proj.OwnersID, uid)
+		updateProjectHelp(proj)
+		return
+
+	}
+
+}
+
+func getRole(c *gin.Context) {
+
 }
 
 /*
