@@ -4,15 +4,14 @@ import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import { useAuth } from '@/context/AuthContext';
 import { db } from '@/config/firebase';
 import { 
-    updateDoc, 
     doc,
     query, 
     collection,
     getDocs, 
-    serverTimestamp, 
     onSnapshot
 } from 'firebase/firestore';
 import {EditorState, convertFromRaw, convertToRaw } from 'draft-js';
+import { updateState } from '@/fireStoreBE/projDoc';
 
 function ProjTextEditor({pid,docId}) {
 
@@ -22,11 +21,7 @@ function ProjTextEditor({pid,docId}) {
         setState(state)
         if(docId)
         {
-            await updateDoc(doc(db, "projDocs", pid,"docs",docId), {
-                lastEditBy: userInfo.name,
-                lastEdit: serverTimestamp(),
-                state: convertToRaw(state.getCurrentContent())
-              });
+            updateState(pid,docId,convertToRaw(state.getCurrentContent()),userInfo.name)
         }
 
     }

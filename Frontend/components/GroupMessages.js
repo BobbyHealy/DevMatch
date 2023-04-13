@@ -2,7 +2,6 @@ import { useEffect, useState, Fragment} from "react";
 import Router from "next/router";
 import {
   onSnapshot,
-  doc,
   collection,
 } from "firebase/firestore";
 import { db } from "@/config/firebase";

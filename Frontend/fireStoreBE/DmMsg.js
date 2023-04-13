@@ -9,7 +9,7 @@ import {
 } from 'firebase/firestore'
 import { db } from "../config/firebase";
 
-export async function pinMsg(DMID, id, message,pinner ) 
+export async function pinMsg(DMID, id,pinner ) 
 {
   await updateDoc(doc(db, "chats", DMID, "messages", id),
   {

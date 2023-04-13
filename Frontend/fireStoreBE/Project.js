@@ -6,8 +6,12 @@ import {
     deleteDoc,
     Timestamp,
     serverTimestamp,
+    query,
+    collection,
+    getDocs,
 } from 'firebase/firestore'
 import { db } from "../config/firebase";
+import { deleteChannel } from './GCMsg';
 
 export async function createProject(pid) {
   const data = {
@@ -20,4 +24,11 @@ export async function createProject(pid) {
 
 export async function deleteProject(pid){
   await deleteDoc(doc(db, "GCs", pid))
+  const queryData = query(collection(db, "GCs", pid, "channels"));
+  const querySnapshot = await getDocs(queryData);
+  querySnapshot.docs.forEach(channel =>(
+    deleteChannel(pid, channel.id)
+  ))
+
+  
 }

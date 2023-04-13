@@ -7,13 +7,11 @@ import { v4 as uuid } from "uuid";
 import Router from 'next/router';
 
 import {
-    doc,
-    serverTimestamp,
-    setDoc,
     onSnapshot,
     collection,
   } from "firebase/firestore";
 import { switchPage } from '@/fireStoreBE/User';
+import { addDoc } from '@/fireStoreBE/userDoc';
 
 export default function Documents() {
     const {user, userInfo} = useAuth()
@@ -88,16 +86,8 @@ export default function Documents() {
       if(input.trim())
       {
         if(!input) return;
-        const data =
-        {
-
-          fileName: input,
-          time: serverTimestamp(),
-          lastEdit: serverTimestamp()
-        }
         const docID= uuid()
-        await setDoc(doc(db, "userDocs", user.email, "docs", docID ),data)
-
+        addDoc(user.email,docID,input.trim())
         Router.push(`/doc/${docID}`)
         setInput("")
         setShowModal(false)

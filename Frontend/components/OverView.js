@@ -7,6 +7,7 @@ import Router from "next/router";
 import DeactivateModal from "./DeactivateModal";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { switchPage, switchProjPage } from "@/fireStoreBE/User";
+import { deleteProject } from "@/fireStoreBE/Project";
 
 export default function Overview({ pid, projectD }) {
   const project = {
@@ -330,6 +331,9 @@ export default function Overview({ pid, projectD }) {
 
   const handleLeaveProj = () => {
     var myHeaders = new Headers();
+    if(projectD.tmembers.length<= 1){
+      deleteProject(pid)
+    }
     myHeaders.append("Content-Type", "application/json");
     var raw = JSON.stringify({
       pid: pid,
@@ -353,7 +357,7 @@ export default function Overview({ pid, projectD }) {
     //refreshPage()
   };
 
-  const handleDeleteProj = () => {
+  const handleDeleteProj = async () => {
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     var raw = JSON.stringify({
@@ -371,6 +375,7 @@ export default function Overview({ pid, projectD }) {
       .catch((err) => {
         console.log(err);
       });
+    await deleteProject(pid)
 
     Router.push("/");
   };

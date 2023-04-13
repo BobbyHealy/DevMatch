@@ -5,7 +5,10 @@ import {
   deleteField,
   deleteDoc,
   Timestamp,
-  serverTimestamp
+  serverTimestamp,
+  query,
+  collection,
+  getDocs
 } from 'firebase/firestore'
 import { db } from "../config/firebase";
 
@@ -21,6 +24,11 @@ export async function addChannel(pid, channelID, title)
 export async function deleteChannel(pid, channelID) 
 {
   await deleteDoc(doc(db, "GCs", pid,"channels", channelID));
+  const queryData = query(collection(db, "GCs", pid, "channels",channelID,"messages"));
+  const querySnapshot = await getDocs(queryData);
+  querySnapshot.docs.forEach(msg =>(
+    deleteMsg(pid, channelID, msg.id)
+  ))
 }
 export async function pinMsg(pid, channel, id,pinnerID , pinner) 
 {

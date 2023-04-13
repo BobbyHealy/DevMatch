@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import {
-    doc,
-    serverTimestamp,
-    setDoc,
     collection,
     onSnapshot,
   } from "firebase/firestore";
@@ -13,6 +10,7 @@ import Router from 'next/router';
 import ProjDocRow from "./ProjDocRow";
 import {EditorState,convertToRaw} from 'draft-js';
 import { switchProjPage } from "@/fireStoreBE/User";
+import { addDoc } from "@/fireStoreBE/projDoc";
 export default function ProjectDocs({pid}) {
     const {user, userInfo} = useAuth()
     const [showModal, setShowModal] = useState(false);
@@ -128,18 +126,10 @@ export default function ProjectDocs({pid}) {
       }
       const createDocument =async ()=>
       {
-          if(!input) return;
+          if(!input.trim()) return;
 
-          const data =
-          {
-            fileName: input,
-            time: serverTimestamp(),
-            lastEdit: serverTimestamp(),
-            createBy: userInfo.name,
-            state: convertToRaw(EditorState.createEmpty().getCurrentContent())
-          }
           const docID= uuid()
-          await setDoc(doc(db, "projDocs", pid, "docs", docID ),data)
+          addDoc(pid,docID,input.trim(), userInfo.name,convertToRaw(EditorState.createEmpty().getCurrentContent()))
           Router.push(`/projDoc/${pid}DocId=${docID}`)
           setInput("")
           setShowModal(false)

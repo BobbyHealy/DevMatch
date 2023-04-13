@@ -1,13 +1,13 @@
-import React ,{useEffect, useState}from 'react'
+import {useEffect, useState}from 'react'
 import Router from "next/router";
 import {
-    DocumentTextIcon,
-    EllipsisVerticalIcon
-  } from "@heroicons/react/24/outline";
-  import {   Timestamp } from 'firebase/firestore';
-  import { doc, deleteDoc } from "firebase/firestore";
-  import { useAuth } from '@/context/AuthContext';
-  import { db } from '@/config/firebase';
+  DocumentTextIcon,
+  EllipsisVerticalIcon
+} from "@heroicons/react/24/outline";
+import {   Timestamp } from 'firebase/firestore';
+import { useAuth } from '@/context/AuthContext';
+import { delDoc } from '@/fireStoreBE/userDoc';
+
 
 function DocumentRow({id, fileName, lastEdit,date}) {
   const  dateTime =lastEdit?.toDate().toLocaleString('en-US').split(",")
@@ -17,15 +17,6 @@ function DocumentRow({id, fileName, lastEdit,date}) {
   const [open ,setOpen] = useState(false)
   const {user}=useAuth()
   
-  useEffect
-  function refreshPage() {
-    window.location.reload(false);
-  }
-  const handleDelete = async () => {
-    await deleteDoc(doc(db, "userDocs", user.email,"docs",id));
-    refreshPage()
-
-  };
   useEffect(() => {
     if(dateTime)
     {
@@ -59,7 +50,7 @@ function DocumentRow({id, fileName, lastEdit,date}) {
               open ? "block" : "hidden"
             }`}
           >
-            <li onClick={()=>handleDelete()}
+            <li onClick={()=>delDoc(user.email,id)}
             className="flex w-full items-center px-2 py-2 text-xs text-red-600 hover:bg-gray-100">
               delete
             </li>

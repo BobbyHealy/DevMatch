@@ -1,11 +1,12 @@
-import React,{useState,useEffect}from 'react'
+import {useState,useEffect}from 'react'
 import { Editor } from 'react-draft-wysiwyg';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import Router from 'next/router';
 import { useAuth } from '@/context/AuthContext';
 import { db } from '@/config/firebase';
-import { updateDoc, doc,query, collection,getDocs, serverTimestamp} from 'firebase/firestore';
+import { query, collection,getDocs} from 'firebase/firestore';
 import {EditorState, convertFromRaw, convertToRaw } from 'draft-js';
+import { updateState } from '@/fireStoreBE/userDoc';
 
 function TextEditor() {
     const{user} = useAuth();
@@ -13,10 +14,7 @@ function TextEditor() {
     const{id} =Router.query;
     const onEditChange =async (state) =>{
         setState(state)
-        await updateDoc(doc(db, "userDocs", user.email,"docs",id), {
-            lastEdit: serverTimestamp(),
-            state: convertToRaw(state.getCurrentContent())
-          });
+        updateState(user.email, id, convertToRaw(state.getCurrentContent()))
     }
     const getState  = async() => {
         const q = query(
