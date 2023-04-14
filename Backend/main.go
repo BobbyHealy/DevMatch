@@ -21,14 +21,15 @@ const authToken = "token"
  * NOTE: Projects are stored by their project ids
  */
 type user struct {
-	UserID        string   `json:"userID"`
-	Name          string   `json:"name"`
-	ProjectOwned  []string `json:"pOwned"` //This is a slice. Dynamically sized array. (Change to type project later)
-	ProjectJoined []string `json:"pJoined"`
-	Rating        int      `json:"rating"`
-	Skills        []string `json:"skills"`
-	ProfilePic    string   `json:"profilePic"`
-	Description   string   `json:"description"`
+	UserID         string   `json:"userID"`
+	Name           string   `json:"name"`
+	ProjectOwned   []string `json:"pOwned"` //This is a slice. Dynamically sized array. (Change to type project later)
+	ProjectJoined  []string `json:"pJoined"`
+	Rating         int      `json:"rating"`
+	Skills         []string `json:"skills"`
+	ProfilePic     string   `json:"profilePic"`
+	Description    string   `json:"description"`
+	PendingInvites []string `json:"pending"` //will hold pid of pending invitations
 }
 
 /*
@@ -115,6 +116,9 @@ func main() {
 	router.POST("/addTask", addTask)
 	router.GET("/getTasks", getTasks)
 	//router.POST("/updateSingleTask", updateSingleTask)
+	router.POST("/invite", invite)
+	router.POST("/acceptInvite", acceptInvite)
+	router.POST("/declineInvite", declineInvite)
 
 	router.Run("localhost:8080")
 
@@ -482,7 +486,134 @@ func updateProject(c *gin.Context) {
 }
 
 /*
+ * will invite uid user to pid project
+ */
+func inviteHelp(uid string, pid string) {
+	var v user
+	v = getUserFromID(uid)
+
+	if v.UserID == "" {
+		fmt.Printf("invalid user")
+		return
+	}
+	for _, a := range v.PendingInvites { //if already exists, don't do it
+		if a == pid {
+			return
+		}
+	}
+	v.PendingInvites = append(v.PendingInvites, pid)
+	updateUserHelp(v)
+}
+
+func invite(c *gin.Context) {
+	uid, exists := c.GetQuery("uid")
+	if !exists {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	} else {
+		fmt.Println(uid)
+	}
+
+	pid, exists2 := c.GetQuery("pid")
+	if !exists2 {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	} else {
+		fmt.Println(pid)
+	}
+	inviteHelp(uid, pid)
+	c.IndentedJSON(http.StatusOK, nil)
+}
+
+func respondInviteHelp(uid string, pid string, yes int) {
+	var v user
+	v = getUserFromID(uid)
+
+	if v.UserID == "" {
+		fmt.Printf("invalid user")
+		return
+	}
+	pending := v.PendingInvites
+	var pending2 []string = make([]string, 0)
+
+	found := false
+	for i := 0; i < len(pending); i++ {
+		if !(pending[i] == pid) { //will remove pid from pending list
+			pending2 = append(pending2, pending[i])
+		} else if !found {
+			if yes != 0 { //accepting invite
+				already := false                    //already joined
+				for _, a := range v.ProjectJoined { //if already exists, don't do it
+					if a == pid {
+						already = true
+						break
+					}
+				}
+				if !already {
+					v.ProjectJoined = append(v.ProjectJoined, pid) //add pid to pJoined
+				}
+			}
+			found = true //avoids doing it twice (shouldn't be possible)
+		}
+	}
+	if !found {
+		fmt.Println("Invite doesn't exist")
+		return
+	}
+	v.PendingInvites = pending2
+	updateUserHelp(v)
+
+}
+
+func declineInvite(c *gin.Context) {
+	uid, exists := c.GetQuery("uid")
+	if !exists {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	} else {
+		fmt.Println(uid)
+	}
+
+	pid, exists2 := c.GetQuery("pid")
+	if !exists2 {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	} else {
+		fmt.Println(pid)
+	}
+	respondInviteHelp(uid, pid, 0)
+	c.IndentedJSON(http.StatusOK, nil)
+}
+
+func acceptInvite(c *gin.Context) {
+	uid, exists := c.GetQuery("uid")
+	if !exists {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	} else {
+		fmt.Println(uid)
+	}
+
+	pid, exists2 := c.GetQuery("pid")
+	if !exists2 {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	} else {
+		fmt.Println(pid)
+	}
+	respondInviteHelp(uid, pid, 1)
+	c.IndentedJSON(http.StatusOK, nil)
+}
+
+/*
  * Use the key "uid" to get user by user id.
+ * Adds user to project
  */
 func userToProject(c *gin.Context) {
 	uid, exists := c.GetQuery("uid")
