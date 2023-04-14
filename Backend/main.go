@@ -551,8 +551,16 @@ func respondInviteHelp(uid string, pid string, yes int) {
 						break
 					}
 				}
+				var proj project
+				proj = getProjectFromID(pid)
+				if proj.ProjectID == "" {
+					fmt.Println("Project doesn't exist")
+					return
+				}
 				if !already {
 					v.ProjectJoined = append(v.ProjectJoined, pid) //add pid to pJoined
+					proj.MembersID = append(proj.MembersID, uid)
+					updateProjectHelp(proj)
 				}
 			}
 			found = true //avoids doing it twice (shouldn't be possible)
