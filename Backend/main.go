@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -48,6 +49,7 @@ type project struct {
 	Tasks              []string `json:"tasks"`
 	MaxNum             int      `json:"maxNum"`
 	CurrentNum         int      `json:"currentNum"`
+	Complete           int      `json:"complete"`
 	//TaskBoard     Scrumboard `json: "board"`
 }
 
@@ -564,7 +566,7 @@ func updateProjectParts(c *gin.Context) {
 	fmt.Println(c)
 
 	projFields := []string{"owners", "name", "tmembers", "skills", "projectProfile",
-		"projectBannerPic", "projectDes", "type", "milestones", "tasks", "maxNum", "currentNum"}
+		"projectBannerPic", "projectDes", "type", "milestones", "tasks", "maxNum", "currentNum", "complete"}
 	// projFieldsPair := []string{"OwnersID",
 	// 	"ProjectName",
 	// 	"MembersID",
@@ -615,6 +617,27 @@ func updateProjectParts(c *gin.Context) {
 				newProj.Milestones = interfaceToStringSplice(hold)
 			case projFields[9]:
 				newProj.Tasks = interfaceToStringSplice(hold)
+			case projFields[10]:
+				strHold := fmt.Sprintf("%v", hold)
+				intVar, err := strconv.Atoi(strHold)
+				if err != nil {
+					log.Fatal(err)
+				}
+				newProj.MaxNum = intVar
+			case projFields[11]:
+				strHold := fmt.Sprintf("%v", hold)
+				intVar, err := strconv.Atoi(strHold)
+				if err != nil {
+					log.Fatal(err)
+				}
+				newProj.CurrentNum = intVar
+			case projFields[12]:
+				strHold := fmt.Sprintf("%v", hold)
+				intVar, err := strconv.Atoi(strHold)
+				if err != nil {
+					log.Fatal(err)
+				}
+				newProj.Complete = intVar
 			}
 		}
 	}
