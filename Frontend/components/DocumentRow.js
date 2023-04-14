@@ -6,7 +6,7 @@ import {
 } from "@heroicons/react/24/outline";
 import {   Timestamp } from 'firebase/firestore';
 import { useAuth } from '@/context/AuthContext';
-import { delDoc } from '@/fireStoreBE/userDoc';
+import { delDoc } from '@/fireStoreBE/UserDoc';
 
 
 function DocumentRow({id, fileName, lastEdit,date}) {

@@ -1,5 +1,5 @@
 import {useEffect, useRef} from "react";
-import { unpinMsg } from '@/fireStoreBE/GCMsg';
+import { unpinMsg } from '@/fireStoreBE/GCText';
 import { Timestamp } from "firebase/firestore";
 import { useAuth } from "@/context/AuthContext";
 

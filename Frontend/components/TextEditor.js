@@ -6,7 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import { db } from '@/config/firebase';
 import { query, collection,getDocs} from 'firebase/firestore';
 import {EditorState, convertFromRaw, convertToRaw } from 'draft-js';
-import { updateState } from '@/fireStoreBE/userDoc';
+import { updateState } from '@/fireStoreBE/UserDoc';
 
 function TextEditor() {
     const{user} = useAuth();

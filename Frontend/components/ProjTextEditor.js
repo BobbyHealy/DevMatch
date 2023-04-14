@@ -11,7 +11,7 @@ import {
     onSnapshot
 } from 'firebase/firestore';
 import {EditorState, convertFromRaw, convertToRaw } from 'draft-js';
-import { updateState } from '@/fireStoreBE/projDoc';
+import { updateState } from '@/fireStoreBE/ProjDoc';
 
 function ProjTextEditor({pid,docId}) {
 

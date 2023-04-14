@@ -15,7 +15,7 @@ export default function GroupMessages({open, channel}) {
   const {pid}= Router.query;
   useEffect(() => {
     if(pid){
-      const unSub = onSnapshot(collection(db, "GCs", pid, "channels", channel,"messages"), (docs) => {
+      const unSub = onSnapshot(collection(db, "GCs", pid, "textChannels", channel,"messages"), (docs) => {
         setMessages(docs.docs);
       });
       return () => {

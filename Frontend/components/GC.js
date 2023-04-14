@@ -10,12 +10,15 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 import GCTextChannels from './GCTextChannels';
+import GCVoiceChannels from './GCVoiceChannels';
 
 
 export default function GC({pid,project}) {
   
   const [edit, setEdit] = useState(false);
   const [title, setTitle] = useState("");
+  const [vTitle, setVTitle] = useState("");
+  const [vEdit, setVEdit] = useState(false);
   const{userInfo} =useAuth()
   const [channelName, setChannel]=useState("main")
   const [channelID, setID]=useState("main")
@@ -80,8 +83,11 @@ const handleShow= ()=>{
           <div  className='flex'>
             <div className='h-[calc(100vh-104px)] w-[calc(246px)] lg:h-[calc(100vh-48px)]  '>
             {/* Text Channels */}
+            <div className='bg-gray-700 overflow-y-scroll h-[calc(100vh-160px)] lg:h-full'>
               <GCTextChannels pid={pid} project={project} channelID={channelID} title={title} edit={edit} setChannel={setChannel} setTitle={setTitle} setEdit={setEdit} setID={setID}/>
               {/* Voice Channels */}
+              <GCVoiceChannels pid={pid} project={project} vTitle={vTitle} vEdit={vEdit} setVTitle={setVTitle} setVEdit={setVEdit}/>
+              </div>
               <div onClick={()=>{setEdit(false); setTitle("");setOpen(false)}} className='flex-2 bg-gray-800 items-center justify-between h-14 p-3 pl-5 pr-5 lg:hidden '>
               <div className='flex'>
                 <img src= {userInfo.profilePic} className='bg-white h-8 w-8 rounded-full'/>
@@ -89,7 +95,6 @@ const handleShow= ()=>{
               </div>
               </div>
             </div>
-          
             <div onClick={()=>{setEdit(false); setTitle("");setOpen(false)}} className='w-[calc(100vw-246px)] lg:w-[calc(100vw-502px)]'>
             <GroupMessages open={open} channel={channelID} />
             <div className='pl-2 pr-2'>

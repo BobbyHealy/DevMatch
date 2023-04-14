@@ -11,8 +11,8 @@ import {
     query
 } from 'firebase/firestore'
 import { db } from "../config/firebase";
-import { delDoc } from './userDoc';
-import { deleteUserDM, deleteDM } from './DmMsg';
+import { delDoc } from './UserDoc';
+import { deleteUserDM, deleteDM } from './DMs';
 
 export async function switchPage(uid, page){
     updateDoc(doc(db, "users", uid), {
@@ -28,6 +28,12 @@ export async function switchProjPage(uid, page){
 export async function switchChat(uid, chat){
     await updateDoc(doc(db, "users", uid), {
       currentChat:chat
+    });
+}
+
+export async function updateName(uid, name){
+    await updateDoc(doc(db, "users", uid), {
+        displayName: name
     });
 }
 

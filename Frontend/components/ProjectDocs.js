@@ -10,7 +10,7 @@ import Router from 'next/router';
 import ProjDocRow from "./ProjDocRow";
 import {EditorState,convertToRaw} from 'draft-js';
 import { switchProjPage } from "@/fireStoreBE/User";
-import { addDoc } from "@/fireStoreBE/projDoc";
+import { addDoc } from "@/fireStoreBE/ProjDoc";
 export default function ProjectDocs({pid}) {
     const {user, userInfo} = useAuth()
     const [showModal, setShowModal] = useState(false);
