@@ -1145,7 +1145,13 @@ func getIDS(isProject bool) []string {
 	}
 	keys := make([]string, 0, len(v))
 	for k := range v {
-		keys = append(keys, k)
+		if isProject {
+			if len(getProjectFromID(k).MembersID) < getProjectFromID(k).MaxNum {
+				keys = append(keys, k)
+			}
+		} else {
+			keys = append(keys, k)
+		}
 	}
 	return keys
 }
