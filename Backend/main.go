@@ -113,6 +113,7 @@ func main() {
 
 	router.POST("/addTask", addTask)
 	router.GET("/getTasks", getTasks)
+	router.GET("/getRole", getRole)
 	//router.POST("/updateSingleTask", updateSingleTask)
 
 	router.Run("localhost:8080")
@@ -1163,13 +1164,46 @@ func getRole(c *gin.Context) {
 			return
 		}
 	}
-	for i := 0; i < len(proj.AdminsID); i++ {
-		if proj.AdminsID[i] == uid {
-			c.IndentedJSON(http.StatusOK, []interface{}{"Admin"})
-			return
+	//uncomment when projects w/ admin array are created
+	//for i := 0; i < len(proj.AdminsID); i++ {
+	//	if proj.AdminsID[i] == uid {
+	//		c.IndentedJSON(http.StatusOK, []interface{}{"Admin"})
+	//		return
+	//	}
+	//}
+	c.IndentedJSON(http.StatusOK, []interface{}{"Team Member"})
+}
+
+func getRoleHelper(c *gin.Context) string {
+	pid, exists1 := c.GetQuery("pid")
+	if !exists1 {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+	}
+	uid, exists2 := c.GetQuery("uid")
+	if !exists2 {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+	}
+	var proj project = getProjectFromID(pid)
+	if proj.ProjectID == "" {
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return ""
+	}
+	for i := 0; i < len(proj.OwnersID); i++ {
+		if proj.OwnersID[i] == uid {
+			c.IndentedJSON(http.StatusOK, []interface{}{"Owner"})
+			return "Owner"
 		}
 	}
-	c.IndentedJSON(http.StatusOK, []interface{}{"Team Member"})
+	//uncomment when projects w/ admin array are created
+	//for i := 0; i < len(proj.AdminsID); i++ {
+	//	if proj.AdminsID[i] == uid {
+	//		c.IndentedJSON(http.StatusOK, []interface{}{"Admin"})
+	//		return
+	//	}
+	//}
+	return "Team Member"
 }
 
 /*
