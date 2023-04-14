@@ -2,7 +2,7 @@ import{ useEffect, useRef } from "react";
 import { Timestamp } from "firebase/firestore";
 
 import { useAuth } from "@/context/AuthContext";
-import { unpinMsg } from "@/fireStoreBE/DmMsg";
+import { unpinMsg } from "@/fireStoreBE/DMs";
 
 function PinnedMsg({DMID, id, message, receiver}) {
   const ref = useRef(); 

@@ -8,8 +8,8 @@ import {
   setDoc,
 } from "firebase/firestore";
 import { v4 as uuid } from "uuid";
-import { sendMsg,pinMsg,unpinMsg } from "../fireStoreBE/DmMsg";
-import { sendMsg as sendGC,pinMsg as pinGC,unpinMsg as unpinGC} from "../fireStoreBE/GCMsg";
+import { sendMsg,pinMsg,unpinMsg } from "../fireStoreBE/DMs";
+import { sendMsg as sendGC,pinMsg as pinGC,unpinMsg as unpinGC} from "../fireStoreBE/GCText";
 const email = "jesttestemail@jesttestemail.com";
 const password = "123456";
 const senderID = "jestUID"

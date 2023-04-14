@@ -5,7 +5,7 @@ import {
   PencilIcon 
 } from '@heroicons/react/20/solid'
 
-import { unpinMsg,pinMsg,deleteMsg, editMsg } from "@/fireStoreBE/DmMsg";
+import { unpinMsg,pinMsg,deleteMsg, editMsg } from "@/fireStoreBE/DMs";
 import { useAuth } from "@/context/AuthContext";
 
 

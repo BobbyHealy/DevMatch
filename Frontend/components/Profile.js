@@ -4,16 +4,8 @@ import { EnvelopeIcon } from "@heroicons/react/20/solid";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "@/context/AuthContext";
 import DeactivateModal from "./DeactivateModal";
-import {
-  doc,
-  updateDoc,
-  deleteDoc,
-  onSnapshot,
-  deleteField,
-} from "firebase/firestore";
-import { db } from "@/config/firebase";
 import { getAuth } from "firebase/auth";
-import { deleteAccount, switchPage } from "@/fireStoreBE/User";
+import { deleteAccount, switchPage, updateName } from "@/fireStoreBE/User";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -210,12 +202,7 @@ function Profile() {
       headers: myHeaders,
       body: raw,
     };
-    updateDoc(doc(db, "users", user.uid), {
-      displayName:
-        newName !== undefined && newName.trim().length > 0
-          ? newName.trim()
-          : userInfo.name,
-    });
+    newName && newName.trim().length > 0&& updateName(user.uid,newName)
 
     await fetch("http://localhost:3000/api/addUser", requestOptions)
       .then((response) => response.text())

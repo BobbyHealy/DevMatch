@@ -5,7 +5,7 @@ import {
   EllipsisVerticalIcon, 
   PencilIcon 
 } from '@heroicons/react/20/solid'
-import { pinMsg,unpinMsg,deleteMsg,editMsg } from "@/fireStoreBE/GCMsg";
+import { pinMsg,unpinMsg,deleteMsg,editMsg } from "@/fireStoreBE/GCText";
 import { useAuth } from "@/context/AuthContext";
 
 function classNames(...classes) 
@@ -22,7 +22,30 @@ export default function GroupMessage({pid, channel, message, id}) {
     const {user, userInfo} = useAuth();
     const [onEdit, setEdit] = useState(false);
     const [text, setText]= useState(message.text)
+    const [sender, setSender] = useState("Loading...")
   
+    useEffect(()=>{
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        var raw = JSON.stringify({
+            userID: message.senderID,
+        });
+        var requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: raw,
+        };
+        fetch("http://localhost:3000/api/getUser", requestOptions)
+            .then((response) => response.text())
+            .then((result) => {
+            setSender(JSON.parse(result).name);
+
+            })
+            .catch((err) => {
+            console.log(err);
+            });
+ 
+    },[])
     
     useEffect(() => {
         ref.current?.scrollIntoView({ behavior: "smooth" });
@@ -46,8 +69,9 @@ export default function GroupMessage({pid, channel, message, id}) {
             }
         }
         setEdit(false)
-
     }
+
+    
 
   return (
     <div className="group hover:bg-zinc-500 p-1 rounded-lg">
@@ -58,7 +82,7 @@ export default function GroupMessage({pid, channel, message, id}) {
             </div>
             <div className='content flex flex-col w-[calc(90%-40px)]'>
                 <div>
-                    <span className='text-yellow-300'>{message.senderID===user.uid?message.sender+" (You)":message.sender}</span>
+                    <span className='text-yellow-300'>{message.senderID===user.uid?sender+" (You)":sender}</span>
                     {diff<0&&<span className='text-xs pl-2'>{date[0]}</span>}
                     {diff>0&&<span className='text-xs pl-2'>Today at</span>}
                     <span className='text-xs pl-1'>{time[0].trim()+":"+time[1]+" "+sign[1]}</span>

@@ -5,7 +5,7 @@ import {
 } from "firebase/firestore";
 import { v4 as uuid } from "uuid";
 import { db } from "@/config/firebase";
-import { addChannel } from '@/fireStoreBE/GCMsg';
+import { addChannel } from '@/fireStoreBE/GCText';
 import GCTextChannel from './GCTextChannel';
 import { useAuth } from '@/context/AuthContext';
 
@@ -14,22 +14,18 @@ function GCTextChannels({pid, project, channelID, title, edit, setChannel, setTi
     const [channels, setChannels] =useState([])
     const{userInfo} =useAuth()
     useEffect(() => {
-        if(pid){
-          const ref = collection(db, "GCs", pid,"channels")
-          // const snap = getDoc(ref)
-          
-          const unSub = onSnapshot(collection(db, "GCs", pid, "channels"), (col) => {
-            setChannels(col.docs)
-          });
-          return () => {
-            unSub();
-          };
-        }
-      }, [pid]);
-      const handleKey = e=>{
-        e.code ==="Enter" &&handleSend(); 
+      if(pid){      
+        const unSub = onSnapshot(collection(db, "GCs", pid, "textChannels"), (col) => {
+          setChannels(col.docs)
+        });
+        return () => {
+          unSub();
+        };
       }
-    
+    }, [pid]);
+    const handleKey = e=>{
+      e.code ==="Enter" &&handleSend(); 
+    }
     
     const handleSend = async () => 
     {
@@ -41,7 +37,7 @@ function GCTextChannels({pid, project, channelID, title, edit, setChannel, setTi
       setEdit(false)
     }
   return (
-    <div className='bg-gray-700 overflow-y-scroll h-[calc(100vh-160px)] lg:h-full'>
+    <div>
         
     {!expend&&<span className='flex-grow  pl-1 w-5 text-gray-500 cursor-pointer hover:text-white ' onClick={()=>{setExpend(true); setEdit(false); setTitle("")}}>{">"}</span>}
     {expend&&<span className='flex-grow  pl-1 w-5 text-gray-500 cursor-pointer hover:text-white ' onClick={()=>{setExpend(false); setEdit(false);setTitle("")}}>v</span>}

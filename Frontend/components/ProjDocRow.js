@@ -5,7 +5,7 @@ import {
     EllipsisVerticalIcon
   } from "@heroicons/react/24/outline";
   import {   Timestamp } from 'firebase/firestore';
-import { delDoc } from '@/fireStoreBE/projDoc';
+import { delDoc } from '@/fireStoreBE/ProjDoc';
 
 function ProjDocRow({id, fileName, lastEdit, date, createdBy}) {
   const { pid } = Router.query;
