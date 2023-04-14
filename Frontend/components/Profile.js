@@ -13,13 +13,13 @@ import {
 } from "firebase/firestore";
 import { db } from "@/config/firebase";
 import { getAuth } from "firebase/auth";
-import { switchPage } from "@/fireStoreBE/User";
+import { deleteAccount, switchPage } from "@/fireStoreBE/User";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 function Profile() {
-  const { user, login, logout, userInfo } = useAuth();
+  const { user, userInfo } = useAuth();
   const currentUser = {
     userID: user.userID !== undefined ? userInfo.userID : "",
     name: userInfo.name !== undefined ? userInfo.name : "Foo Bar",
@@ -169,23 +169,8 @@ function Profile() {
       .catch((err) => {
         console.log(err);
       });
-    deleteDoc(doc(db, "userDocs", user.email));
-
-    console.log(1)
-    onSnapshot(doc(db, "userChats", user.uid), (doc) => {
-      if (doc.data()) {
-        Object.entries(doc.data()).forEach((id) => {
-
-          deleteChat(id[0]);
-        });
-      }
-    });
     
-    deleteDoc(doc(db, "users", user.uid));
-  
-
-    deleteDoc(doc(db, "userChats", user.uid));
-
+    await deleteAccount(user.uid,user.email)
 
     currentUser
       .delete()
@@ -197,19 +182,6 @@ function Profile() {
       .catch((error) => {console.log(error)});
   };
 
-  function deleteChat(chatID) {
-    deleteDoc(doc(db, "chats", chatID));
-    const ids = chatID.split("-");
-    if (ids[0] === user.id) {
-      updateDoc(doc(db, "userChats", ids[1]), {
-        [chatID]: deleteField(),
-      });
-    } else {
-      updateDoc(doc(db, "userChats", ids[0]), {
-        [chatID]: deleteField(),
-      });
-    }
-  }
 
   const handleSubmit = async (e) => {
     console.log(newName === "");
@@ -257,9 +229,6 @@ function Profile() {
     refreshPage();
   };
 
-  // const handleSubmit = () => {
-  //   setEdit(false);
-  // };
   const handleCancel = () => {
     setEdit(false);
   };
@@ -563,6 +532,7 @@ function Profile() {
           >
             Cancel
           </button>
+          
         </div>
       </DeactivateModal>
     </div>

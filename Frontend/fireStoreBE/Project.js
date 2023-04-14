@@ -23,12 +23,11 @@ export async function createProject(pid) {
 }
 
 export async function deleteProject(pid){
-  await deleteDoc(doc(db, "GCs", pid))
+ 
   const queryData = query(collection(db, "GCs", pid, "channels"));
   const querySnapshot = await getDocs(queryData);
   querySnapshot.docs.forEach(channel =>(
     deleteChannel(pid, channel.id)
   ))
-
-  
+  await deleteDoc(doc(db, "GCs", pid))
 }

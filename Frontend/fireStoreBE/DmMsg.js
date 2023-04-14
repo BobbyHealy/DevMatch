@@ -6,6 +6,9 @@ import {
   deleteDoc,
   Timestamp,
   serverTimestamp,
+  query,
+  getDocs,
+  collection
 } from 'firebase/firestore'
 import { db } from "../config/firebase";
 
@@ -32,7 +35,8 @@ export async function deleteMsg(DMID, id)
   await deleteDoc(doc(db, "chats", DMID, "messages", id));
 }
 
-export async function sendMsg(DMID, msgID,senderID, receiverID, text){
+export async function sendMsg(DMID, msgID,senderID, receiverID, text)
+{
   const data = {
     text: text,
     senderId: senderID,
@@ -40,16 +44,20 @@ export async function sendMsg(DMID, msgID,senderID, receiverID, text){
     pinned: false
   }
   await setDoc(doc(db, "chats", DMID, "messages", msgID ), data);
-  await updateDoc(doc(db, "userChats", senderID), {
-    [DMID + ".lastMessage"]: {
+  await updateDoc(doc(db, "userChats", senderID), 
+  {
+    [DMID + ".lastMessage"]: 
+    {
       text: text.trim(),
       id: msgID
     },
     [DMID + ".date"]: serverTimestamp(),
   });
 
-  await updateDoc(doc(db, "userChats", receiverID), {
-    [DMID + ".lastMessage"]: {
+  await updateDoc(doc(db, "userChats", receiverID), 
+  {
+    [DMID + ".lastMessage"]: 
+    {
       text: text.trim(),
       id: msgID
     },
@@ -57,8 +65,10 @@ export async function sendMsg(DMID, msgID,senderID, receiverID, text){
   });
 }
 
-export async function sendMsgWithImage(DMID, msgID,senderID, receiverID, text, downloadURL){
-  const data ={
+export async function sendMsgWithImage(DMID, msgID,senderID, receiverID, text, downloadURL)
+{
+  const data =
+  {
     text: text.trim(),
     senderId: senderID,
     date: Timestamp.now(),
@@ -66,8 +76,10 @@ export async function sendMsgWithImage(DMID, msgID,senderID, receiverID, text, d
     pinned: false
   }
   await setDoc(doc(db, "chats", DMID, "messages", msgID ), data);
-  await updateDoc(doc(db, "userChats", senderID), {
-    [DMID + ".lastMessage"]: {
+  await updateDoc(doc(db, "userChats", senderID), 
+  {
+    [DMID + ".lastMessage"]: 
+    {
       text: text.trim(),
       id: msgID,
       img: true,
@@ -75,8 +87,10 @@ export async function sendMsgWithImage(DMID, msgID,senderID, receiverID, text, d
     [DMID + ".date"]: serverTimestamp(),
   });
 
-  await updateDoc(doc(db, "userChats", receiverID), {
-    [DMID + ".lastMessage"]: {
+  await updateDoc(doc(db, "userChats", receiverID), 
+  {
+    [DMID + ".lastMessage"]: 
+    {
       text: text.trim(),
       id:  msgID,
       img: true,
@@ -85,9 +99,30 @@ export async function sendMsgWithImage(DMID, msgID,senderID, receiverID, text, d
   });
 }
 
-export async function editMsg(DMID, msgID, text){
+export async function editMsg(DMID, msgID, text)
+{
   updateDoc(doc(db, "chats", DMID, "messages", msgID),
   {
     text: text,
   })
+}
+
+export async function deleteUserDM(uid, DMID)
+{
+  console.log(uid, DMID)
+  
+  await updateDoc(doc(db, "userChats",uid),{
+    [DMID]: deleteField(),
+  })
+}
+
+export async function deleteDM(DMID)
+{
+  const queryData = query(collection(db, "chats", DMID, "messages"));
+  const querySnapshot = await getDocs(queryData);
+  querySnapshot.docs.forEach(msg =>(
+      deleteMsg(DMID, msg.id)
+  ))
+  await deleteDoc(doc(db, "chats", DMID));
+
 }

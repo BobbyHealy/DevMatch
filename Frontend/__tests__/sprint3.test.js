@@ -68,7 +68,6 @@ describe("Pin and Unpin Test (User Story #7)", () => {
     test("User can pin a msg in GC", async () => {
         //Fetch the Msg in the GC
         const queryData = query(doc(db, "GCs", pid,"channels", channel, "messages", msgID));
-        const msg= await getDoc(queryData);
         //Pin the Msg
         await pinGC(pid,channel,msgID, user.userID, user.name)
         const result= await getDoc(queryData);
@@ -78,7 +77,6 @@ describe("Pin and Unpin Test (User Story #7)", () => {
     test("User can unpin a msg in GC", async () => {
         await  sendGC(pid,channel,msgID,user,text)
         const queryData = query(doc(db, "GCs", pid,"channels", channel, "messages", msgID));
-        
         // Make sure it is pinned before trying to unpin
         await pinGC(pid,channel,msgID, user.userID, user.name)
         const msg= await getDoc(queryData);
@@ -90,7 +88,6 @@ describe("Pin and Unpin Test (User Story #7)", () => {
         expect(result.data().pinned).toBe(false);
         deleteDoc(doc(db, "GCs", pid,"channels", channel, "messages", msgID));
     }, 10000);
-
   });
 
   
