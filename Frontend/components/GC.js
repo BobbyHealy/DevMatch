@@ -23,8 +23,8 @@ export default function GC({pid,project}) {
   const [title, setTitle] = useState("");
   const [vTitle, setVTitle] = useState("");
   const [vEdit, setVEdit] = useState(false);
-  const [mic, setMic] = useState(false);
-  const [mute, setMute] = useState(false);
+  const [mic, setMic] = useState(true);
+  const [sound, setSound] = useState(true);
   const {userInfo} =useAuth()
   const [channelName, setChannel]=useState("main")
   const [channelID, setID]=useState("main")
@@ -94,7 +94,7 @@ export default function GC({pid,project}) {
               {/* Voice Channels */}
               <GCVoiceChannels pid={pid} project={project} channelID={channelVID} vTitle={vTitle} vEdit={vEdit} setVTitle={setVTitle} setVEdit={setVEdit} setChannel={setVID}/>
               {/* voice channel input control */}
-            </div>:<div className='bg-gray-700 overflow-y-scroll h-[calc(100vh-260px)] lg:h-[calc(100vh-100px)]'>
+            </div>:<div className='bg-gray-700 overflow-y-scroll h-[calc(100vh-210px)] lg:h-[calc(100vh-50px)]'>
               <GCTextChannels pid={pid} project={project} channelID={channelID} title={title} edit={edit} setChannel={setChannel} setTitle={setTitle} setEdit={setEdit} setID={setID}/>
               {/* Voice Channels */}
               <GCVoiceChannels pid={pid} project={project} channelID={channelVID} vTitle={vTitle} vEdit={vEdit} setVTitle={setVTitle} setVEdit={setVEdit} setChannel={setVID}/>
@@ -102,9 +102,9 @@ export default function GC({pid,project}) {
             </div>}
             {channelVID&&<div className='flex items-center bg-gray-800 h-[calc(50px)] '>
               <span className='mx-1 text-green-700 text-sm'>VOICE CONNECTED</span>
-              <span className='flex h-8 w-8 rounded-lg hover:bg-gray-700 items-center'> <MicrophoneIcon className='ml-1.5 text-white h-5 w-5 '/></span>
+              <span className='flex h-8 w-8 rounded-lg hover:bg-gray-700 items-center'> {mic?<MicrophoneIcon onClick={()=>setMic(false)} className='ml-1.5 text-white h-5 w-5 '/>:<MicrophoneIcon onClick={()=>setMic(true)}  className='ml-1.5 text-red-800 h-5 w-5 '/>}</span>
              
-              <span className='flex h-8 w-8 rounded-lg hover:bg-gray-700 items-center'> <SpeakerWaveIcon className='ml-1.5 text-white h-5 w-5'/></span>
+              <span className='flex h-8 w-8 rounded-lg hover:bg-gray-700 items-center'> {sound?<SpeakerWaveIcon onClick={()=>setSound(false)} className='ml-1.5 text-white h-5 w-5'/>:<SpeakerXMarkIcon onClick={()=>setSound(true)} className='ml-1.5 text-red-800 h-5 w-5'/>}</span>
               <span className='flex h-8 w-8 rounded-lg hover:bg-gray-700 items-center'
               onClick={()=>setVID("")}><PhoneXMarkIcon className='ml-1.5 text-white h-5 w-5'/></span>
             </div>}
