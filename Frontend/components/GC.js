@@ -3,6 +3,10 @@ import GroupMessages from './GroupMessages'
 import GroupChatInput from './GroupChatInput';
 import { 
   EllipsisVerticalIcon, 
+  PhoneXMarkIcon,
+  MicrophoneIcon,
+  SpeakerWaveIcon,
+  SpeakerXMarkIcon
 } from '@heroicons/react/20/solid'
 import { Menu, Transition } from '@headlessui/react'
 import { useAuth } from '@/context/AuthContext';
@@ -19,14 +23,16 @@ export default function GC({pid,project}) {
   const [title, setTitle] = useState("");
   const [vTitle, setVTitle] = useState("");
   const [vEdit, setVEdit] = useState(false);
-  const{userInfo} =useAuth()
+  const [mic, setMic] = useState(false);
+  const [mute, setMute] = useState(false);
+  const {userInfo} =useAuth()
   const [channelName, setChannel]=useState("main")
   const [channelID, setID]=useState("main")
+  const [channelVID, setVID]=useState("")
   const [open, setOpen] = useState(false)
-
-const handleShow= ()=>{
-  setOpen(true)
-}
+  const handleShow= ()=>{
+    setOpen(true)
+  }
   return (
     <div className='h-[calc(100vh-56px)] bg-gray-600 w-[calc(100vw)] lg:h-[calc(100vh)] lg:w-[calc(100vw-256px)] '>
       <div onClick={()=>{setEdit(false); setTitle("")}} className='flex bg-red-100 h-12  justify-between  border-b border-black'>
@@ -83,17 +89,31 @@ const handleShow= ()=>{
           <div  className='flex'>
             <div className='h-[calc(100vh-104px)] w-[calc(246px)] lg:h-[calc(100vh-48px)]  '>
             {/* Text Channels */}
-            <div className='bg-gray-700 overflow-y-scroll h-[calc(100vh-160px)] lg:h-full'>
+            {!channelVID?<div className='bg-gray-700 overflow-y-scroll h-[calc(100vh-160px)] lg:h-full'>
               <GCTextChannels pid={pid} project={project} channelID={channelID} title={title} edit={edit} setChannel={setChannel} setTitle={setTitle} setEdit={setEdit} setID={setID}/>
               {/* Voice Channels */}
-              <GCVoiceChannels pid={pid} project={project} vTitle={vTitle} vEdit={vEdit} setVTitle={setVTitle} setVEdit={setVEdit}/>
-              </div>
-              <div onClick={()=>{setEdit(false); setTitle("");setOpen(false)}} className='flex-2 bg-gray-800 items-center justify-between h-14 p-3 pl-5 pr-5 lg:hidden '>
+              <GCVoiceChannels pid={pid} project={project} channelID={channelVID} vTitle={vTitle} vEdit={vEdit} setVTitle={setVTitle} setVEdit={setVEdit} setChannel={setVID}/>
+              {/* voice channel input control */}
+            </div>:<div className='bg-gray-700 overflow-y-scroll h-[calc(100vh-260px)] lg:h-[calc(100vh-100px)]'>
+              <GCTextChannels pid={pid} project={project} channelID={channelID} title={title} edit={edit} setChannel={setChannel} setTitle={setTitle} setEdit={setEdit} setID={setID}/>
+              {/* Voice Channels */}
+              <GCVoiceChannels pid={pid} project={project} channelID={channelVID} vTitle={vTitle} vEdit={vEdit} setVTitle={setVTitle} setVEdit={setVEdit} setChannel={setVID}/>
+              {/* voice channel input control */}
+            </div>}
+            {channelVID&&<div className='flex items-center bg-gray-800 h-[calc(50px)] '>
+              <span className='mx-1 text-green-700 text-sm'>VOICE CONNECTED</span>
+              <span className='flex h-8 w-8 rounded-lg hover:bg-gray-700 items-center'> <MicrophoneIcon className='ml-1.5 text-white h-5 w-5 '/></span>
+             
+              <span className='flex h-8 w-8 rounded-lg hover:bg-gray-700 items-center'> <SpeakerWaveIcon className='ml-1.5 text-white h-5 w-5'/></span>
+              <span className='flex h-8 w-8 rounded-lg hover:bg-gray-700 items-center'
+              onClick={()=>setVID("")}><PhoneXMarkIcon className='ml-1.5 text-white h-5 w-5'/></span>
+            </div>}
+            <div onClick={()=>{setEdit(false); setTitle("");setOpen(false)}} className='flex-2 bg-gray-800 items-center justify-between h-14 p-3 pl-5 pr-5 lg:hidden '>
               <div className='flex'>
                 <img src= {userInfo.profilePic} className='bg-white h-8 w-8 rounded-full'/>
                 <span className='text-white pl-3 p-1 truncate'>{userInfo.name}</span>
               </div>
-              </div>
+            </div>
             </div>
             <div onClick={()=>{setEdit(false); setTitle("");setOpen(false)}} className='w-[calc(100vw-246px)] lg:w-[calc(100vw-502px)]'>
             <GroupMessages open={open} channel={channelID} />

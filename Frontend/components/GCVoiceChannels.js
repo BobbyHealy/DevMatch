@@ -7,10 +7,10 @@ import { v4 as uuid } from "uuid";
 import { db } from "@/config/firebase";
 import { addChannel } from '@/fireStoreBE/GCVoice';
 import { useAuth } from '@/context/AuthContext';
+import GCVoiceChannel from './GCVoiceChannel';
 
-function GCVoiceChannels({pid,project, vTitle, vEdit,setVTitle, setVEdit}) {
+function GCVoiceChannels({pid,project, vTitle, vEdit, channelID,setVTitle, setVEdit, setChannel}) {
 const [expend, setExpend] = useState(false);
-const [channelID, setChannel] = useState("");
 const [channels, setChannels] =useState([])
 const{userInfo} =useAuth()
 useEffect(() => {
@@ -61,17 +61,17 @@ useEffect(() => {
             <div onClick={()=>{setVEdit(false); setVTitle("")}} className='p-2 pl-1 pr-2'>
             {!expend&&Object.entries(channels)?.sort((a,b)=>a[1].data().dateCreated- b[1].data().dateCreated).map((channel)=>
 
-                (channel[1].id===channelID&&<div className='text-white' onClick={()=>{setChannel(channel[1].id)}}>{channel[1].data().name}
+                (channel[1].id===channelID&&<div className='text-white' onClick={()=>{setChannel(channel[1].id)}}>
+                  <GCVoiceChannel channelID={channel[1].id} selectedID={channelID} pid={pid} channelName={channel[1].data().name}/>
                 </div>)
                 )}
             {expend&&Object.entries(channels)?.sort((a,b)=>a[1].data().dateCreated- b[1].data().dateCreated).map((channel)=>
                 (<div className='text-white' onClick={()=>{setChannel(channel[1].id)}}>
-                {channel[1].data().name}
+                  <GCVoiceChannel channelID={channel[1].id} selectedID={channelID} pid={pid} channelName={channel[1].data().name}/>
                 </div>)
                 )}
             </div>
         </div>
     )
 }
-
 export default GCVoiceChannels
