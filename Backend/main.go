@@ -30,6 +30,7 @@ type user struct {
 	ProfilePic     string   `json:"profilePic"`
 	Description    string   `json:"description"`
 	PendingInvites []string `json:"pending"` //will hold pid of pending invitations
+	WorkHours      string   `json:"workHours"`
 }
 
 /*
@@ -203,6 +204,11 @@ func getUsers(c *gin.Context) {
 	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Users/" + uid
 	f := firego.New(path, nil)
 	var v user
+	
+	if v.WorkHours == "" {
+		v.WorkHours = "N/A"
+	}
+
 	if err := f.Value(&v); err != nil {
 		log.Fatal(err)
 	}

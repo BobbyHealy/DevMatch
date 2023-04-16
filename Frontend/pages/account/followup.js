@@ -60,6 +60,7 @@ export default function FollowUp() {
               pJoined:
                 userInfo.pJoined !== undefined ? userInfo.pOwned : undefined,
               profilePic: url,
+              workHours: hours,
             });
 
             var myHeaders = new Headers();
@@ -98,6 +99,7 @@ export default function FollowUp() {
         rating: 100,
         skills: skillsArr,
         ProfilePic: url !== undefined ? url : userInfo.profilePic,
+        workHours: hours,
       });
       setDoc(doc(db, "users", user.uid), {
         uid: user.uid,
