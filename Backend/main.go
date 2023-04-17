@@ -51,7 +51,7 @@ type project struct {
 	Tasks              []string `json:"tasks"`
 	MaxNum             int      `json:"maxNum"`
 	CurrentNum         int      `json:"currentNum"`
-	Complete           int      `json:"complete"`
+	Complete           bool     `json:"complete"`
 	//TaskBoard     Scrumboard `json: "board"`
 }
 
@@ -204,7 +204,7 @@ func getUsers(c *gin.Context) {
 	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Users/" + uid
 	f := firego.New(path, nil)
 	var v user
-	
+
 	if v.WorkHours == "" {
 		v.WorkHours = "N/A"
 	}
@@ -777,12 +777,12 @@ func updateProjectParts(c *gin.Context) {
 				}
 				newProj.CurrentNum = intVar
 			case projFields[12]:
-				strHold := fmt.Sprintf("%v", hold)
-				intVar, err := strconv.Atoi(strHold)
+				strHold := fmt.Sprintf("%t", hold)
+				boolVar, err := strconv.ParseBool(strHold)
 				if err != nil {
 					log.Fatal(err)
 				}
-				newProj.Complete = intVar
+				newProj.Complete = boolVar
 			}
 		}
 	}
