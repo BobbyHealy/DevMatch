@@ -94,7 +94,7 @@ export default function GC({pid,project}) {
               {/* Voice Channels */}
               <GCVoiceChannels pid={pid} project={project} channelID={channelVID} vTitle={vTitle} vEdit={vEdit} setVTitle={setVTitle} setVEdit={setVEdit} setChannel={setVID}/>
               {/* voice channel input control */}
-            </div>:<div className='bg-gray-700 overflow-y-scroll h-[calc(100vh-210px)] lg:h-[calc(100vh-50px)]'>
+            </div>:<div className='bg-gray-700 overflow-y-scroll h-[calc(100vh-210px)] lg:h-[calc(100vh-100px)]'>
               <GCTextChannels pid={pid} project={project} channelID={channelID} title={title} edit={edit} setChannel={setChannel} setTitle={setTitle} setEdit={setEdit} setID={setID}/>
               {/* Voice Channels */}
               <GCVoiceChannels pid={pid} project={project} channelID={channelVID} vTitle={vTitle} vEdit={vEdit} setVTitle={setVTitle} setVEdit={setVEdit} setChannel={setVID}/>
