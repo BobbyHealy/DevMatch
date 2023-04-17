@@ -10,7 +10,7 @@ export default function Example() {
 	const [isSubmit, setIsSubmit] = useState(false);
 
 	const handleSubmit = () => {
-		if (rateValue) {
+		if (techSkill) {
 			setIsSubmit(true);
 		}
 	};
