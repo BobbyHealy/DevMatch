@@ -116,6 +116,7 @@ func main() {
 	router.POST("/addMilestone", addMilestone)
 	router.GET("/getMilestones", getMilestones)
 	router.GET("/getResume", getResume)
+	router.GET("/getPastUsers", getPastUsers)
 
 	router.DELETE("/removeProjectComplete", removeProjectAll)
 	router.DELETE("/removeUserComplete", removeUserAll)
@@ -665,6 +666,7 @@ func respondInviteHelp(uid string, pid string, yes int) {
 					v.ProjectJoined = append(v.ProjectJoined, pid) //add pid to pJoined
 					proj.MembersID = append(proj.MembersID, uid)
 					updateProjectHelp(proj)
+					updatePastUsers(uid, pid)
 				}
 			}
 			found = true //avoids doing it twice (shouldn't be possible)
@@ -1389,6 +1391,35 @@ func getResume(c *gin.Context) {
 	r.Skills = u.Skills
 	r.Rating = u.Rating
 	c.IndentedJSON(http.StatusOK, r)
+}
+
+func updatePastUsers(uid string, pid string) {
+	var proj project = getProjectFromID(pid)
+	var user user = getUserFromID(uid)
+	var toAdd []string
+	for j := 0; j < len(proj.MembersID); j++ {
+		if uid != proj.MembersID[j] {
+			toAdd = append(toAdd, proj.MembersID[j])
+		}
+	}
+	var oldPast []string = user.PastUsers
+	for i := 0; i < len(toAdd); i++ {
+		oldPast = append(oldPast, toAdd[i])
+	}
+	user.PastUsers = removeDuplicateString(oldPast)
+	updateUserHelp(user)
+}
+
+func getPastUsers(c *gin.Context) {
+	uid, exists := c.GetQuery("uid")
+	if !exists {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	}
+	var pastUsers []string = (getUserFromID(uid)).PastUsers
+	c.IndentedJSON(http.StatusOK, []interface{}{pastUsers})
+
 }
 
 /*
