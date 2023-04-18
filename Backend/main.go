@@ -120,7 +120,8 @@ func main() {
 	router.POST("/invite", invite)
 	router.POST("/acceptInvite", acceptInvite)
 	router.POST("/declineInvite", declineInvite)
-
+	router.GET("/getPastProjects", getPastProjects)
+	router.GET("/getCurrentProjects", getCurrentProjects)
 	router.Run("localhost:8080")
 
 }
@@ -398,6 +399,93 @@ func getProjectFromID(pid string) project {
 		return project{}
 	}
 	return v
+}
+
+/*
+ * Returns array of past projects of given user
+ *
+ */
+func getPastProjects(c *gin.Context) {
+	uid, exists := c.GetQuery("uid")
+	if !exists {
+		fmt.Println("Request with key")
+		return
+	} else {
+		fmt.Println(uid)
+	}
+
+	var u user = getUserFromID(uid)
+	if u.UserID == "" {
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	}
+	projects := append(u.ProjectOwned, u.ProjectJoined...) //merge projects owned and projects joined
+	projects = removeDuplicateString(projects)             // removes duplicates (shouldn't be a problem, but just in case)
+	list := getProjectsHelp(projects, 1)
+	c.IndentedJSON(http.StatusOK, list)
+
+}
+
+/*
+ * Returns array of past projects of given user
+ *
+ */
+func getCurrentProjects(c *gin.Context) {
+	uid, exists := c.GetQuery("uid")
+	if !exists {
+		fmt.Println("Request with key")
+		return
+	} else {
+		fmt.Println(uid)
+	}
+
+	var u user = getUserFromID(uid)
+	if u.UserID == "" {
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	}
+	projects := append(u.ProjectOwned, u.ProjectJoined...) //merge projects owned and projects joined
+	projects = removeDuplicateString(projects)             // removes duplicates (shouldn't be a problem, but just in case)
+	list := getProjectsHelp(projects, 0)
+	c.IndentedJSON(http.StatusOK, list)
+
+}
+
+/*
+ * Gives option of past projects or currentProjects
+ * 0 is current projects, 1 is past projects
+ */
+
+func getProjectsHelp(projects []string, period int) []string {
+
+	//might have duplicates since removeUserFromProject doesn't update the new owner's project list
+	var list []string = make([]string, 0)
+	for j := 0; j < len(projects); j++ {
+		var proj project
+		proj = getProjectFromID(projects[j])
+		if proj.ProjectID == "" {
+			continue
+		}
+		if period == 0 && !proj.Complete { //seeking current projects
+			list = append(list, projects[j])
+		} else if period == 1 && proj.Complete {
+			list = append(list, projects[j])
+		}
+	}
+	return list
+}
+
+func removeDuplicateString(strSlice []string) []string {
+	// map to store unique keys
+	keys := make(map[string]bool)
+	returnSlice := []string{}
+	for _, item := range strSlice {
+		if _, value := keys[item]; !value {
+			keys[item] = true
+			returnSlice = append(returnSlice, item)
+		}
+	}
+	return returnSlice
 }
 
 /*
@@ -879,6 +967,7 @@ func removeUserFromProj(pid string, uid string) {
 			if len(owns) == 1 { //sole owner
 				if len(mems2) >= 1 { //at least one more user
 					owns2 = append(owns2, mems2[0]) //takes the first user on the list
+					// NOTE: this is not adding the project pOwned for the new owner
 				} else {
 					removeProjHelper(pid) //remove it if no users left
 					return
