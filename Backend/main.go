@@ -21,16 +21,17 @@ const authToken = "token"
  * NOTE: Projects are stored by their project ids
  */
 type user struct {
-	UserID         string   `json:"userID"`
-	Name           string   `json:"name"`
-	ProjectOwned   []string `json:"pOwned"` //This is a slice. Dynamically sized array. (Change to type project later)
-	ProjectJoined  []string `json:"pJoined"`
-	Rating         int      `json:"rating"`
-	Skills         []string `json:"skills"`
-	ProfilePic     string   `json:"profilePic"`
-	Description    string   `json:"description"`
-	PendingInvites []string `json:"pending"` //will hold pid of pending invitations
-	WorkHours      string   `json:"workHours"`
+	UserID         string             `json:"userID"`
+	Name           string             `json:"name"`
+	ProjectOwned   []string           `json:"pOwned"` //This is a slice. Dynamically sized array. (Change to type project later)
+	ProjectJoined  []string           `json:"pJoined"`
+	Rating         float64            `json:"rating"`
+	Skills         []string           `json:"skills"`
+	ProfilePic     string             `json:"profilePic"`
+	Description    string             `json:"description"`
+	PendingInvites []string           `json:"pending"` //will hold pid of pending invitations
+	WorkHours      string             `json:"workHours"`
+	Ratings        map[string]float64 `json:"ratings"` //map of uid: givenRating
 }
 
 /*
@@ -78,7 +79,7 @@ type searchType struct {
 
 type resume struct {
 	Name        string   `json:"name"`
-	Rating      int      `json:"rating"`
+	Rating      float64  `json:"rating"`
 	Skills      []string `json:"skills"`
 	ProfilePic  string   `json:"profilePic"`
 	Description string   `json:"description"`
@@ -131,6 +132,8 @@ func main() {
 	router.POST("/declineInvite", declineInvite)
 	router.GET("/getPastProjects", getPastProjects)
 	router.GET("/getCurrentProjects", getCurrentProjects)
+	router.POST("/postRating", postRating)
+	router.GET("/getRating", getRating)
 	router.Run("localhost:8080")
 
 }
@@ -355,6 +358,82 @@ func getUserFromID(uid string) user {
 		return user{}
 	}
 	return v
+}
+
+/*
+ * User 1 (uid1) gives User 2 (uid2) a rating
+ */
+func postRating(c *gin.Context) {
+	uid1, exists := c.GetQuery("uid1")
+	if !exists {
+		fmt.Println("Request with key")
+		return
+	} else {
+		fmt.Println(uid1)
+	}
+
+	uid2, exists := c.GetQuery("uid2")
+	if !exists {
+		fmt.Println("Request with key")
+		return
+	} else {
+		fmt.Println(uid2)
+	}
+
+	rating, exists := c.GetQuery("rating")
+	if !exists {
+		fmt.Println("Request with key")
+		return
+	} else {
+		fmt.Println(rating)
+	}
+
+	var u user = getUserFromID(uid2) //user to be rated
+	ratings := u.Ratings
+	ratingInt, err := strconv.ParseFloat(rating, 64)
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, "rating is not a number")
+		return
+	}
+	ratings[uid1] = ratingInt
+	u.Ratings = ratings
+	u.Rating = calculateRating(ratings)
+
+	updateUserHelp(u)
+	c.IndentedJSON(http.StatusOK, nil)
+
+}
+
+func calculateRating(ratings map[string]float64) float64 {
+	count := 0.0
+	sum := 0.0
+	for _, value := range ratings { // _ is a filler identifier so I don't have to deal with keys
+		count++
+		sum += value
+	}
+	if count == 0 {
+		return 0
+	}
+	return float64(sum) / count
+
+}
+
+func getRating(c *gin.Context) {
+	uid, exists := c.GetQuery("uid")
+	if !exists {
+		fmt.Println("Request with key")
+		return
+	} else {
+		fmt.Println(uid)
+	}
+
+	var u user = getUserFromID(uid) //user to be rated
+
+	u.Rating = calculateRating(u.Ratings)
+
+	updateUserHelp(u)
+	c.IndentedJSON(http.StatusOK, u.Rating)
+
 }
 
 /*
