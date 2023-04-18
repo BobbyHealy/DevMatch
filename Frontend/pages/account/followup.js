@@ -14,6 +14,7 @@ export default function FollowUp() {
   const { user, login, logout, userInfo } = useAuth();
   const [name, setName] = useState("");
   const [skills, setSkills] = useState("");
+  const [hours, setHours] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [image, setimage] = useState(null);
   const [url, setUrl] = useState(null);
@@ -59,6 +60,7 @@ export default function FollowUp() {
               pJoined:
                 userInfo.pJoined !== undefined ? userInfo.pOwned : undefined,
               profilePic: url,
+              workHours: hours,
             });
 
             var myHeaders = new Headers();
@@ -97,6 +99,7 @@ export default function FollowUp() {
         rating: 100,
         skills: skillsArr,
         ProfilePic: url !== undefined ? url : userInfo.profilePic,
+        workHours: hours,
       });
       setDoc(doc(db, "users", user.uid), {
         uid: user.uid,
@@ -186,6 +189,24 @@ export default function FollowUp() {
                         id='first-name'
                         value={skills}
                         onChange={(e) => setSkills(e.target.value)}
+                        autoComplete='given-name'
+                        className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm'
+                      />
+                    </div>
+
+                    <div className='col-span-6 sm:col-span-3'>
+                      <label
+                        htmlFor='first-name'
+                        className='block text-sm font-medium text-gray-700'
+                      >
+                        {"Work Commitment (Hours a Week)"}
+                      </label>
+                      <input
+                        type='text'
+                        name='first-name'
+                        id='first-name'
+                        value={hours}
+                        onChange={(e) => setHours(e.target.value)}
                         autoComplete='given-name'
                         className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm'
                       />

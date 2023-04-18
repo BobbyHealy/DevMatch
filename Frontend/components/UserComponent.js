@@ -42,12 +42,16 @@ const default_user = {
 export default function UserComponent(props) {
   const [showModal, setShowModal] = useState(false);
 
-  const { user = default_user, inviteProjectID = null, removeID = null } = props;
+  const {
+    user = default_user,
+    inviteProjectID = null,
+    removeID = null,
+  } = props;
   const { userInfo } = useAuth();
   const combinedId =
     userInfo.userID > user.userID
-      ? userInfo.userID +"-"+ user.userID
-      : user.userID +"-"+ userInfo.userID;
+      ? userInfo.userID + "-" + user.userID
+      : user.userID + "-" + userInfo.userID;
 
   const inviteMessage = `Come join the project! here is the link: http://localhost:3000/project?pid=${inviteProjectID}`;
   const handleSelect = async () => {
@@ -93,10 +97,10 @@ export default function UserComponent(props) {
     //check whether the group(chats in firestore) exists, if not create
     try {
       const res = await getDoc(doc(db, "chats", combinedId));
-  
-        if (!res.exists()) {
+
+      if (!res.exists()) {
         //create a chat in chats collection
-        await setDoc(doc(db, "chats", combinedId),{});
+        await setDoc(doc(db, "chats", combinedId), {});
 
         await updateDoc(doc(db, "userChats", userInfo.userID), {
           [combinedId + ".userInfo"]: {
@@ -156,7 +160,6 @@ export default function UserComponent(props) {
   const handleRemove = async () => {
     //Unfinished
     try {
-      
     } catch (err) {
       console.log("THERE WAS AN ERROR " + err);
     }
@@ -185,6 +188,12 @@ export default function UserComponent(props) {
           <p className='text-sm text-gray-500'>
             <a href='#' className='hover:underline'>
               Rating: {" " + user.rating}
+            </a>
+          </p>
+          <p className='text-sm text-gray-500'>
+            <a href='#' className='hover:underline'>
+              Work Hours:{" "}
+              {" " + (user.workHours === "" ? "N/A" : user.workHours)}
             </a>
           </p>
           <div className='text-sm text-gray-500'>
@@ -232,12 +241,12 @@ export default function UserComponent(props) {
             <></>
           )}
           <button
-              type='button'
-              className='inline-flex items-center rounded-md border border-transparent bg-red-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2'
-            >
-              Report User
-              <FlagIcon className='ml-2 -mr-1 h-5 w-5' aria-hidden='true' />
-            </button>
+            type='button'
+            className='inline-flex items-center rounded-md border border-transparent bg-red-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2'
+          >
+            Report
+            <FlagIcon className='ml-2 -mr-1 h-5 w-5' aria-hidden='true' />
+          </button>
         </div>
       </div>
       <DeactivateModal
@@ -273,7 +282,6 @@ export default function UserComponent(props) {
                   type='text'
                   name='confirm'
                   className='block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
-                 
                 />
               </div>
             </div>

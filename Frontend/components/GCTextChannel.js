@@ -1,5 +1,5 @@
 import { TrashIcon } from '@heroicons/react/24/outline';
-import { deleteChannel } from '@/fireStoreBE/GCMsg';
+import { deleteChannel } from '@/fireStoreBE/GCText';
 
 
 function GCTextChannel({pid,channelID, selectedID, channelName, setChannel, setID}) {

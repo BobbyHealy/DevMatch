@@ -3,7 +3,7 @@ import { storage } from "@/config/firebase";
 import { v4 as uuid } from "uuid";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useAuth } from "@/context/AuthContext";
-import { sendMsgWithImage, sendMsg } from "@/fireStoreBE/DmMsg";
+import { sendMsgWithImage, sendMsg } from "@/fireStoreBE/DMs";
 
 export default function ChatInput({ DMID, receiver }) {
   const [text, setText] = useState("");

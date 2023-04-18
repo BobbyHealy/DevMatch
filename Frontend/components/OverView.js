@@ -155,6 +155,28 @@ export default function Overview({ pid, projectD }) {
     return () => URL.revokeObjectURL(objectUrl);
   }, [banner]);
 
+  const handleComplete = ()=>{
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    var raw = JSON.stringify({
+      pid: pid,
+      complete: true,
+    });
+    var requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+    };
+    fetch("http://localhost:3000/api/updateProject", requestOptions)
+      .then((response) => response.text())
+      .then((result) => {
+        refreshPage()
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
   const handleSubmit = async (e) => {
     if (!icon && !banner) {
       const skillsArr = newSkills.split(",");
@@ -697,6 +719,15 @@ export default function Overview({ pid, projectD }) {
                     </dd>
                   </div>
                   <div className='sm:col-span-1'>
+                      {projectD.owners?.includes(user.uid) && (
+                        !projectD.complete&&<button
+                        onClick={handleComplete}
+                        className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                        
+                      >
+                        Complete Project
+                      </button>
+                      )}
                     <dt>
                       <span
                         // onClick={handleDeleteProj}

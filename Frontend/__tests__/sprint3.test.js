@@ -8,8 +8,9 @@ import {
   setDoc,
 } from "firebase/firestore";
 import { v4 as uuid } from "uuid";
-import { sendMsg,pinMsg,unpinMsg } from "../fireStoreBE/DmMsg";
-import { sendMsg as sendGC,pinMsg as pinGC,unpinMsg as unpinGC} from "../fireStoreBE/GCMsg";
+import { sendMsg, pinMsg, unpinMsg, deleteDM } from "../fireStoreBE/DMs";
+import { sendMsg as sendGC, pinMsg as pinGC, unpinMsg as unpinGC, addChannel} from "../fireStoreBE/GCText";
+import { createProject, deleteProject } from "../fireStoreBE/Project";
 const email = "jesttestemail@jesttestemail.com";
 const password = "123456";
 const senderID = "jestUID"
@@ -37,37 +38,39 @@ describe("Pin and Unpin Test (User Story #7)", () => {
     }, 10000);
     test("User can pin a msg in DMs", async () => {
         const queryData = query(doc(db, "chats", DMID, "messages", msgID ));
-        const msg= await getDoc(queryData);
-        await pinMsg(DMID,msgID,msg.data(),senderID)
+        await pinMsg(DMID,msgID,senderID)
         const result= await getDoc(queryData);
         expect(result.data().pinned).toBe(true);
     }, 10000);
     test("User can unpin a msg in DMs", async () => {
-        const queryData = query(doc(db, "chats", DMID, "messages", msgID ));
-        const msg= await getDoc(queryData);
+        const msgIDU = "unpinMsg"
+
         // make sure it is pinned before unpin
-        expect(msg.data().pinned).toBe(true);
+        await sendMsg(DMID, msgIDU, senderID,receiverID, text)
+        await pinMsg(DMID,msgIDU,senderID)
         // unpin the msg
-        await unpinMsg(DMID,msgID,msg.data(),senderID)
-        const result= await getDoc(queryData);
-        expect(result.data().pinned).toBe(false);
+        await unpinMsg(DMID,msgIDU)
+        const queryData = query(doc(db, "chats", DMID, "messages", msgIDU ));
+        const msg= await getDoc(queryData);
+        expect(msg.data().pinned).toBe(false);
         deleteDoc(doc(db, "userChats",senderID ));
         deleteDoc(doc(db, "userChats", receiverID));
-        await deleteDoc(doc(db, "chats", DMID, "messages", msgID));
-        deleteDoc(doc(db, "chats",  DMID));
+        deleteDM(DMID)
     }, 10000);
     test("Msgs in GC are default as unpin", async () => {
+        createProject(pid)
+        addChannel(pid, channel,channel)
         //send a messege in the Jest test GC
         await  sendGC(pid,channel,msgID,user,text)
         //Fetch the Msg in the GC
-        const queryData = query(doc(db, "GCs", pid,"channels", channel, "messages", msgID));
+        const queryData = query(doc(db, "GCs", pid,"textChannels", channel, "messages", msgID));
         const msg= await getDoc(queryData);
         //Check if pinned is false 
         expect(msg.data().pinned).toBe(false);
     }, 10000);
     test("User can pin a msg in GC", async () => {
         //Fetch the Msg in the GC
-        const queryData = query(doc(db, "GCs", pid,"channels", channel, "messages", msgID));
+        const queryData = query(doc(db, "GCs", pid,"textChannels", channel, "messages", msgID));
         //Pin the Msg
         await pinGC(pid,channel,msgID, user.userID, user.name)
         const result= await getDoc(queryData);
@@ -75,18 +78,20 @@ describe("Pin and Unpin Test (User Story #7)", () => {
         expect(result.data().pinned).toBe(true);
     }, 10000);
     test("User can unpin a msg in GC", async () => {
-        await  sendGC(pid,channel,msgID,user,text)
-        const queryData = query(doc(db, "GCs", pid,"channels", channel, "messages", msgID));
+        const msgIDU = "unpinMsg"
+        await  sendGC(pid,channel,msgIDU,user,text)
+
         // Make sure it is pinned before trying to unpin
         await pinGC(pid,channel,msgID, user.userID, user.name)
-        const msg= await getDoc(queryData);
-        expect(msg.data().pinned).toBe(true);
+
         // Unpin the msg
         await unpinGC(pid,channel,msgID)
-        const result= await getDoc(queryData);
+        const queryData = query(doc(db, "GCs", pid,"textChannels", channel, "messages", msgIDU));
+        const msg= await getDoc(queryData);
         // Check the pinned is false
-        expect(result.data().pinned).toBe(false);
-        deleteDoc(doc(db, "GCs", pid,"channels", channel, "messages", msgID));
+        expect(msg.data().pinned).toBe(false);
+        deleteProject(pid)
+        
     }, 10000);
   });
 

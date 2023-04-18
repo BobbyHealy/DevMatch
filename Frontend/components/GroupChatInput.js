@@ -5,7 +5,7 @@ import { v4 as uuid } from "uuid";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useAuth } from "@/context/AuthContext";
 import Router from "next/router";
-import { sendMsg,sendMsgWithImage} from "@/fireStoreBE/GCMsg";
+import { sendMsg,sendMsgWithImage} from "@/fireStoreBE/GCText";
 
 export default function GroupChatInput({channel}) {
     const [text, setText] = useState("");

@@ -11,7 +11,7 @@ import {
     collection,
   } from "firebase/firestore";
 import { switchPage } from '@/fireStoreBE/User';
-import { addDoc } from '@/fireStoreBE/userDoc';
+import { addDoc } from '@/fireStoreBE/UserDoc';
 
 export default function Documents() {
     const {user, userInfo} = useAuth()

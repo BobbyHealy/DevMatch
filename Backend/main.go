@@ -30,6 +30,7 @@ type user struct {
 	ProfilePic     string   `json:"profilePic"`
 	Description    string   `json:"description"`
 	PendingInvites []string `json:"pending"` //will hold pid of pending invitations
+	WorkHours      string   `json:"workHours"`
 }
 
 /*
@@ -50,7 +51,7 @@ type project struct {
 	Tasks              []string `json:"tasks"`
 	MaxNum             int      `json:"maxNum"`
 	CurrentNum         int      `json:"currentNum"`
-	Complete           int      `json:"complete"`
+	Complete           bool     `json:"complete"`
 	//TaskBoard     Scrumboard `json: "board"`
 }
 
@@ -73,6 +74,14 @@ type searchType struct {
 	Ignore  []string `json:"ignore"`
 	Skills  []string `json:"skills"`
 	Name    string   `json:"name"`
+}
+
+type resume struct {
+	Name        string   `json:"name"`
+	Rating      int      `json:"rating"`
+	Skills      []string `json:"skills"`
+	ProfilePic  string   `json:"profilePic"`
+	Description string   `json:"description"`
 }
 
 func main() {
@@ -203,6 +212,11 @@ func getUsers(c *gin.Context) {
 	path := "https://devmatch-8f074-default-rtdb.firebaseio.com/Users/" + uid
 	f := firego.New(path, nil)
 	var v user
+
+	if v.WorkHours == "" {
+		v.WorkHours = "N/A"
+	}
+
 	if err := f.Value(&v); err != nil {
 		log.Fatal(err)
 	}
@@ -551,8 +565,16 @@ func respondInviteHelp(uid string, pid string, yes int) {
 						break
 					}
 				}
+				var proj project
+				proj = getProjectFromID(pid)
+				if proj.ProjectID == "" {
+					fmt.Println("Project doesn't exist")
+					return
+				}
 				if !already {
 					v.ProjectJoined = append(v.ProjectJoined, pid) //add pid to pJoined
+					proj.MembersID = append(proj.MembersID, uid)
+					updateProjectHelp(proj)
 				}
 			}
 			found = true //avoids doing it twice (shouldn't be possible)
@@ -763,12 +785,12 @@ func updateProjectParts(c *gin.Context) {
 				}
 				newProj.CurrentNum = intVar
 			case projFields[12]:
-				strHold := fmt.Sprintf("%v", hold)
-				intVar, err := strconv.Atoi(strHold)
+				strHold := fmt.Sprintf("%t", hold)
+				boolVar, err := strconv.ParseBool(strHold)
 				if err != nil {
 					log.Fatal(err)
 				}
-				newProj.Complete = intVar
+				newProj.Complete = boolVar
 			}
 		}
 	}
@@ -1257,6 +1279,25 @@ func getTasks(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, []interface{}{tasks})
+}
+
+func getResume(c *gin.Context) {
+	uid, exists := c.GetQuery("uid")
+	if !exists {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	} else {
+		fmt.Println(uid)
+	}
+	var u user = getUserFromID(uid)
+	var r resume
+	r.Description = u.Description
+	r.Name = u.Name
+	r.ProfilePic = u.ProfilePic
+	r.Skills = u.Skills
+	r.Rating = u.Rating
+	c.IndentedJSON(http.StatusOK, r)
 }
 
 /*

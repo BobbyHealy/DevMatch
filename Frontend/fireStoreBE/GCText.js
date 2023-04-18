@@ -18,21 +18,22 @@ export async function addChannel(pid, channelID, title)
     name:title,
     dateCreated: serverTimestamp()
   }
-  await setDoc(doc(db, "GCs", pid, "channels", channelID),data)
+  await setDoc(doc(db, "GCs", pid, "textChannels", channelID),data)
 }
 
 export async function deleteChannel(pid, channelID) 
 {
-  await deleteDoc(doc(db, "GCs", pid,"channels", channelID));
+  
   const queryData = query(collection(db, "GCs", pid, "channels",channelID,"messages"));
   const querySnapshot = await getDocs(queryData);
   querySnapshot.docs.forEach(msg =>(
     deleteMsg(pid, channelID, msg.id)
   ))
+  await deleteDoc(doc(db, "GCs", pid,"textChannels", channelID));
 }
 export async function pinMsg(pid, channel, id,pinnerID , pinner) 
 {
-  await updateDoc(doc(db, "GCs", pid,"channels", channel, "messages", id),
+  await updateDoc(doc(db, "GCs", pid,"textChannels", channel, "messages", id),
   {
     pinned: true,
     pinner: {
@@ -44,7 +45,7 @@ export async function pinMsg(pid, channel, id,pinnerID , pinner)
 
 export async function unpinMsg(pid, channel, id) 
 {
-  updateDoc(doc(db, "GCs", pid,"channels", channel, "messages", id),
+  updateDoc(doc(db, "GCs", pid,"textChannels", channel, "messages", id),
   {
     pinned: false,
     pinnedBy: deleteField()
@@ -53,7 +54,7 @@ export async function unpinMsg(pid, channel, id)
 
 export async function deleteMsg(pid, channel, id) 
 {
-  await deleteDoc(doc(db, "GCs", pid,"channels", channel, "messages", id));
+  await deleteDoc(doc(db, "GCs", pid,"textChannels", channel, "messages", id));
 }
 
 export async function sendMsg(pid, channel,msgID,sender, text){
@@ -65,7 +66,7 @@ export async function sendMsg(pid, channel,msgID,sender, text){
       date: Timestamp.now(),
       pinned: false
   }
-  await setDoc(doc(db, "GCs", pid,"channels", channel, "messages", msgID), data);
+  await setDoc(doc(db, "GCs", pid,"textChannels", channel, "messages", msgID), data);
 }
 
 export async function sendMsgWithImage(pid, channel,msgID,sender, text, downloadURL){
@@ -73,17 +74,16 @@ export async function sendMsgWithImage(pid, channel,msgID,sender, text, download
   {
       text: text.trim(),
       senderID: sender.userID,
-      sender: sender.name,
       photoURL: sender.profilePic,
       date: Timestamp.now(),
       img: downloadURL,
       pinned: false
   }
-  await setDoc(doc(db, "GCs", pid,"channels", channel, "messages", msgID), data);
+  await setDoc(doc(db, "GCs", pid,"textChannels", channel, "messages", msgID), data);
 }
 
 export async function editMsg(pid, channel,msgID, text){
-  updateDoc(doc(db, "GCs", pid,"channels", channel, "messages", msgID),
+  updateDoc(doc(db, "GCs", pid,"textChannels", channel, "messages", msgID),
   {
     text: text
   })
