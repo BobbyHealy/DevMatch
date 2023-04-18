@@ -79,7 +79,7 @@ type searchType struct {
 
 type resume struct {
 	Name        string   `json:"name"`
-	Rating      int      `json:"rating"`
+	Rating      float64  `json:"rating"`
 	Skills      []string `json:"skills"`
 	ProfilePic  string   `json:"profilePic"`
 	Description string   `json:"description"`
