@@ -76,6 +76,14 @@ type searchType struct {
 	Name    string   `json:"name"`
 }
 
+type resume struct {
+	Name        string   `json:"name"`
+	Rating      int      `json:"rating"`
+	Skills      []string `json:"skills"`
+	ProfilePic  string   `json:"profilePic"`
+	Description string   `json:"description"`
+}
+
 func main() {
 	router := gin.Default()
 	//pushValue("test")
@@ -1265,6 +1273,25 @@ func getTasks(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, []interface{}{tasks})
+}
+
+func getResume(c *gin.Context) {
+	uid, exists := c.GetQuery("uid")
+	if !exists {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	} else {
+		fmt.Println(uid)
+	}
+	var u user = getUserFromID(uid)
+	var r resume
+	r.Description = u.Description
+	r.Name = u.Name
+	r.ProfilePic = u.ProfilePic
+	r.Skills = u.Skills
+	r.Rating = u.Rating
+	c.IndentedJSON(http.StatusOK, r)
 }
 
 /*
