@@ -114,6 +114,7 @@ func main() {
 	router.POST("/searchFilter", searchFilter)
 	router.POST("/addMilestone", addMilestone)
 	router.GET("/getMilestones", getMilestones)
+	router.GET("/getResume", getResume)
 
 	router.DELETE("/removeProjectComplete", removeProjectAll)
 	router.DELETE("/removeUserComplete", removeUserAll)
