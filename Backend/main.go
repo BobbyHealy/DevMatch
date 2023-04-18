@@ -31,6 +31,7 @@ type user struct {
 	Description    string   `json:"description"`
 	PendingInvites []string `json:"pending"` //will hold pid of pending invitations
 	WorkHours      string   `json:"workHours"`
+	PastUsers      []string `json:"pastUsers"`
 }
 
 /*
