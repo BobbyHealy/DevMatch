@@ -706,7 +706,7 @@ export default function Overview({ pid, projectD }) {
                   </div>
                   <div className='sm:col-span-1'>
                     <dt className='text-sm font-medium text-gray-500'>
-                    Max Numberber of Members
+                    Max Number of Members
                     </dt>
                     <dd className='mt-1 text-sm text-gray-900'>
                       <input
