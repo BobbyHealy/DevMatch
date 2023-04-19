@@ -36,6 +36,7 @@ export default function Create() {
   const defaultType = { name: "Personal" };
   const [selectedType, setSelectedType] = useState(defaultType);
   const [maxNum, setMax] = useState(null);
+  const [hours, setHours] = useState("");
 
   const filteredType =
     query === ""
@@ -72,7 +73,7 @@ export default function Create() {
   const handleSumbit = async (e) => {
     e.preventDefault();
     const projectID = uuidv4();
-    createProject(projectID)
+    createProject(projectID);
     if (!icon && !banner) {
       const skillsArr = skills.split(",").map((e) => e.trim());
       var raw = JSON.stringify({
@@ -83,9 +84,10 @@ export default function Create() {
         tmembers: [user.uid],
         skills: skillsArr,
         type: selectedType.name,
-        maxNum: Number(maxNum)?Number(maxNum)>2?Number(maxNum):2:2
+        maxNum: Number(maxNum) ? (Number(maxNum) > 2 ? Number(maxNum) : 2) : 2,
+        workHours: hours,
       });
-      console.log(raw)
+      // console.log(raw);
 
       var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
@@ -112,6 +114,7 @@ export default function Create() {
             : [projectID],
         pJoined: userInfo.pJoined !== null ? userInfo.pJoined : undefined,
         skills: userInfo.skills !== null ? userInfo.skills : undefined,
+        workHours: userInfo.workHours !== null ? userInfo.workHours : undefined,
       });
 
       var requestOptions2 = {
@@ -148,7 +151,12 @@ export default function Create() {
             skills: skillsArr,
             projectProfile: url,
             type: selectedType.name,
-            maxNum: Number(maxNum)?Number(maxNum)>2?Number(maxNum):2:2
+            maxNum: Number(maxNum)
+              ? Number(maxNum) > 2
+                ? Number(maxNum)
+                : 2
+              : 2,
+            workHours: hours,
           });
 
           var myHeaders = new Headers();
@@ -216,7 +224,12 @@ export default function Create() {
             skills: skillsArr,
             projectBannerPic: url,
             type: selectedType.name,
-            maxNum: Number(maxNum)?Number(maxNum)>2?Number(maxNum):2:2
+            maxNum: Number(maxNum)
+              ? Number(maxNum) > 2
+                ? Number(maxNum)
+                : 2
+              : 2,
+            workHours: hours,
           });
 
           var myHeaders = new Headers();
@@ -286,7 +299,12 @@ export default function Create() {
                 projectProfile: url1,
                 projectBannerPic: url2,
                 type: selectedType.name,
-                maxNum: Number(maxNum)?Number(maxNum)>2?Number(maxNum):2:2
+                maxNum: Number(maxNum)
+                  ? Number(maxNum) > 2
+                    ? Number(maxNum)
+                    : 2
+                  : 2,
+                workHours: hours,
               });
 
               var myHeaders = new Headers();
@@ -476,12 +494,31 @@ export default function Create() {
                         {"Maximum Number of Member"}
                       </label>
                       <input
-                        placeholder="The minumum is 2 (default as 2)"
+                        placeholder='The minumum is 2 (default as 2)'
                         type='text'
                         name='maxNum'
                         id='maxNum'
                         value={maxNum}
                         onChange={(e) => setMax(e.target.value)}
+                        autoComplete='maxNum'
+                        className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm'
+                      />
+                    </div>
+
+                    <div className='col-span-6 sm:col-span-3'>
+                      <label
+                        htmlFor='maxNum'
+                        className='block text-sm font-medium text-gray-700 pb-2'
+                      >
+                        {"Hours of work a week"}
+                      </label>
+                      <input
+                        placeholder='Hours of work expected a week'
+                        type='text'
+                        name='hours'
+                        id='hours'
+                        value={hours}
+                        onChange={(e) => setHours(e.target.value)}
                         autoComplete='maxNum'
                         className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm'
                       />

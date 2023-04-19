@@ -54,6 +54,7 @@ type project struct {
 	MaxNum             int      `json:"maxNum"`
 	CurrentNum         int      `json:"currentNum"`
 	Complete           bool     `json:"complete"`
+	WorkHours      	   string   `json:"workHours"`
 	//TaskBoard     Scrumboard `json: "board"`
 }
 
