@@ -3,6 +3,7 @@ import UserComponent from "@/components/UserComponent";
 
 import { useAuth } from "@/context/AuthContext";
 import { switchProjPage } from "@/fireStoreBE/User";
+import ReportDetail from "./ReportDetail";
 
 export default function ManageMember({ project }) {
   const [posts, setPosts] = useState(null);
@@ -78,6 +79,10 @@ export default function ManageMember({ project }) {
             )
           );
         })}
+      <div className="py-6">
+        <h1 className="">Reported Users</h1>
+        <ReportDetail name={user.name}/>
+      </div>
     </div>
   );
 }
