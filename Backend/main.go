@@ -33,6 +33,7 @@ type user struct {
 	WorkHours      string             `json:"workHours"`
 	Ratings        map[string]float64 `json:"ratings"` //map of uid: givenRating
 	Reports        []string			  `json:"reports"`
+	PastUsers      []string           `json:"pastUsers"`
 }
 
 /*
@@ -119,6 +120,7 @@ func main() {
 	router.POST("/addMilestone", addMilestone)
 	router.GET("/getMilestones", getMilestones)
 	router.GET("/getResume", getResume)
+	router.GET("/getPastUsers", getPastUsers)
 
 	router.DELETE("/removeProjectComplete", removeProjectAll)
 	router.DELETE("/removeUserComplete", removeUserAll)
@@ -786,6 +788,7 @@ func respondInviteHelp(uid string, pid string, yes int) {
 					v.ProjectJoined = append(v.ProjectJoined, pid) //add pid to pJoined
 					proj.MembersID = append(proj.MembersID, uid)
 					updateProjectHelp(proj)
+					updatePastUsers(uid, pid)
 				}
 			}
 			found = true //avoids doing it twice (shouldn't be possible)
@@ -896,6 +899,7 @@ func userToProject(c *gin.Context) {
 	}
 	updateProjectHelp(proj)
 	updateUserHelp(v)
+	updatePastUsers(uid, pid)
 
 }
 
@@ -1380,11 +1384,16 @@ func getIDS(isProject bool) []string {
 	keys := make([]string, 0, len(v))
 	if isProject {
 		for k := range v {
-			if len(getProjectFromID(k).MembersID) < getProjectFromID(k).MaxNum {
+			var cur int = len(getProjectFromID(k).MembersID)
+			var max int = (getProjectFromID(k).MaxNum)
+			//fmt.Println(cur)
+			//fmt.Println(max)
+			if cur < max {
 				keys = append(keys, k)
+				//fmt.Println("here")
 			}
-			return keys
 		}
+		return keys
 	} else {
 		for k := range v {
 			keys = append(keys, k)
@@ -1743,6 +1752,36 @@ func getRoleHelper(proj project, uid string) string {
 	//}
 	return "Team Member"
 }*/
+
+func updatePastUsers(uid string, pid string) {
+	var proj project = getProjectFromID(pid)
+	var user user = getUserFromID(uid)
+	var toAdd []string
+	for j := 0; j < len(proj.MembersID); j++ {
+		if uid != proj.MembersID[j] {
+			toAdd = append(toAdd, proj.MembersID[j])
+		}
+	}
+	var oldPast []string = user.PastUsers
+	for i := 0; i < len(toAdd); i++ {
+		oldPast = append(oldPast, toAdd[i])
+	}
+	user.PastUsers = removeDuplicateString(oldPast)
+	//fmt.Println("updatePastUsers")
+	updateUserHelp(user)
+}
+
+func getPastUsers(c *gin.Context) {
+	uid, exists := c.GetQuery("uid")
+	if !exists {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	}
+	var pastUsers []string = (getUserFromID(uid)).PastUsers
+	c.IndentedJSON(http.StatusOK, []interface{}{pastUsers})
+
+}
 
 /*
 The following is meant to update the task when we drag and drop to a new progress column, but not sure if it works since

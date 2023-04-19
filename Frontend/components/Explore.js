@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import UserComponent from "@/components/UserComponent";
+import PreferenceFilter from "./Preference";
 
 import { useAuth } from "@/context/AuthContext";
 import { switchProjPage } from "@/fireStoreBE/User";
@@ -60,13 +61,13 @@ export default function Explore({ project }) {
   useEffect(() => {}, [posts]);
 
   return (
-    <div className='mx-auto max-w-7xl sm:px-6 lg:px-8 pt-4 bg-gray-100'>
-      <div className='lg:max-w-lg pb-4'>
+    <div className='bg-gray-100'>
+      <div className='px-4 pb-4'>
         <p className='text-base font-semibold leading-7 text-indigo-600'>
           Explore
         </p>
-        <h1 className='mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl'>
-          Find the right match for {project.name}
+        <h1 className='mt-2 text-3xl font-bold tracking-tight text-gray-900'>
+          <PreferenceFilter project={project}/>
         </h1>
       </div>
       {posts &&
