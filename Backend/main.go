@@ -32,6 +32,7 @@ type user struct {
 	PendingInvites []string           `json:"pending"` //will hold pid of pending invitations
 	WorkHours      string             `json:"workHours"`
 	Ratings        map[string]float64 `json:"ratings"` //map of uid: givenRating
+	Reports        []string			  `json:"reports"`
 }
 
 /*
@@ -138,6 +139,8 @@ func main() {
 	router.POST("/declineInvite", declineInvite)
 	router.GET("/getPastProjects", getPastProjects)
 	router.GET("/getCurrentProjects", getCurrentProjects)
+	router.POST("/postReport", postReport)
+	//router.GET("/getReport", getReport)
 	router.POST("/postRating", postRating)
 	router.GET("/getRating", getRating)
 	router.Run("localhost:8080")
@@ -364,6 +367,40 @@ func getUserFromID(uid string) user {
 		return user{}
 	}
 	return v
+}
+
+
+/*
+ *	API to post report to specified user
+ *
+ */
+
+
+func postReport(c *gin.Context) {
+	uid, exists := c.GetQuery("uid")
+
+	if !exists {
+		fmt.Println("Request with key")
+		return
+	} else {
+		fmt.Println(uid)
+	}
+
+	report, exists := c.GetQuery("report")
+	if !exists {
+		fmt.Println("Request with key")
+		return
+	} else {
+		fmt.Println(report)
+	}
+
+	var u user = getUserFromID(uid) //user to post report to
+
+
+	u.Reports = append(u.Reports, report)
+
+	updateUserHelp(u)
+	c.IndentedJSON(http.StatusOK, nil)
 }
 
 /*
