@@ -192,7 +192,7 @@ export default function UserComponent(props) {
         console.log(err);
       });
 
-    Router.push("./");
+    //Router.push("./");
 
     setReportModal(false);
 
