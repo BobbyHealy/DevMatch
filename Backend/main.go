@@ -862,6 +862,7 @@ func userToProject(c *gin.Context) {
 	}
 	updateProjectHelp(proj)
 	updateUserHelp(v)
+	updatePastUsers(uid, pid)
 
 }
 
@@ -1729,6 +1730,7 @@ func updatePastUsers(uid string, pid string) {
 		oldPast = append(oldPast, toAdd[i])
 	}
 	user.PastUsers = removeDuplicateString(oldPast)
+	//fmt.Println("updatePastUsers")
 	updateUserHelp(user)
 }
 
