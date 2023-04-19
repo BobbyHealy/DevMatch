@@ -54,7 +54,7 @@ type project struct {
 	MaxNum             int      `json:"maxNum"`
 	CurrentNum         int      `json:"currentNum"`
 	Complete           bool     `json:"complete"`
-	WorkHours      	   string   `json:"workHours"`
+	WorkHours          string   `json:"workHours"`
 	//TaskBoard     Scrumboard `json: "board"`
 }
 
@@ -1341,12 +1341,15 @@ func getIDS(isProject bool) []string {
 		log.Fatal(err)
 	}
 	keys := make([]string, 0, len(v))
-	for k := range v {
-		if isProject {
+	if isProject {
+		for k := range v {
 			if len(getProjectFromID(k).MembersID) < getProjectFromID(k).MaxNum {
 				keys = append(keys, k)
 			}
-		} else {
+			return keys
+		}
+	} else {
+		for k := range v {
 			keys = append(keys, k)
 		}
 	}
