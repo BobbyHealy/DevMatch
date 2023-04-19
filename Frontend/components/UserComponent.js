@@ -165,6 +165,39 @@ export default function UserComponent(props) {
       console.log("THERE WAS AN ERROR " + err);
     }
   };
+  
+
+  const handleReport = () => {
+
+    var textArea = document.getElementById('report').value;
+    console.log(textArea);
+    
+    var myHeaders = new Headers();
+
+    myHeaders.append("Content-Type", "application/json");
+    var raw = JSON.stringify({
+      uid: user.userID,
+      report: textArea
+    });
+    var requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+    };
+
+    fetch("http://localhost:3000/api/reportUser", requestOptions)
+      .then((response) => response.text())
+      .then((result) => console.log(result))
+      .catch((err) => {
+        console.log(err);
+      });
+
+    //Router.push("./");
+
+    setReportModal(false);
+
+    //refreshPage()
+  };
 
   return (
     <div className='bg-white px-4 py-5 sm:px-6 rounded-lg'>
@@ -277,7 +310,7 @@ export default function UserComponent(props) {
                 htmlFor='email'
                 className='block text-sm font-medium leading-6 text-gray-900'
               >
-                Confirm by writting the user's name
+                Confirm by writing the user's name
               </label>
               <div className='mt-2'>
                 <input
@@ -347,7 +380,7 @@ export default function UserComponent(props) {
         <button
             type='submit'
             className='inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto'
-            onClick={() => setReportModal(false)}
+            onClick={() => handleReport()}
           >
             Submit
           </button>
