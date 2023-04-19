@@ -21,17 +21,18 @@ const authToken = "token"
  * NOTE: Projects are stored by their project ids
  */
 type user struct {
-	UserID         string   `json:"userID"`
-	Name           string   `json:"name"`
-	ProjectOwned   []string `json:"pOwned"` //This is a slice. Dynamically sized array. (Change to type project later)
-	ProjectJoined  []string `json:"pJoined"`
-	Rating         int      `json:"rating"`
-	Skills         []string `json:"skills"`
-	ProfilePic     string   `json:"profilePic"`
-	Description    string   `json:"description"`
-	PendingInvites []string `json:"pending"` //will hold pid of pending invitations
-	WorkHours      string   `json:"workHours"`
-	PastUsers      []string `json:"pastUsers"`
+	UserID         string             `json:"userID"`
+	Name           string             `json:"name"`
+	ProjectOwned   []string           `json:"pOwned"` //This is a slice. Dynamically sized array. (Change to type project later)
+	ProjectJoined  []string           `json:"pJoined"`
+	Rating         float64            `json:"rating"`
+	Skills         []string           `json:"skills"`
+	ProfilePic     string             `json:"profilePic"`
+	Description    string             `json:"description"`
+	PendingInvites []string           `json:"pending"` //will hold pid of pending invitations
+	WorkHours      string             `json:"workHours"`
+	Ratings        map[string]float64 `json:"ratings"` //map of uid: givenRating
+	PastUsers      []string           `json:"pastUsers"`
 }
 
 /*
@@ -41,6 +42,7 @@ type user struct {
 type project struct {
 	ProjectID          string   `json:"pid"`
 	OwnersID           []string `json:"owners"`
+	AdminsID           []string `json:"admins"`
 	ProjectName        string   `json:"name"`
 	MembersID          []string `json:"tmembers"`
 	NeededSkills       []string `json:"skills"`
@@ -53,6 +55,7 @@ type project struct {
 	MaxNum             int      `json:"maxNum"`
 	CurrentNum         int      `json:"currentNum"`
 	Complete           bool     `json:"complete"`
+	WorkHours          string   `json:"workHours"`
 	//TaskBoard     Scrumboard `json: "board"`
 }
 
@@ -79,7 +82,7 @@ type searchType struct {
 
 type resume struct {
 	Name        string   `json:"name"`
-	Rating      int      `json:"rating"`
+	Rating      float64  `json:"rating"`
 	Skills      []string `json:"skills"`
 	ProfilePic  string   `json:"profilePic"`
 	Description string   `json:"description"`
@@ -127,12 +130,18 @@ func main() {
 
 	router.POST("/addTask", addTask)
 	router.GET("/getTasks", getTasks)
+	router.GET("/getRole", getRole)
+	router.POST("/setRole", storeRole)
+	router.POST("/promote", promote)
+	router.POST("/demote", demote)
 	//router.POST("/updateSingleTask", updateSingleTask)
 	router.POST("/invite", invite)
 	router.POST("/acceptInvite", acceptInvite)
 	router.POST("/declineInvite", declineInvite)
 	router.GET("/getPastProjects", getPastProjects)
 	router.GET("/getCurrentProjects", getCurrentProjects)
+	router.POST("/postRating", postRating)
+	router.GET("/getRating", getRating)
 	router.Run("localhost:8080")
 
 }
@@ -357,6 +366,82 @@ func getUserFromID(uid string) user {
 		return user{}
 	}
 	return v
+}
+
+/*
+ * User 1 (uid1) gives User 2 (uid2) a rating
+ */
+func postRating(c *gin.Context) {
+	uid1, exists := c.GetQuery("uid1")
+	if !exists {
+		fmt.Println("Request with key")
+		return
+	} else {
+		fmt.Println(uid1)
+	}
+
+	uid2, exists := c.GetQuery("uid2")
+	if !exists {
+		fmt.Println("Request with key")
+		return
+	} else {
+		fmt.Println(uid2)
+	}
+
+	rating, exists := c.GetQuery("rating")
+	if !exists {
+		fmt.Println("Request with key")
+		return
+	} else {
+		fmt.Println(rating)
+	}
+
+	var u user = getUserFromID(uid2) //user to be rated
+	ratings := u.Ratings
+	ratingInt, err := strconv.ParseFloat(rating, 64)
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, "rating is not a number")
+		return
+	}
+	ratings[uid1] = ratingInt
+	u.Ratings = ratings
+	u.Rating = calculateRating(ratings)
+
+	updateUserHelp(u)
+	c.IndentedJSON(http.StatusOK, nil)
+
+}
+
+func calculateRating(ratings map[string]float64) float64 {
+	count := 0.0
+	sum := 0.0
+	for _, value := range ratings { // _ is a filler identifier so I don't have to deal with keys
+		count++
+		sum += value
+	}
+	if count == 0 {
+		return 0
+	}
+	return float64(sum) / count
+
+}
+
+func getRating(c *gin.Context) {
+	uid, exists := c.GetQuery("uid")
+	if !exists {
+		fmt.Println("Request with key")
+		return
+	} else {
+		fmt.Println(uid)
+	}
+
+	var u user = getUserFromID(uid) //user to be rated
+
+	u.Rating = calculateRating(u.Ratings)
+
+	updateUserHelp(u)
+	c.IndentedJSON(http.StatusOK, u.Rating)
+
 }
 
 /*
@@ -1259,12 +1344,20 @@ func getIDS(isProject bool) []string {
 		log.Fatal(err)
 	}
 	keys := make([]string, 0, len(v))
-	for k := range v {
-		if isProject {
-			if len(getProjectFromID(k).MembersID) < getProjectFromID(k).MaxNum {
+	if isProject {
+		for k := range v {
+			var cur int = len(getProjectFromID(k).MembersID)
+			var max int = (getProjectFromID(k).MaxNum)
+			//fmt.Println(cur)
+			//fmt.Println(max)
+			if cur < max {
 				keys = append(keys, k)
+				//fmt.Println("here")
 			}
-		} else {
+		}
+		return keys
+	} else {
+		for k := range v {
 			keys = append(keys, k)
 		}
 	}
@@ -1392,6 +1485,235 @@ func getResume(c *gin.Context) {
 	r.Rating = u.Rating
 	c.IndentedJSON(http.StatusOK, r)
 }
+
+func storeRole(c *gin.Context) {
+	pid, exists1 := c.GetQuery("pid")
+	if !exists1 {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+	}
+	uid, exists2 := c.GetQuery("uid")
+	if !exists2 {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+	}
+	role, exists3 := c.GetQuery("role")
+	if !exists3 {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+	}
+	var proj project = getProjectFromID(pid)
+	if proj.ProjectID == "" {
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	}
+	storeRoleHelp(proj, uid, role)
+
+}
+
+func storeRoleHelp(proj project, uid string, role string) {
+
+	if role == "team member" {
+		proj.MembersID = append(proj.MembersID, uid)
+		updateProjectHelp(proj)
+		return
+	}
+	if role == "admin" {
+		proj.AdminsID = append(proj.AdminsID, uid)
+		updateProjectHelp(proj)
+		return
+	}
+	if role == "owner" {
+		//fmt.Println("here")
+		proj.OwnersID = append(proj.OwnersID, uid)
+		updateProjectHelp(proj)
+		return
+
+	}
+}
+
+func promote(c *gin.Context) {
+	pid, exists1 := c.GetQuery("pid")
+	if !exists1 {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+	}
+	uid, exists2 := c.GetQuery("uid")
+	if !exists2 {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+	}
+
+	var proj project = getProjectFromID(pid)
+	if proj.ProjectID == "" {
+		c.IndentedJSON(http.StatusBadRequest, "project doesn't exist	")
+		return
+	}
+	role := getRoleHelper(proj, uid)
+	if role == "owner" { //nothing needs to be done
+		c.IndentedJSON(http.StatusOK, "already owner")
+		return
+	}
+	if role == "admin" {
+		storeRoleHelp(proj, uid, "owner")
+		var u user = getUserFromID(uid)
+		u.ProjectOwned = append(u.ProjectOwned, pid) //adds project to projects owned
+		updateUserHelp(u)
+		c.IndentedJSON(http.StatusOK, "owner")
+		return
+	}
+	if role == "team member" {
+		storeRoleHelp(proj, uid, "admin")
+		c.IndentedJSON(http.StatusOK, "admin")
+	}
+
+}
+
+/*
+ * Will demote user
+ * NOTE: will only demote to Admin if user is already an admin and an owner
+ * This won't be a problem unless the owner role is set rather than promoted to
+ */
+
+func demote(c *gin.Context) {
+	pid, exists1 := c.GetQuery("pid")
+	if !exists1 {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+	}
+	uid, exists2 := c.GetQuery("uid")
+	if !exists2 {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+	}
+
+	var proj project = getProjectFromID(pid)
+	if proj.ProjectID == "" {
+		c.IndentedJSON(http.StatusBadRequest, "project doesn't exist	")
+		return
+	}
+	var u user = getUserFromID(uid)
+
+	role := getRoleHelper(proj, uid)
+	if role == "owner" {
+		owners := proj.OwnersID
+		owners2 := make([]string, 0)
+		owned := u.ProjectOwned
+		owned2 := make([]string, 0)
+		for i := 0; i < len(owners); i++ {
+			//fmt.Println(owned[i])
+			if owners[i] != uid { //removes from project owners list
+				owners2 = append(owners2, owners[i])
+			}
+		}
+		if len(owners2) == 0 {
+			c.IndentedJSON(http.StatusOK, "Sole owner. Make someone else owner first")
+			return
+		}
+
+		for i := 0; i < len(owned); i++ {
+			fmt.Println(owned[i])
+			if owned[i] != pid {
+				//fmt.Println("here " + pid)
+				owned2 = append(owned2, owned[i])
+			}
+		}
+		u.ProjectOwned = owned2
+		proj.OwnersID = owners2
+		updateUserHelp(u)
+		updateProjectHelp(proj)
+		role := getRoleHelper(proj, uid)
+		c.IndentedJSON(http.StatusOK, role)
+		return
+	}
+	if role == "admin" {
+
+		admins := proj.AdminsID
+		admins2 := make([]string, 0)
+		for i := 0; i < len(admins); i++ {
+			fmt.Println(admins[i])
+			if admins[i] != uid {
+				admins2 = append(admins2, uid)
+			}
+		}
+		proj.AdminsID = admins2
+		updateProjectHelp(proj)
+		c.IndentedJSON(http.StatusOK, "team member")
+		return
+	}
+	if role == "team member" {
+		c.IndentedJSON(http.StatusOK, "already team member")
+	}
+
+}
+
+func getRole(c *gin.Context) {
+	pid, exists1 := c.GetQuery("pid")
+	if !exists1 {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+	}
+	uid, exists2 := c.GetQuery("uid")
+	if !exists2 {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+	}
+	var proj project = getProjectFromID(pid)
+	if proj.ProjectID == "" {
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return
+	}
+	var role string = getRoleHelper(proj, uid)
+	c.IndentedJSON(http.StatusOK, role)
+
+}
+
+func getRoleHelper(proj project, uid string) string {
+	for i := 0; i < len(proj.OwnersID); i++ {
+		if proj.OwnersID[i] == uid {
+			return "owner"
+		}
+	}
+	//uncomment when projects w/ admin array are created
+	for i := 0; i < len(proj.AdminsID); i++ {
+		if proj.AdminsID[i] == uid {
+			return "admin"
+		}
+	}
+	return "team member"
+}
+
+/*func getRoleHelper(c *gin.Context) string {
+	pid, exists1 := c.GetQuery("pid")
+	if !exists1 {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+	}
+	uid, exists2 := c.GetQuery("uid")
+	if !exists2 {
+		fmt.Println("Request with key")
+		c.IndentedJSON(http.StatusBadRequest, nil)
+	}
+	var proj project = getProjectFromID(pid)
+	if proj.ProjectID == "" {
+		c.IndentedJSON(http.StatusBadRequest, nil)
+		return ""
+	}
+	for i := 0; i < len(proj.OwnersID); i++ {
+		if proj.OwnersID[i] == uid {
+			c.IndentedJSON(http.StatusOK, []interface{}{"Owner"})
+			return "Owner"
+		}
+	}
+	//uncomment when projects w/ admin array are created
+	//for i := 0; i < len(proj.AdminsID); i++ {
+	//	if proj.AdminsID[i] == uid {
+	//		c.IndentedJSON(http.StatusOK, []interface{}{"Admin"})
+	//		return
+	//	}
+	//}
+	return "Team Member"
+}*/
 
 func updatePastUsers(uid string, pid string) {
 	var proj project = getProjectFromID(pid)
