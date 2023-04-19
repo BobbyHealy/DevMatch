@@ -73,11 +73,16 @@ type Task struct {
  * returned
  */
 type searchType struct {
-	Project bool     `json:"project"`
-	Limit   int      `json:"limit"`
-	Ignore  []string `json:"ignore"`
-	Skills  []string `json:"skills"`
-	Name    string   `json:"name"`
+	Project  bool     `json:"project"`
+	Limit    int      `json:"limit"`
+	Ignore   []string `json:"ignore"`
+	Skills   []string `json:"skills"`
+	Name     string   `json:"name"`
+	Rating   bool     `json:"rating"`
+	Recent   bool     `json:"recent"`
+	Relevant bool     `json:"relevant"`
+	Time     bool     `json:"time"`
+	Type     bool     `json:"type"`
 }
 
 type resume struct {
