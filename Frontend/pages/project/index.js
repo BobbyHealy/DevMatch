@@ -89,8 +89,9 @@ export default function ProjectSpace() {
   return (
     <>
       <div>
-        <Transition.Root show={sidebarOpen} as={Fragment}>
+        <Transition.Root  show={sidebarOpen} as={Fragment}>
           <Dialog
+           
             as='div'
             className='relative z-40 lg:hidden'
             onClose={setSidebarOpen}
@@ -216,7 +217,8 @@ export default function ProjectSpace() {
         </Transition.Root>
         <projectSidebar />
         {/* Static sidebar for desktop */}
-        <div className='hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col'>
+        <div id="blocking"></div>
+        <div id="projIndex" className='hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col'>
           {/* Sidebar component, swap this element with another sidebar if you like */}
           <div className='flex min-h-0 flex-1 flex-col border-r border-gray-500 bg-black'>
             <div className='flex flex-1 flex-col overflow-y-auto pt-5 pb-4'>
@@ -285,7 +287,8 @@ export default function ProjectSpace() {
           </div>
         </div>
         <div className='flex flex-1 flex-col lg:pl-64'>
-          <div className='sticky top-0 z-10 bg-gray-100 pl-1 pt-1 sm:pl-3 sm:pt-3 lg:hidden'>
+          <div id="blocking2" className="hidden"><span className="mr-5"> IN CALL</span></div>
+          <div id= "cIndex" className='sticky top-0 z-10 bg-gray-100 pl-1 pt-1 sm:pl-3 sm:pt-3 lg:hidden'>
             <button
               type='button'
               className='-ml-0.5 -mt-0.5 inline-flex h-12 w-12 items-center justify-center rounded-md text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500'

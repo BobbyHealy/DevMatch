@@ -9,7 +9,6 @@ import {
 function VCRoom({roomId, setJoined, setChannel}) 
 {
     const{user, userInfo} = useAuth()
-    const name = "room10"
     const appid = "cbe38fe4d8f3419793086c6b2cf42312"
     const token = null
 
@@ -86,7 +85,6 @@ let initVolumeIndicator = async () => {
 
   rtcClient.on("volume-indicator", volumes => {
     volumes.forEach((volume) => {
-        console.log(volume)
       try{
          if (volume.level >= 70){
             document.getElementById('volumn-'+volume.uid).className = 'text-green-700'
