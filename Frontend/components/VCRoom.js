@@ -88,12 +88,13 @@ let initVolumeIndicator = async () => {
     volumes.forEach((volume) => {
         console.log(volume)
       try{
-
-         if (volume.level >= 50){
-            // document.getElementById('volumn').className ='mx-1 text-green-700 text-sm'
+         if (volume.level >= 70){
             document.getElementById('volumn-'+volume.uid).className = 'text-green-700'
+         }else if(volume.level >= 50){
+            document.getElementById('volumn-'+volume.uid).className = 'text-green-500'
+         }else if(volume.level >= 30){
+            document.getElementById('volumn-'+volume.uid).className = 'text-green-300'
          }else{
-            // document.getElementById('volumn').className ='mx-1 text-green-white text-sm'
             document.getElementById('volumn-'+volume.uid).className = 'text-white'
          }
       }catch(error){
