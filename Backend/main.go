@@ -58,7 +58,7 @@ type project struct {
 	CurrentNum         int      `json:"currentNum"`
 	Complete           bool     `json:"complete"`
 	WorkHours          string   `json:"workHours"`
-	//TimeStamp          int      `json:"timeStamp"`
+	TimeStamp          int      `json:"timeStamp"`
 	//TaskBoard     Scrumboard `json: "board"`
 }
 
@@ -1422,7 +1422,7 @@ func searchFilter(c *gin.Context) {
 	time := thisSearch.Time
 	userTime := thisSearch.UserTime
 	t := thisSearch.Type
-	//recent := thisSearch.Recent
+	recent := thisSearch.Recent
 
 	var ids []string = getIDS(isProject)
 	if name != "" {
@@ -1454,11 +1454,11 @@ func searchFilter(c *gin.Context) {
 		}
 		result = resultWType
 	}
-	//if recent {
-	//sort.Slice(result[:], func(i, j int) bool {
-	//return getProjectFromID(result[:][i]).TimeStamp > getProjectFromID(result[:][j]).TimeStamp
-	//})
-	//}
+	if recent {
+		sort.Slice(result[:], func(i, j int) bool {
+			return getProjectFromID(result[:][i]).TimeStamp > getProjectFromID(result[:][j]).TimeStamp
+		})
+	}
 	if rating {
 		//fmt.Println("here 1")
 		//result = mergeSort(result, isProject)
