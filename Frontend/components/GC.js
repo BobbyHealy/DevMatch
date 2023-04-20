@@ -1,12 +1,8 @@
-import {useState, Fragment}from 'react'
+import {useState, Fragment, useEffect}from 'react'
 import GroupMessages from './GroupMessages'
 import GroupChatInput from './GroupChatInput';
 import { 
   EllipsisVerticalIcon, 
-  PhoneXMarkIcon,
-  MicrophoneIcon,
-  SpeakerWaveIcon,
-  SpeakerXMarkIcon
 } from '@heroicons/react/20/solid'
 import { Menu, Transition } from '@headlessui/react'
 import { useAuth } from '@/context/AuthContext';
@@ -18,13 +14,13 @@ import GCVoiceChannels from './GCVoiceChannels';
 
 
 export default function GC({pid,project}) {
-  
+  const [joined, setJoined] = useState(false)
   const [edit, setEdit] = useState(false);
   const [title, setTitle] = useState("");
   const [vTitle, setVTitle] = useState("");
   const [vEdit, setVEdit] = useState(false);
-  const [mic, setMic] = useState(true);
-  const [sound, setSound] = useState(true);
+  // const [mic, setMic] = useState(true);
+  // const [sound, setSound] = useState(true);
   const {userInfo} =useAuth()
   const [channelName, setChannel]=useState("main")
   const [channelID, setID]=useState("main")
@@ -33,6 +29,14 @@ export default function GC({pid,project}) {
   const handleShow= ()=>{
     setOpen(true)
   }
+  useEffect(() => {
+    console.log(joined)
+    if(!joined){
+
+      setVID("")
+    }     
+  
+  }, [joined]);
   return (
     <div className='h-[calc(100vh-56px)] bg-gray-600 w-[calc(100vw)] lg:h-[calc(100vh)] lg:w-[calc(100vw-256px)] '>
       <div onClick={()=>{setEdit(false); setTitle("")}} className='flex bg-red-100 h-12  justify-between  border-b border-black'>
@@ -91,9 +95,9 @@ export default function GC({pid,project}) {
             {/* Text Channels */}
             {/* {!channelVID? */}
             <div className='bg-gray-700 overflow-y-scroll h-[calc(100vh-160px)] lg:h-full'>
-              <GCTextChannels pid={pid} project={project} channelID={channelID} title={title} edit={edit} setChannel={setChannel} setTitle={setTitle} setEdit={setEdit} setID={setID}/>
+              {!joined&&<GCTextChannels pid={pid} project={project} channelID={channelID} title={title} edit={edit} setChannel={setChannel} setTitle={setTitle} setEdit={setEdit} setID={setID}/>}
               {/* Voice Channels */}
-              <GCVoiceChannels pid={pid} project={project} channelID={channelVID} vTitle={vTitle} vEdit={vEdit} setVTitle={setVTitle} setVEdit={setVEdit} setChannel={setVID}/>
+              <GCVoiceChannels pid={pid} project={project} channelID={channelVID} vTitle={vTitle} vEdit={vEdit} setVTitle={setVTitle} setVEdit={setVEdit} setChannel={setVID} joined={joined} setJoined={setJoined}/>
               {/* voice channel input control */}
             </div>
             {/* :<div className='bg-gray-700 overflow-y-scroll h-[calc(100vh-210px)] lg:h-[calc(100vh-100px)]'>

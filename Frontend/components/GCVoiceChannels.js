@@ -9,13 +9,15 @@ import { addChannel } from '@/fireStoreBE/GCVoice';
 import { useAuth } from '@/context/AuthContext';
 import GCVoiceChannel from './GCVoiceChannel';
 
-function GCVoiceChannels({pid,project, vTitle, vEdit, channelID,setVTitle, setVEdit, setChannel}) {
+function GCVoiceChannels({pid,project, vTitle, vEdit, channelID,setVTitle, setVEdit, setChannel, joined, setJoined}) {
 const [expend, setExpend] = useState(false);
 const [channels, setChannels] =useState([])
-const [joined, setJoined] = useState(false)
+
 const{userInfo} =useAuth()
 useEffect(() => {
+  console.log(joined)
   if(!joined){
+  
     setChannel("")
   }     
 
@@ -69,7 +71,7 @@ useEffect(() => {
             {!expend&&Object.entries(channels)?.sort((a,b)=>a[1].data().dateCreated- b[1].data().dateCreated).map((channel)=>
 
                 (channel[1].id===channelID&&<div className='text-white' onClick={()=>{setChannel(channel[1].id);}}>
-                  <GCVoiceChannel channelID={channel[1].id} selectedID={channelID} pid={pid} channelName={channel[1].data().name} setJoined={setJoined}  setChannel={ setChannel} />
+                  <GCVoiceChannel channelID={channel[1].id} selectedID={channelID} pid={pid} channelName={channel[1].data().name} setJoined={setJoined}  setChannel={setChannel} />
                 </div>)
                 )}
             {expend&&Object.entries(channels)?.sort((a,b)=>a[1].data().dateCreated- b[1].data().dateCreated).map((channel)=>

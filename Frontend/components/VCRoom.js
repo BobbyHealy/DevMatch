@@ -1,7 +1,6 @@
 import AgoraRTC from 'agora-rtc-sdk-ng'
 import AgoraRTM from 'agora-rtm-sdk'
 import { useAuth } from '@/context/AuthContext'
-import { useEffect } from 'react'
 import { 
     PhoneXMarkIcon,
     MicrophoneIcon,
@@ -24,7 +23,6 @@ let audioTracks = {
 };
 
 let micMuted = true
-let joined = false
 let rtcClient;
 let rtmClient;
 let channel;
@@ -33,14 +31,12 @@ let channel;
 const enterRoom = async (e) => {
     e.preventDefault()
     
-
     document.getElementById('enter').style.display = 'none'
     document.getElementById('volumn-control').className ='flex items-center bg-gray-800 h-[calc(50px)]'
     initRtc()
   
     let userName = userInfo.name;
     initRtm(userName)
-    joined = true
     
   }
 
@@ -53,8 +49,13 @@ const initRtm = async (name) => {
   await channel.join()
 
   await rtmClient.addOrUpdateLocalUserAttributes({'name':name, 'userRtcUid':rtcUid.toString()})
+  console.log(channel.getMembers())
+  getChannelMembers()
 
+  channel.on('MemberJoined', handleMemberJoined)
+  channel.on('MemberLeft', handleMemberLeft)
   window.addEventListener('beforeunload', leaveRtmChannel)
+
 }
 
 
@@ -77,24 +78,23 @@ const initRtc = async () => {
 
 
 let initVolumeIndicator = async () => {
+    console.log(channel)
 
-  //1
   AgoraRTC.setParameter('AUDIO_VOLUME_INDICATION_INTERVAL', 200);
   rtcClient.enableAudioVolumeIndicator();
   
-  //2
+
   rtcClient.on("volume-indicator", volumes => {
     volumes.forEach((volume) => {
-      console.log(`UID ${volume.uid} Level ${volume.level}`);
-
-      //3
+        console.log(volume)
       try{
-        //   let item = document.getElementsByClassName(`avatar-${volume.uid}`)[0]
 
          if (volume.level >= 50){
-        //    item.style.borderColor = '#00ff00'
+            // document.getElementById('volumn').className ='mx-1 text-green-700 text-sm'
+            document.getElementById('volumn-'+volume.uid).className = 'text-green-700'
          }else{
-        //    item.style.borderColor = "#fff"
+            // document.getElementById('volumn').className ='mx-1 text-green-white text-sm'
+            document.getElementById('volumn-'+volume.uid).className = 'text-white'
          }
       }catch(error){
         console.error(error)
@@ -121,19 +121,53 @@ let handleUserLeft = async (user) => {
   delete audioTracks.remoteAudioTracks[user.uid]
 
 }
+let handleMemberJoined = async (MemberId) => {
 
+    let {name, userRtcUid} = await rtmClient.getUserAttributesByKeys(MemberId, ['name', 'userRtcUid'])
+
+    let newMember = `
+    <div class="speaker user-rtc-${userRtcUid}" id="${MemberId}">
+        <p>${name}</p>
+    </div>`
+
+    document.getElementById("members").insertAdjacentHTML('beforeend', newMember)
+}
+  
+let handleMemberLeft = async (MemberId) => {
+document.getElementById(MemberId).remove()
+}
 
 const toggleMic = async (e) => {
-    console.log(e.target)
+    console.log(e.target.className)
   if (micMuted){
     micMuted = false
+    document.getElementById('mic').className = 'flex h-8 w-8 rounded-lg hover:bg-gray-700 items-center text-white'
+    
   }else{
+    
     micMuted = true
+    document.getElementById('mic').className = 'flex h-8 w-8 rounded-lg hover:bg-gray-700 items-center text-red-600'
+    
     
   }
   audioTracks.localAudioTrack.setMuted(micMuted)
  
 }
+let getChannelMembers = async () => {
+    let members = await channel.getMembers()
+  
+    for (let i = 0; members.length > i; i++){
+  
+      let {name, userRtcUid} = await rtmClient.getUserAttributesByKeys(members[i], ['name', 'userRtcUid'])
+  
+      let newMember = `
+      <div class="speaker user-rtc-${userRtcUid}" id="${members[i]}">
+          <p class="text-white" id="volumn-${userRtcUid}">${name}</p>
+      </div>`
+    
+      document.getElementById("members").insertAdjacentHTML('beforeend', newMember)
+    }
+  }
 
 
 
@@ -155,12 +189,13 @@ let leaveRoom = async () => {
 
 return (
     <div id="container">
-    
       <button id ="enter" onClick={enterRoom}>Enter</button>
+      <div id="members">
+        </div>
 
       <div id = "volumn-control" className='hidden '>
-              <span className='mx-1 text-green-700 text-sm'>VOICE CONNECTED</span>
-              <span className='flex h-8 w-8 rounded-lg hover:bg-gray-700 items-center'> {micMuted?<MicrophoneIcon onClick={toggleMic} className='ml-1.5 text-white h-5 w-5 '/>:<MicrophoneIcon onClick={toggleMic}  className='ml-1.5 text-red-800 h-5 w-5 '/>}</span>
+              <span id="volumn" className='mx-1 text-white text-sm'>VOICE CONNECTED</span>
+              <span id ="mic" className='flex h-8 w-8 rounded-lg hover:bg-gray-700 items-center text-red-600 '> {<MicrophoneIcon  onClick={toggleMic} className='ml-1.5  h-5 w-5 '/>}</span>
               <span className='flex h-8 w-8 rounded-lg hover:bg-gray-700 items-center'
               onClick={leaveRoom}><PhoneXMarkIcon className='ml-1.5 text-white h-5 w-5'/></span>
             </div>
