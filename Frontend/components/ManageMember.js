@@ -5,62 +5,82 @@ import { useAuth } from "@/context/AuthContext";
 import { switchProjPage } from "@/fireStoreBE/User";
 import ReportDetail from "./ReportDetail";
 
-export default function ManageMember({ project }) {
-  const [posts, setPosts] = useState(null);
+export default function ManageMember({ pid, project }) {
   const [members, setMembers] = useState([]);
+  const [load, setload] = useState(false);
   const { user } = useAuth();
 
-  var myHeaders = new Headers();
-  myHeaders.append("Content-Type", "application/json");
-
-  var raw = JSON.stringify({
-    project: true,
-    limit: 21,
-  });
-
-  var raw2 = JSON.stringify({
-    project: false,
-    limit: 21,
-  });
-
-  var requestOptions = {
-    method: "POST",
-    headers: myHeaders,
-    body: raw,
-    redirect: "follow",
-  };
-
-  var requestOptions2 = {
-    method: "POST",
-    headers: myHeaders,
-    body: raw2,
-    redirect: "follow",
-  };
   useEffect(() => {
-    if (user.uid) {
-      switchProjPage(user.uid, "#Manage")
-    }
-  }, []);
-
-  useEffect(() => {
-    setPosts(null);
-    fetch("http://localhost:3000/api/getSearch", requestOptions2)
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    var raw = JSON.stringify({
+      pid: pid,
+    });
+    var requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+    };
+    fetch("http://localhost:3000/api/getProject", requestOptions)
       .then((response) => response.text())
-      .then((result) => {
-        setPosts(
-          Object.entries(JSON.parse(result)).map((e) => {
-            const obj = JSON.parse(JSON.stringify(e[1]));
-            obj.pid = e[0];
-            return obj;
-          })
-        );
-      })
+      .then((result) => setProject(JSON.parse(result)))
       .catch((err) => {
         console.log(err);
       });
   }, []);
-
-  useEffect(() => {}, [posts]);
+  useEffect(() => {
+    if (!load && project.owners) {
+      setload(true);
+      var owners = [];
+      var members = [];
+      project.owners.map((owner) => {
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        var raw = JSON.stringify({
+          userID: owner,
+        });
+        var requestOptions = {
+          method: "POST",
+          headers: myHeaders,
+          body: raw,
+        };
+        fetch("http://localhost:3000/api/getUser", requestOptions)
+          .then((response) => response.text())
+          .then((result) => {
+            owners.push(JSON.parse(result).name);
+            if (project.owners.length === owners.length) {
+              setOwners(owners);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      });
+      project.tmembers.map((mem) => {
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        var raw = JSON.stringify({
+          userID: mem,
+        });
+        var requestOptions = {
+          method: "POST",
+          headers: myHeaders,
+          body: raw,
+        };
+        fetch("http://localhost:3000/api/getUser", requestOptions)
+          .then((response) => response.text())
+          .then((result) => {
+            members.push(JSON.parse(result).name);
+            if (project.tmembers.length === members.length) {
+              setMembers(members);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      });
+    }
+  }, [project]);
 
   return (
     <div className='mx-auto max-w-7xl sm:px-6 lg:px-8 pt-4 bg-gray-100'>
@@ -69,8 +89,8 @@ export default function ManageMember({ project }) {
           Members of {project.name}:
         </p>
       </div>
-      {posts &&
-        posts.map((e, i) => {
+      {members &&
+        members.map((e, i) => {
           return (
             e.userID !== user.uid && (
               <div key={e.toString() + i} className='pb-6'>
