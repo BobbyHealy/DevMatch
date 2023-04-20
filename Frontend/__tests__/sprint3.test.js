@@ -9,17 +9,16 @@ import {
 } from "firebase/firestore";
 import { v4 as uuid } from "uuid";
 import { sendMsg, pinMsg, unpinMsg, deleteDM } from "../fireStoreBE/DMs";
-import { sendMsg as sendGC, pinMsg as pinGC, unpinMsg as unpinGC, addChannel} from "../fireStoreBE/GCText";
+import { sendMsg as sendGC, pinMsg as pinGC, unpinMsg as unpinGC} from "../fireStoreBE/GCText";
 import { createProject, deleteProject } from "../fireStoreBE/Project";
-const email = "jesttestemail@jesttestemail.com";
-const password = "123456";
+import { addChannel as addVCChannel, deleteChannel} from "../fireStoreBE/GCVoice";
 const senderID = "jestUID"
 const receiverID = "jestUID2"
 const DMID = senderID +"-"+receiverID
 const msgID = uuid();
 const text = "This is jest Test"
 const pid = "JestProj";
-const channel ="jestChannel"
+const channel ="main"
 const user ={
     userID: senderID,
     name: "JestName",
@@ -59,18 +58,18 @@ describe("Pin and Unpin Test (User Story #7)", () => {
     }, 10000);
     test("Msgs in GC are default as unpin", async () => {
         createProject(pid)
-        addChannel(pid, channel,channel)
+
         //send a messege in the Jest test GC
         await  sendGC(pid,channel,msgID,user,text)
         //Fetch the Msg in the GC
-        const queryData = query(doc(db, "GCs", pid,"textChannels", channel, "messages", msgID));
+        const queryData = query(doc(db, "Projects", pid,"TextChannels", channel, "messages", msgID));
         const msg= await getDoc(queryData);
         //Check if pinned is false 
         expect(msg.data().pinned).toBe(false);
     }, 10000);
     test("User can pin a msg in GC", async () => {
         //Fetch the Msg in the GC
-        const queryData = query(doc(db, "GCs", pid,"textChannels", channel, "messages", msgID));
+        const queryData = query(doc(db, "Projects", pid,"TextChannels", channel, "messages", msgID));
         //Pin the Msg
         await pinGC(pid,channel,msgID, user.userID, user.name)
         const result= await getDoc(queryData);
@@ -86,13 +85,46 @@ describe("Pin and Unpin Test (User Story #7)", () => {
 
         // Unpin the msg
         await unpinGC(pid,channel,msgID)
-        const queryData = query(doc(db, "GCs", pid,"textChannels", channel, "messages", msgIDU));
+        const queryData = query(doc(db, "Projects", pid,"TextChannels", channel, "messages", msgIDU));
         const msg= await getDoc(queryData);
         // Check the pinned is false
-        expect(msg.data().pinned).toBe(false);
+        await expect(msg.data().pinned).toBe(false);
         deleteProject(pid)
         
     }, 10000);
+  });
+
+  describe("Voice Channel Test (User Story #21)", () => {
+    const pid21 = "US21Test"
+    const channelVID = "US21"
+    const vName = "US21"
+    createProject(pid21)
+    test("User can create voice channels", async () => {
+        await addVCChannel(pid21,channelVID,vName)
+        const queryData = query(doc(db, "Projects", pid,"VoiceChannels", channelVID));
+        const vChannel= await getDoc(queryData);
+        await expect(vChannel).toBeTruthy();
+
+        
+
+    }, 10000);
+    test("User can fetch the correct voice channels data", async () => {
+        const queryData = query(doc(db, "Projects", pid, "VoiceChannels", channelVID));
+        const vChannel= await getDoc(queryData);
+        // id is correct
+        await expect(vChannel.id).toBe(channelVID);
+
+    }, 10000);
+
+    test("User can delete voice channel", async () => {
+        await deleteChannel(pid21,channelVID)
+        const queryData = query(doc(db, "Projects", pid,"VoiceChannels", channelVID));
+        const vChannel= await getDoc(queryData);
+        // channel is deleted
+        await expect(vChannel.exists()).toBe(false)
+        deleteProject(pid21)
+    }, 10000);
+   
   });
 
   

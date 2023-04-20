@@ -27,13 +27,14 @@ function ProjTextEditor({pid,docId}) {
     }
     const getState  = async() => {
         const q = query(
-            collection(db, "projDocs", pid,"docs")
+            collection(db, "Projects", pid,"Docs")
           );
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc)=>{
             if(doc.id === docId)
             {
 
+                console.log(doc.data())
                 if(doc.data().state)
                 {
                     setState(EditorState.createWithContent(
@@ -44,7 +45,7 @@ function ProjTextEditor({pid,docId}) {
                 }
 
             }})
-        await onSnapshot(doc(db, "projDocs", pid,"docs",docId), (doc) => {
+        await onSnapshot(doc(db, "Projects", pid,"Docs",docId), (doc) => {
 
             if(doc.data())
             {

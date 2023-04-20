@@ -5,6 +5,7 @@ import { updateDoc, doc, getDocs, collection, query } from "firebase/firestore";
 import { db } from "@/config/firebase";
 import { useAuth } from "@/context/AuthContext";
 import ProjTextEditor from "@/components/ProjTextEditor";
+import { updateTitle } from "@/fireStoreBE/ProjDoc";
 
 function ProjDoc() {
   const [ids, setIds] = useState(null);
@@ -25,7 +26,7 @@ function ProjDoc() {
   const [document, setDoc] = useState(null);
   const [title, setTitle] = useState(null);
   const getDoc = async () => {
-    const q = query(collection(db, "projDocs", pid, "docs"));
+    const q = query(collection(db, "Projects", pid, "Docs"));
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
       if (doc.id === docId) {
@@ -40,13 +41,9 @@ function ProjDoc() {
   useEffect(() => {
     if (title !== null) {
       if (title !== "") {
-        updateDoc(doc(db, "projDocs", pid, "docs", docId), {
-          fileName: title,
-        });
+        updateTitle(pid,docId,title)
       } else {
-        updateDoc(doc(db, "projDocs", pid, "docs", docId), {
-          fileName: "Default Title",
-        });
+        updateTitle(pid,docId,"Default Title")
       }
     }
   }, [title]);

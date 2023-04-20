@@ -15,7 +15,7 @@ function GCTextChannels({pid, project, channelID, title, edit, setChannel, setTi
     const{userInfo} =useAuth()
     useEffect(() => {
       if(pid){      
-        const unSub = onSnapshot(collection(db, "GCs", pid, "textChannels"), (col) => {
+        const unSub = onSnapshot(collection(db, "Projects", pid, "TextChannels"), (col) => {
           setChannels(col.docs)
         });
         return () => {
@@ -58,12 +58,12 @@ function GCTextChannels({pid, project, channelID, title, edit, setChannel, setTi
     <div onClick={()=>{setEdit(false); setTitle("")}} className='p-2 pl-1 pr-2'>
       {!expend&&Object.entries(channels)?.sort((a,b)=>a[1].data().dateCreated- b[1].data().dateCreated).map((channel)=>
         (channel[1].id===channelID&&<div onClick={()=>{setChannel(channel[1].data().name); setID(channel[1].id)}}>
-          <GCTextChannel pid={pid} channelID={channel[1].id} selectedID={channelID} channelName={channel[1].data().name}/>
+          <GCTextChannel pid={pid}  channelID={channel[1].id} selectedID={channelID} channelName={channel[1].data().name}/>
        </div>)
         )}
       {expend&&Object.entries(channels)?.sort((a,b)=>a[1].data().dateCreated- b[1].data().dateCreated).map((channel)=>
         (<div >
-          <GCTextChannel pid={pid} channelID={channel[1].id} selectedID={channelID} channelName={channel[1].data().name} setChannel={setChannel} setID={setID}/>
+          <GCTextChannel pid={pid} project={project} channelID={channel[1].id} selectedID={channelID} channelName={channel[1].data().name} setChannel={setChannel} setID={setID}/>
         </div>)
         )}
     </div>
