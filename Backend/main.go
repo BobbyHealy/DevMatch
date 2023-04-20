@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sort"
 	"strconv"
 	"time"
 
@@ -1421,6 +1422,7 @@ func searchFilter(c *gin.Context) {
 	time := thisSearch.Time
 	userTime := thisSearch.UserTime
 	t := thisSearch.Type
+	recent := thisSearch.Recent
 
 	var ids []string = getIDS(isProject)
 	if name != "" {
@@ -1452,10 +1454,11 @@ func searchFilter(c *gin.Context) {
 		}
 		result = resultWType
 	}
-	/*sort.Slice(result, func(i, j int) bool {
-		return getProjectFromID(result[i]).TimeStamp < getProjectFromID(result[j]).TimeStamp
-	}) */
-
+	if recent {
+		sort.Slice(result[:], func(i, j int) bool {
+			return getProjectFromID(result[:][i]).TimeStamp > getProjectFromID(result[:][j]).TimeStamp
+		})
+	}
 	if rating {
 		result = mergeSort(result, isProject)
 	}
