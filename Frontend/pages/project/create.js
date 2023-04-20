@@ -86,6 +86,7 @@ export default function Create() {
         type: selectedType.name,
         maxNum: Number(maxNum) ? (Number(maxNum) > 2 ? Number(maxNum) : 2) : 2,
         workHours: hours,
+        timeStamp: Date().toLocaleString('en-us'),
       });
       // console.log(raw);
 
@@ -157,6 +158,7 @@ export default function Create() {
                 : 2
               : 2,
             workHours: hours,
+            timeStamp: Date().toLocaleString('en-us'),
           });
 
           var myHeaders = new Headers();
@@ -230,6 +232,7 @@ export default function Create() {
                 : 2
               : 2,
             workHours: hours,
+            timeStamp: Date().toLocaleString('en-us'),
           });
 
           var myHeaders = new Headers();
@@ -305,6 +308,7 @@ export default function Create() {
                     : 2
                   : 2,
                 workHours: hours,
+                timeStamp: Date().toLocaleString('en-us'),
               });
 
               var myHeaders = new Headers();
