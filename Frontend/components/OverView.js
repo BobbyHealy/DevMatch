@@ -8,6 +8,7 @@ import DeactivateModal from "./DeactivateModal";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { switchPage, switchProjPage } from "@/fireStoreBE/User";
 import { deleteProject } from "@/fireStoreBE/Project";
+import { CheckCircleIcon } from "@heroicons/react/20/solid";
 
 export default function Overview({ pid, projectD }) {
   const project = {
@@ -33,6 +34,7 @@ export default function Overview({ pid, projectD }) {
   const [load, setload] = useState(false);
   const [members, setMembers] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showComplete, setShowComplete] = useState(false);
   const [confirmation, setConfirmation] = useState("");
   const [maxNum, setMax] = useState(null)
 
@@ -695,8 +697,8 @@ export default function Overview({ pid, projectD }) {
                   <div className='sm:col-span-1'>
                       {projectD.owners?.includes(user.uid) && (
                         !projectD.complete&&<button
-                        onClick={handleComplete}
-                        className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                        onClick={() => setShowComplete(true)}
+                        className="rounded-md bg-indigo-600 px-3 py-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                         
                       >
                         Complete Project
@@ -706,7 +708,7 @@ export default function Overview({ pid, projectD }) {
                       <span
                         // onClick={handleDeleteProj}
                         onClick={() => setShowModal(true)}
-                        className=' text-red-600 cursor-pointer hover:text-red-900'
+                        className=' text-red-600 mt-4 cursor-pointer hover:text-red-900'
                       >
                         Delete Project
                       </span>
@@ -774,6 +776,73 @@ export default function Overview({ pid, projectD }) {
                           type='button'
                           className='mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto'
                           onClick={() => setShowModal(false)}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </DeactivateModal>
+
+                    <DeactivateModal
+                      isVisible={showComplete}
+                      onClose={() => setShowComplete(false)}
+                    >
+                      <div className='sm:flex sm:items-start'>
+                        <div className='mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10'>
+                          <CheckCircleIcon
+                            className='h-6 w-6 text-green-600'
+                            aria-hidden='true'
+                          />
+                        </div>
+                        <div className='mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left'>
+                          <h3 className='text-base font-semibold leading-6 text-gray-900'>
+                            Complete Project
+                          </h3>
+                          <div className='mt-2'>
+                            <p className='text-sm text-gray-500'>
+                              Are you sure you want to complete the project? This action cannot be undone.
+                            </p>
+                          </div>
+
+                          <div className='mt-2'>
+                            <label
+                              htmlFor='email'
+                              className='block text-sm font-medium leading-6 text-gray-900'
+                            >
+                              Confirm by writting project name
+                            </label>
+                            <div className='mt-2'>
+                              <input
+                                type='text'
+                                name='confirm'
+                                className='block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+                                onChange={(e) =>
+                                  setConfirmation(e.target.value)
+                                }
+                                value={confirmation}
+                                placeholder={name}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className='mt-5 sm:mt-4 sm:flex sm:flex-row-reverse'>
+                        <button
+                          disabled={confirmation !== name}
+                          type='button'
+                          className={`inline-flex w-full justify-center rounded-md bg-${
+                            confirmation !== name
+                              ? "gray-600"
+                              : "indigo-600 hover:bg-indigo-500"
+                          } px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto`}
+                          onClick={handleComplete}
+                        >
+                          Complete
+                        </button>
+                        <button
+                          type='button'
+                          className='mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto'
+                          onClick={() => setShowComplete(false)}
                         >
                           Cancel
                         </button>
