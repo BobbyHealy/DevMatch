@@ -197,7 +197,8 @@ export default function Overview({ pid, projectD }) {
             : undefined,
         projectDes: des !== undefined ? des : projectD.projectDes,
         type: projectD.type !== undefined ? projectD.type : undefined,
-        maxNum: Number(maxNum)?Number(maxNum)>=2?Number(maxNum):projectD.maxNum:projectD.maxNum
+        maxNum: Number(maxNum)?Number(maxNum)>=2?Number(maxNum):projectD.maxNum:projectD.maxNum,
+        CurrentNum: projectD.CurrentNum
       });
 
       var myHeaders = new Headers();
@@ -235,7 +236,8 @@ export default function Overview({ pid, projectD }) {
                 : undefined,
             projectDes: des !== undefined ? des : projectD.projectDes,
             type: projectD.type !== undefined ? projectD.type : undefined,
-            maxNum: Number(maxNum)?Number(maxNum)>=2?Number(maxNum):projectD.maxNum:projectD.maxNum
+            maxNum: Number(maxNum)?Number(maxNum)>=2?Number(maxNum):projectD.maxNum:projectD.maxNum,
+            CurrentNum: projectD.CurrentNum
           });
 
           var myHeaders = new Headers();
@@ -275,7 +277,8 @@ export default function Overview({ pid, projectD }) {
             projectBannerPic: url,
             projectDes: des !== undefined ? des : projectD.projectDes,
             type: projectD.type !== undefined ? projectD.type : undefined,
-            maxNum: Number(maxNum)?Number(maxNum)>=2?Number(maxNum):projectD.maxNum:projectD.maxNum
+            maxNum: Number(maxNum)?Number(maxNum)>=2?Number(maxNum):projectD.maxNum:projectD.maxNum,
+            CurrentNum: projectD.CurrentNum
           });
 
           var myHeaders = new Headers();
@@ -318,7 +321,8 @@ export default function Overview({ pid, projectD }) {
                 projectBannerPic: url2,
                 projectDes: des !== undefined ? des : projectD.projectDes,
                 type: projectD.type !== undefined ? projectD.type : undefined,
-                maxNum: Number(maxNum)?Number(maxNum)>=2?Number(maxNum):projectD.maxNum:projectD.maxNum
+                maxNum: Number(maxNum)?Number(maxNum)>=2?Number(maxNum):projectD.maxNum:projectD.maxNum,
+                CurrentNum: projectD.CurrentNum
               });
 
               var myHeaders = new Headers();
@@ -582,7 +586,16 @@ export default function Overview({ pid, projectD }) {
                         : "N/a"}
                     </dd>
                   </div>
-
+                  <div className='sm:col-span-1'>
+                    <dt className='text-sm font-medium text-gray-500'>
+                      Current Number of Members
+                    </dt>
+                    <dd className='mt-1 max-w-prose space-y-5 text-sm text-gray-900'>
+                      {projectD.currentNum?projectD.currentNum:0}
+                  
+                    </dd>
+                  </div>
+                  <div className='sm:col-span-1'></div>
                   <div className='sm:col-span-1'>
                     <dt className='text-sm font-medium text-gray-500'>
                       Max Number of Members
@@ -590,7 +603,6 @@ export default function Overview({ pid, projectD }) {
                     <dd className='mt-1 max-w-prose space-y-5 text-sm text-gray-900'>
                       {projectD.maxNum?projectD.maxNum:0}
                     
-                      {console.log(projectD)}
                     </dd>
                   </div>
                   <div className='sm:col-span-1'>

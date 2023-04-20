@@ -87,6 +87,7 @@ export default function Create() {
         skills: skillsArr,
         type: selectedType.name,
         maxNum: Number(maxNum) ? (Number(maxNum) > 2 ? Number(maxNum) : 2) : 2,
+        currentNum: 1,
         workHours: hours,
         timeStamp
       });
@@ -159,6 +160,7 @@ export default function Create() {
                 ? Number(maxNum)
                 : 2
               : 2,
+            currentNum: 1,
             workHours: hours,
             timeStamp
           });
@@ -233,6 +235,7 @@ export default function Create() {
                 ? Number(maxNum)
                 : 2
               : 2,
+            currentNum: 1,
             workHours: hours,
             timeStamp
           });
@@ -309,6 +312,7 @@ export default function Create() {
                     ? Number(maxNum)
                     : 2
                   : 2,
+                currentNum: 1,
                 workHours: hours,
                 timeStamp
               });

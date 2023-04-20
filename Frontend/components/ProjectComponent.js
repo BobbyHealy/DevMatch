@@ -236,6 +236,10 @@ export default function ProjComponent(props) {
               )}
             </div>
             <div className='text-sm text-gray-500'>
+              <span className='font-bold'>Current Number of Members</span>
+              <p>{project.currentNum}</p>
+            </div>
+            <div className='text-sm text-gray-500'>
               <span className='font-bold'>Max Number of Members</span>
               <p>{project.maxNum}</p>
             </div>
@@ -338,6 +342,22 @@ export default function ProjComponent(props) {
                   ) : (
                     <p>N/a</p>
                   )}
+                </dd>
+              </div>
+              <div className='py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6'>
+                <dt className='text-sm font-medium text-gray-500'>
+                  Current Number of Members
+                </dt>
+                <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>
+                    {project.currentNum}
+                </dd>
+              </div>
+              <div className='py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6'>
+                <dt className='text-sm font-medium text-gray-500'>
+                  Max Number of Members
+                </dt>
+                <dd className='mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0'>
+                    {project.maxNum}
                 </dd>
               </div>
               <div className='py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6'>
