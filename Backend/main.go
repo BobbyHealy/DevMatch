@@ -79,11 +79,11 @@ type searchType struct {
 	Ignore   []string `json:"ignore"`
 	Skills   []string `json:"skills"`
 	Name     string   `json:"name"`
-	Rating   bool     `json:"rating"` //done
-	Recent   bool     `json:"recent"` //???
-	Time     bool     `json:"time"`
-	UserTime string   `json:"userTime"`
-	Type     bool     `json:"type"`
+	Rating   bool     `json:"rating"`   //done
+	Recent   bool     `json:"recent"`   //???
+	Time     bool     `json:"time"`     //done
+	UserTime string   `json:"userTime"` //done
+	Type     string   `json:"type"`
 }
 
 type resume struct {
@@ -1384,6 +1384,7 @@ func searchFilter(c *gin.Context) {
 	rating := thisSearch.Rating
 	time := thisSearch.Time
 	userTime := thisSearch.UserTime
+	t := thisSearch.Type
 
 	var ids []string = getIDS(isProject)
 	if name != "" {
@@ -1405,6 +1406,15 @@ func searchFilter(c *gin.Context) {
 			break
 		}
 		result = append(result, ids[i])
+	}
+	if t != "" {
+		var resultWType []string
+		for l := 0; l < len(result); l++ {
+			if getProjectFromID(result[l]).ProjectType == t {
+				resultWType = append(resultWType, result[l])
+			}
+		}
+		result = resultWType
 	}
 	/*sort.Slice(result, func(i, j int) bool {
 		return getProjectFromID(result[i]).TimeStamp < getProjectFromID(result[j]).TimeStamp
