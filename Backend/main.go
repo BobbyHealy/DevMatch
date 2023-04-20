@@ -1406,6 +1406,10 @@ func searchFilter(c *gin.Context) {
 		}
 		result = append(result, ids[i])
 	}
+	/*sort.Slice(result, func(i, j int) bool {
+		return getProjectFromID(result[i]).TimeStamp < getProjectFromID(result[j]).TimeStamp
+	}) */
+
 	if rating {
 		result = mergeSort(result, isProject)
 	}
