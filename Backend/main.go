@@ -58,7 +58,7 @@ type project struct {
 	CurrentNum         int      `json:"currentNum"`
 	Complete           bool     `json:"complete"`
 	WorkHours          string   `json:"workHours"`
-	TimeStamp          int      `json:"timeStamp"`
+	//TimeStamp          int      `json:"timeStamp"`
 	//TaskBoard     Scrumboard `json: "board"`
 }
 
@@ -1422,7 +1422,7 @@ func searchFilter(c *gin.Context) {
 	time := thisSearch.Time
 	userTime := thisSearch.UserTime
 	t := thisSearch.Type
-	recent := thisSearch.Recent
+	//recent := thisSearch.Recent
 
 	var ids []string = getIDS(isProject)
 	if name != "" {
@@ -1454,13 +1454,24 @@ func searchFilter(c *gin.Context) {
 		}
 		result = resultWType
 	}
-	if recent {
-		sort.Slice(result[:], func(i, j int) bool {
-			return getProjectFromID(result[:][i]).TimeStamp > getProjectFromID(result[:][j]).TimeStamp
-		})
-	}
+	//if recent {
+	//sort.Slice(result[:], func(i, j int) bool {
+	//return getProjectFromID(result[:][i]).TimeStamp > getProjectFromID(result[:][j]).TimeStamp
+	//})
+	//}
 	if rating {
-		result = mergeSort(result, isProject)
+		//fmt.Println("here 1")
+		//result = mergeSort(result, isProject)
+		if isProject {
+			sort.Slice(result[:], func(i, j int) bool {
+				return getUserFromID(getProjectFromID(result[:][i]).OwnersID[0]).Rating > getUserFromID(getProjectFromID(result[:][j]).OwnersID[0]).Rating
+			})
+		} else {
+			sort.Slice(result[:], func(i, j int) bool {
+				return getUserFromID(result[:][i]).Rating > getUserFromID(result[:][j]).Rating
+			})
+		}
+		//fmt.Println("here 2")
 	}
 	if time {
 		if isProject {
@@ -1471,13 +1482,13 @@ func searchFilter(c *gin.Context) {
 				} else {
 					a, err1 := strconv.Atoi(getProjectFromID(result[g]).WorkHours)
 					if err1 != nil {
-						fmt.Println("bad conversion")
-						return
+						fmt.Println("bad conversion 1")
+						//return
 					}
 					b, err2 := strconv.Atoi(userTime)
 					if err2 != nil {
-						fmt.Println("bad conversion")
-						return
+						fmt.Println("bad conversion 2")
+						//return
 					}
 					if a <= b {
 						resultWTime = append(resultWTime, result[g])
@@ -1493,13 +1504,13 @@ func searchFilter(c *gin.Context) {
 				} else {
 					a, err1 := strconv.Atoi(getUserFromID(result[g]).WorkHours)
 					if err1 != nil {
-						fmt.Println("bad conversion")
-						return
+						fmt.Println("bad conversion 3")
+						//return
 					}
 					b, err2 := strconv.Atoi(userTime)
 					if err2 != nil {
-						fmt.Println("bad conversion")
-						return
+						fmt.Println("bad conversion 4")
+						//return
 					}
 					if a <= b {
 						resultWTime = append(resultWTime, result[g])
