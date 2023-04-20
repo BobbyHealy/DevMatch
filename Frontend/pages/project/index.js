@@ -306,7 +306,7 @@ export default function ProjectSpace() {
               <Scrumboard pid={pid} />
             ) : section === "#Manage" ? (
               project.owners?.includes(user.uid) ? (
-                <ManageMember project={project} />
+                <ManageMember pid={pid} project={project} />
               ) : (
                 <NoAccessPage />
               )

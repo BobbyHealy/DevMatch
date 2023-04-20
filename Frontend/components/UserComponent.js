@@ -42,6 +42,7 @@ const default_user = {
 export default function UserComponent(props) {
   const [showModal, setShowModal] = useState(false);
   const [showReportModal, setReportModal] = useState(false);
+  const [showManage, setManageModal] = useState(false);
 
   const {
     user = default_user,
@@ -264,20 +265,29 @@ export default function UserComponent(props) {
               <EnvelopeIcon className='ml-2 -mr-1 h-5 w-5' aria-hidden='true' />
             </button>
           ) : inviteProjectID === null ? (
-            <button
-              onClick={() => setShowModal(true)}
-              type='button'
-              className='inline-flex items-center rounded-md border border-transparent bg-red-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2'
-            >
-              Remove from Project
-            </button>
+            <div className="space-x-3">
+              <button
+                onClick={() => setManageModal(true)}
+                type='button'
+                className='inline-flex items-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
+              >
+                Manage
+              </button>
+              <button
+                onClick={() => setShowModal(true)}
+                type='button'
+                className='inline-flex items-center rounded-md border border-transparent bg-red-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2'
+              >
+                Remove from Project
+              </button>
+            </div>
           ) : (
             <></>
           )}
           <button
             onClick={() => setReportModal(true)}
             type='button'
-            className='inline-flex items-center rounded-md border border-transparent bg-red-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2'
+            className='inline-flex items-center rounded-md border border-transparent bg-purple-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2'
           >
             Report
             <FlagIcon className='ml-2 -mr-1 h-5 w-5' aria-hidden='true' />
@@ -388,6 +398,56 @@ export default function UserComponent(props) {
             type='button'
             className='mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto'
             onClick={() => setReportModal(false)}
+          >
+            Cancel
+          </button>
+        </div>
+      </DeactivateModal>
+
+      <DeactivateModal
+        isVisible={showManage}
+        onClose={() => setManageModal(false)}
+      >
+        <div>
+          <div className='mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left'>
+            <h3 className='text-base font-semibold leading-6 text-gray-900'>
+              User's name
+            </h3>
+            <div className='mt-2'>
+              <p className='text-sm text-gray-500'>
+                Current role: Member / Manager / Etc...
+              </p>
+            </div>
+
+            <div className='mt-2'>
+              <label htmlFor="roles" className="block text-sm font-medium leading-6 text-gray-900">
+                Roles
+              </label>
+              <select
+                id="role"
+                name="role"
+                className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                defaultValue="Member"
+              >
+                <option>Member</option>
+                <option>Manager</option>
+                <option>Owner</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div className='mt-5 sm:mt-4 space-x-5 sm:flex sm:flex-row-reverse'>
+          <button
+            type='submit'
+            className='inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto'
+          >
+            Save
+          </button>
+          <button
+            type='button'
+            className='mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto'
+            onClick={() => setManageModal(false)}
           >
             Cancel
           </button>
