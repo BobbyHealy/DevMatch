@@ -16,6 +16,7 @@ import Profile from "../../components/Profile";
 import DMs from "../../components/DMs";
 import ManageProjects from "@/components/ManageProjects";
 import Documents from "@/components/Documents";
+import PastUsers from "@/components/PastUsers";
 import { useAuth } from "@/context/AuthContext";
 import { onSnapshot, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/config/firebase";
@@ -30,6 +31,7 @@ const navigation = [
     current: false,
   },
   { name: "Documents", href: "#", icon: DocumentIcon, current: false },
+  { name: "Collaboration", href: "#", icon: UsersIcon, current: false },
 ];
 
 function classNames(...classes) {
@@ -71,6 +73,9 @@ export default function Example() {
         break;
       case "Documents":
         <Documents />;
+        break;
+      case "Collaboration":
+        <PastUsers />;
         break;
 
       default:
@@ -250,6 +255,8 @@ export default function Example() {
               <ManageProjects />
             ) : selectedTab === "Documents" ? (
               <Documents />
+            ) : selectedTab === "Collaboration" ? (
+              <PastUsers />
             ) : (
               <></>
             )}
