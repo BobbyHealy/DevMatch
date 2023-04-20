@@ -82,10 +82,10 @@ type searchType struct {
 	Skills   []string `json:"skills"`
 	Name     string   `json:"name"`
 	Rating   bool     `json:"rating"`   //done
-	Recent   bool     `json:"recent"`   //???
+	Recent   bool     `json:"recent"`   //done
 	Time     bool     `json:"time"`     //done
 	UserTime string   `json:"userTime"` //done
-	Type     string   `json:"type"`
+	Type     string   `json:"type"`     //done
 }
 
 type resume struct {
