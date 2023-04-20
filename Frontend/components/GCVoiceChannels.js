@@ -21,12 +21,17 @@ useEffect(() => {
     document.getElementById('blocking').className = 'hidden'
     document.getElementById('cIndex').className = 'sticky top-0 z-10 bg-gray-100 pl-1 pt-1 sm:pl-3 sm:pt-3 lg:hidden'
     document.getElementById('blocking2').className = 'hidden'
+    console.log(document)
+    document.getElementById('pin').className = ''
+    document.getElementById('pinBlock').className = 'hidden'
     setChannel("")
   }else{
     document.getElementById('projIndex').className = 'hidden '
     document.getElementById('blocking').className = 'lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col bg-gray-800'
     document.getElementById('cIndex').className = 'hidden'
     document.getElementById('blocking2').className = 'sticky top-0 z-10 bg-gray-100 pl-1 pt-1 sm:pl-3 sm:pt-3 lg:hidden h-14'
+    document.getElementById('pin').className = 'hidden'
+    document.getElementById('pinBlock').className = 'h-12 bg-gray-600 w-11'
   }    
 
 }, [joined]);

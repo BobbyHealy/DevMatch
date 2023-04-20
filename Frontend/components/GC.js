@@ -51,7 +51,8 @@ export default function GC({pid,project}) {
             <span className='pl-2 truncate'># {channelName}</span>
           </div>
         </div>
-        <div>
+        <div id="pinBlock"></div>
+        <div id="pin">
           <Menu as="div" className=" relative inline-block text-left">
             <div>
               <Menu.Button className="flex items-center  bg-gray-600 h-12 text-gray-400 hover:text-gray-200 focus:outline-none p-3">
