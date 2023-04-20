@@ -166,6 +166,7 @@ export default function FollowUp() {
                         Name
                       </label>
                       <input
+                        required
                         type='text'
                         name='first-name'
                         id='first-name'
@@ -202,6 +203,7 @@ export default function FollowUp() {
                         {"Work Commitment (Hours a Week)"}
                       </label>
                       <input
+                        required
                         type='text'
                         name='first-name'
                         id='first-name'

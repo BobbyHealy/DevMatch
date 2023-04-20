@@ -408,6 +408,7 @@ export default function Create() {
                         Project Name
                       </label>
                       <input
+                        required
                         type='text'
                         name='first-name'
                         id='first-name'
