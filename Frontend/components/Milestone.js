@@ -4,7 +4,12 @@ import { PlusIcon } from "@heroicons/react/24/outline";
 import MilestoneModal from "./MilestoneModal";
 import { Listbox, Transition } from '@headlessui/react'
 import { CalendarIcon, PaperClipIcon, TagIcon, UserCircleIcon } from '@heroicons/react/20/solid'
-import { switchProjPage } from "@/fireStoreBE/User";
+import { switchProjPage } from "@/fireStoreBE/User"
+import { v4 as uuid } from "uuid";
+import { addMS, sendToApprove, approveRequest, denyRequest, deleteMS } from "@/fireStoreBE/Milestones";
+import { onSnapshot, collection } from "firebase/firestore";
+import { db } from "@/config/firebase";
+
 
 const defaultAssignees = [
   { name: 'Unassigned', value: null },
@@ -44,29 +49,34 @@ export default function Milestone({pid, project}) {
   const [assignees, setAsignees] =useState(defaultAssignees)
   const [members, setMembers] = useState()
   useEffect(() => {
-    var myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    console.log(pid)
-    var raw = JSON.stringify({
-      pid: pid,
-    });
-    var requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-    };
-    fetch("http://localhost:3000/api/getMilestones", requestOptions)
-      .then((response) => response.text())
-      .then((result) => {
-        console.log(JSON.parse(result))
+    fetchMS()
+    // var myHeaders = new Headers();
+    // myHeaders.append("Content-Type", "application/json");
+    // console.log(pid)
+    // var raw = JSON.stringify({
+    //   pid: pid,
+    // });
+    // var requestOptions = {
+    //   method: "POST",
+    //   headers: myHeaders,
+    //   body: raw,
+    // };
+    // fetch("http://localhost:3000/api/getMilestones", requestOptions)
+    //   .then((response) => response.text())
+    //   .then((result) => {
+    //     console.log(JSON.parse(result))
 
-        setMilestones(JSON.parse(result)[0])
-    })
-      .catch((err) => {
-        console.log(err);
-      });
+    //     setMilestones(JSON.parse(result)[0])
+    // })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
+
 
 }, []);
+
+
+
 useEffect(() => {
     if(members)
     {
@@ -74,7 +84,6 @@ useEffect(() => {
             ...assignees,
             ...members
         ]
-        console.log(data)
         setAsignees(data)
     }
   }, [members]);
@@ -111,58 +120,90 @@ useEffect(() => {
           })
     }
 }, [project]);
-
-  useLayoutEffect(() => {
-    const isIndeterminate = selectedMilestones?.length > 0 && selectedMilestones.length < milestones.length
-    setChecked(selectedMilestones?.length === milestones?.length)
-    setIndeterminate(isIndeterminate)
-    checkbox.current.indeterminate = isIndeterminate
-  }, [selectedMilestones])
-
-  function toggleAll() {
-    setSelectedMilestones(checked || indeterminate ? [] : milestones)
-    setChecked(!checked && !indeterminate)
-    setIndeterminate(false)
-  }
-  const addMilestone= async ()=>{
-    if(pid&&title.trim())
+    const fetchMS  = async () => 
     {
-        var myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
-        var raw = JSON.stringify({
-        pid: pid,
-        "milestone":  {
-            title: title.trim(),
-            assignedto: assigned.name,
-            labels: labelled.name,
-            duedate: dated.name,
-            complete:false
-        },
+        const unsub = onSnapshot(collection(db, "Projects", pid, "MileStones"), (ms) => {
+        console.log(ms.docs)
+        setMilestones(ms.docs)
         });
 
-        var requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
+        return () => {
+            unsub();
         };
 
-        await fetch("http://localhost:3000/api/addMilestone", requestOptions)
-        .then((response) => response.text())
-        .then((result) => {
-            console.log(JSON.parse(result));
+    }
+    const handleMarkComplete =()=>
+    {
+        selectedMilestones.forEach(ms=>{
+            if (project.owners?.includes(user.uid))
+            {
+                approveRequest(pid, ms.id)
+            }
+            else
+            {
+                sendToApprove(pid, ms.id)
+            }
         })
-        .catch((error) => console.log("error", error));
-        await setShowModal(false)
-        refreshPage()
+
+        
+    }
+
+    useLayoutEffect(() => {
+        const isIndeterminate = selectedMilestones?.length > 0 && selectedMilestones.length < milestones.length
+        setChecked(selectedMilestones?.length === milestones?.length)
+        setIndeterminate(isIndeterminate)
+        checkbox.current.indeterminate = isIndeterminate
+    }, [selectedMilestones])
+
+    function toggleAll() {
+        setSelectedMilestones(checked || indeterminate ? [] : milestones)
+        setChecked(!checked && !indeterminate)
+        setIndeterminate(false)
+    }
+    const addMilestone= async ()=>{
+        // if(pid&&title.trim())
+        // {
+        //     var myHeaders = new Headers();
+        //     myHeaders.append("Content-Type", "application/json");
+        //     var raw = JSON.stringify({
+        //     pid: pid,
+        //     "milestone":  {
+        //         title: title.trim(),
+        //         assignedto: assigned.name,
+        //         labels: labelled.name,
+        //         duedate: dated.name,
+        //         complete:false
+        //     },
+        //     });
+
+        //     var requestOptions = {
+        //     method: "POST",
+        //     headers: myHeaders,
+        //     body: raw,
+        //     };
+
+        //     await fetch("http://localhost:3000/api/addMilestone", requestOptions)
+        //     .then((response) => response.text())
+        //     .then((result) => {
+        //         console.log(JSON.parse(result));
+        //     })
+        //     .catch((error) => console.log("error", error));
+        //     await setShowModal(false)
+        //     refreshPage()
+        // }
+        if(title.trim())
+        {
+            await addMS(pid, uuid(), title.trim(),assigned.name,dated.name,labelled.name)
+            setShowModal(false)
         }
         
     }
     useEffect(() => {
-    if(user.uid)
-    {
-        switchProjPage(user.uid, "#MS")
-    }
-  }, []);
+        if(user.uid)
+        {
+            switchProjPage(user.uid, "#MS")
+        }
+    }, []);
 
   return (
     <div>
@@ -196,6 +237,7 @@ useEffect(() => {
                             Bulk edit
                         </button>
                         <button
+                            onClick={handleMarkComplete}
                             type="button"
                             className="inline-flex items-center rounded bg-white px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white"
                         >
@@ -234,7 +276,7 @@ useEffect(() => {
                         </thead>
                         <tbody className="divide-y divide-gray-200 bg-white">
                         {milestones?.map((milestone) => (
-                            <tr key={milestone.split(",")[3]} className={selectedMilestones?.includes(milestone) ? 'bg-gray-50' : undefined}>
+                            <tr key={milestone.data().dueDate} className={selectedMilestones?.includes(milestone) ? 'bg-gray-50' : undefined}>
                             <td className="relative px-7 sm:w-12 sm:px-6">
                                 {selectedMilestones?.includes(milestone) && (
                                 <div className="absolute inset-y-0 left-0 w-0.5 bg-indigo-600" />
@@ -242,7 +284,7 @@ useEffect(() => {
                                 <input
                                 type="checkbox"
                                 className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                                value={milestone.split(",")[3]}
+                                value={milestone.data().dueDate}
                                 checked={selectedMilestones?.includes(milestone)}
                                 onChange={(e) =>
                                     setSelectedMilestones(
@@ -259,14 +301,14 @@ useEffect(() => {
                                 selectedMilestones?.includes(milestone) ? 'text-indigo-600' : 'text-gray-900'
                                 )}
                             >
-                                {milestone.split(",")[0]}
+                                {milestone.data().title}
                             </td>
-                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{milestone.split(",")[1]}</td>
-                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{milestone.split(",")[2]}</td>
-                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{milestone.split(",")[3]}</td>
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{milestone.data().assignee}</td>
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{milestone.data().label}</td>
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{milestone.data().dueDate}</td>
                             <td className="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                                 <a href="#" className="text-indigo-600 hover:text-indigo-900">
-                                Edit<span className="sr-only">, {milestone.split(",")[0]}</span>
+                                Edit<span className="sr-only">, {milestone.data().title}</span>
                                 </a>
                             </td>
                             </tr>

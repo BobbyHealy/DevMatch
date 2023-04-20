@@ -12,12 +12,14 @@ import {
 } from 'firebase/firestore'
 import { db } from "../config/firebase";
 import { deleteChannel } from './GCText';
+import { deleteMS } from './Milestones';
 
 export async function createProject(pid) {
   const data = {
     name: "main",
     dateCreated: serverTimestamp(),
   };
+  await setDoc(doc(db, "Projects", pid),{})
   await setDoc(doc(db, "GCs", pid),{})
   await setDoc(doc(db, "GCs", pid, "textChannels", "main"), data);
 }
@@ -34,6 +36,12 @@ export async function deleteProject(pid){
   querySnapshot2.docs.forEach(channel =>(
     // deleteChannel(pid, channel.id)
     console.log("TODO: added remove voice channel")
+  ))
+
+  const queryMS = query(doc(db, "Projects", pid, "MileStones", MSID));
+  const querySnapshotMS = await getDocs(queryMS);
+  querySnapshotMS.docs.forEach(milestone =>(
+    deleteMS(pid, milestone.id)
   ))
   await deleteDoc(doc(db, "GCs", pid))
 }
