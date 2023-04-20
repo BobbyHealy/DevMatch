@@ -24,7 +24,7 @@ export async function addChannel(pid, channelID, title)
 export async function deleteChannel(pid, channelID) 
 {
   
-  const queryData = query(collection(db, "Projects", pid, "channels",channelID,"messages"));
+  const queryData = query(collection(db, "Projects", pid, "TextChannels",channelID,"messages"));
   const querySnapshot = await getDocs(queryData);
   querySnapshot.docs.forEach(msg =>(
     deleteMsg(pid, channelID, msg.id)
