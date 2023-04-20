@@ -63,14 +63,14 @@ describe("Pin and Unpin Test (User Story #7)", () => {
         //send a messege in the Jest test GC
         await  sendGC(pid,channel,msgID,user,text)
         //Fetch the Msg in the GC
-        const queryData = query(doc(db, "GCs", pid,"textChannels", channel, "messages", msgID));
+        const queryData = query(doc(db, "Projects", pid,"TextChannels", channel, "messages", msgID));
         const msg= await getDoc(queryData);
         //Check if pinned is false 
         expect(msg.data().pinned).toBe(false);
     }, 10000);
     test("User can pin a msg in GC", async () => {
         //Fetch the Msg in the GC
-        const queryData = query(doc(db, "GCs", pid,"textChannels", channel, "messages", msgID));
+        const queryData = query(doc(db, "Projects", pid,"TextChannels", channel, "messages", msgID));
         //Pin the Msg
         await pinGC(pid,channel,msgID, user.userID, user.name)
         const result= await getDoc(queryData);
@@ -86,7 +86,7 @@ describe("Pin and Unpin Test (User Story #7)", () => {
 
         // Unpin the msg
         await unpinGC(pid,channel,msgID)
-        const queryData = query(doc(db, "GCs", pid,"textChannels", channel, "messages", msgIDU));
+        const queryData = query(doc(db, "Projects", pid,"TextChannels", channel, "messages", msgIDU));
         const msg= await getDoc(queryData);
         // Check the pinned is false
         expect(msg.data().pinned).toBe(false);

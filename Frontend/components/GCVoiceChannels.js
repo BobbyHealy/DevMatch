@@ -24,7 +24,7 @@ useEffect(() => {
 }, [joined]);
 useEffect(() => {
     if(pid){      
-      const unSub = onSnapshot(collection(db, "GCs", pid, "voiceChannels"), (channels) => {
+      const unSub = onSnapshot(collection(db, "Projects", pid, "VoiceChannels"), (channels) => {
         setChannels(channels.docs)
       });
       return () => {

@@ -32,7 +32,7 @@ export default function ProjectDocs({pid}) {
       }, [])
     const fetchDoc  = async () => 
     {
-      const unsub = onSnapshot(collection(db, "projDocs", pid, "docs"), (snap) => {
+      const unsub = onSnapshot(collection(db, "Projects", pid, "Docs"), (snap) => {
         setDocs(snap.docs)
       });
 
