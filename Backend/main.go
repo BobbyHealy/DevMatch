@@ -1409,13 +1409,50 @@ func searchFilter(c *gin.Context) {
 		result = mergeSort(result, isProject)
 	}
 	if time {
-		var resultWTime []string
-		for g := 0; g < len(result); g++ {
-			if getProjectFromID(result[g]).WorkHours == "N/A" {
-				resultWTime = append(resultWTime, result[g])
-			} else if strconv.ParseFloat(getProjectFromID(result[g]).WorkHours, 64) <= strconv.ParseFloat(userTime, 64) {
-				strconv.ParseInt()
+		if isProject {
+			var resultWTime []string
+			for g := 0; g < len(result); g++ {
+				if getProjectFromID(result[g]).WorkHours == "" || userTime == "" {
+					resultWTime = append(resultWTime, result[g])
+				} else {
+					a, err1 := strconv.Atoi(getProjectFromID(result[g]).WorkHours)
+					if err1 != nil {
+						fmt.Println("bad conversion")
+						return
+					}
+					b, err2 := strconv.Atoi(userTime)
+					if err2 != nil {
+						fmt.Println("bad conversion")
+						return
+					}
+					if a <= b {
+						resultWTime = append(resultWTime, result[g])
+					}
+				}
 			}
+			result = resultWTime
+		} else {
+			var resultWTime []string
+			for g := 0; g < len(result); g++ {
+				if getUserFromID(result[g]).WorkHours == "N/A" || userTime == "N/A" {
+					resultWTime = append(resultWTime, result[g])
+				} else {
+					a, err1 := strconv.Atoi(getUserFromID(result[g]).WorkHours)
+					if err1 != nil {
+						fmt.Println("bad conversion")
+						return
+					}
+					b, err2 := strconv.Atoi(userTime)
+					if err2 != nil {
+						fmt.Println("bad conversion")
+						return
+					}
+					if a <= b {
+						resultWTime = append(resultWTime, result[g])
+					}
+				}
+			}
+			result = resultWTime
 		}
 	}
 	if isProject {
