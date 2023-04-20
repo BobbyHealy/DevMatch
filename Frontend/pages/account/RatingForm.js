@@ -1,18 +1,62 @@
 import { PhotoIcon, UserCircleIcon, StarIcon } from '@heroicons/react/24/solid'
 import Header from '@/components/header'
 import { useState } from 'react';
+import { useAuth } from "@/context/AuthContext";
 
 
-export default function Example() {
+export default function Example(props) {
     const [techSkill, settechValue] = useState(0);
     const [commSkill, setcommValue] = useState(0);
     const [leadSkill, setleadValue] = useState(0);
 	const [isSubmit, setIsSubmit] = useState(false);
+    const { userInfo } = useAuth();
+
+
+    /*
+     *  I tried some of the below things to get the uid2, but they dont work
+     *
+     */
+    
+    //const urlParams = new URLSearchParams(window.location.search);
+    //const greetingValue = urlParams.get('greeting');
+    //const uid2 = localStorage.getItem('uid2');
 
 	const handleSubmit = () => {
-		if (techSkill) {
-			setIsSubmit(true);
-		}
+        console.log(techSkill);
+        console.log(commSkill);
+        console.log(leadSkill);
+        console.log(userInfo)
+        console.log(props)
+		//if (techSkill) {
+		//	setIsSubmit(true);
+		//}
+
+        
+    
+        /*var myHeaders = new Headers();
+
+        myHeaders.append("Content-Type", "application/json");
+        var raw = JSON.stringify({
+            uid1: userInfo.userID,
+            uid2: greetingValue,
+            rating: rating
+        });
+        var requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: raw,
+        };
+
+        fetch("http://localhost:3000/api/rateUser", requestOptions)
+            .then((response) => response.text())
+            .then((result) => console.log(result))
+            .catch((err) => {
+                console.log(err);
+            });
+
+        //Router.push("./");
+
+        //refreshPage()*/
 	};
 
   return (
@@ -131,7 +175,7 @@ export default function Example() {
 			>
 				Submit
 			</button>
-        </div>
-    </form>
+      </div>  
+    </form> 
   )
 }
