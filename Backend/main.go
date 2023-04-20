@@ -32,7 +32,7 @@ type user struct {
 	PendingInvites []string           `json:"pending"` //will hold pid of pending invitations
 	WorkHours      string             `json:"workHours"`
 	Ratings        map[string]float64 `json:"ratings"` //map of uid: givenRating
-	Reports        []string			  `json:"reports"`
+	Reports        []string           `json:"reports"`
 	PastUsers      []string           `json:"pastUsers"`
 }
 
@@ -377,12 +377,10 @@ func getUserFromID(uid string) user {
 	return v
 }
 
-
 /*
  *	API to post report to specified user
  *
  */
-
 
 func postReport(c *gin.Context) {
 	uid, exists := c.GetQuery("uid")
@@ -403,7 +401,6 @@ func postReport(c *gin.Context) {
 	}
 
 	var u user = getUserFromID(uid) //user to post report to
-
 
 	u.Reports = append(u.Reports, report)
 
@@ -899,6 +896,7 @@ func userToProject(c *gin.Context) {
 
 	v.ProjectJoined = append(v.ProjectJoined, pid)
 	proj.MembersID = append(proj.MembersID, uid)
+	proj.CurrentNum = proj.CurrentNum + 1
 	if owner == "true" {
 		v.ProjectOwned = append(v.ProjectOwned, pid)
 		proj.OwnersID = append(proj.OwnersID, uid)
@@ -1118,6 +1116,7 @@ func removeUserFromProj(pid string, uid string) {
 	}
 	proj.MembersID = mems2
 	proj.OwnersID = owns2
+	proj.CurrentNum = proj.CurrentNum - 1
 	updateProjectHelp(proj)
 
 }
