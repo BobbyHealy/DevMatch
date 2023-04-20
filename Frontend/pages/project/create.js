@@ -1,6 +1,7 @@
 import Header from "@/components/header";
 import SkillList from "@/components/SkillList";
 import { useAuth } from "@/context/AuthContext";
+import { Timestamp } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import Head from "next/head";
 import Router from "next/router";
@@ -72,6 +73,7 @@ export default function Create() {
 
   const handleSumbit = async (e) => {
     e.preventDefault();
+    const timeStamp = Timestamp.now().toMillis()
     const projectID = uuidv4();
     createProject(projectID);
     if (!icon && !banner) {
@@ -86,7 +88,7 @@ export default function Create() {
         type: selectedType.name,
         maxNum: Number(maxNum) ? (Number(maxNum) > 2 ? Number(maxNum) : 2) : 2,
         workHours: hours,
-        timeStamp: Date().toLocaleString('en-us'),
+        timeStamp
       });
       // console.log(raw);
 
@@ -158,7 +160,7 @@ export default function Create() {
                 : 2
               : 2,
             workHours: hours,
-            timeStamp: Date().toLocaleString('en-us'),
+            timeStamp
           });
 
           var myHeaders = new Headers();
@@ -232,7 +234,7 @@ export default function Create() {
                 : 2
               : 2,
             workHours: hours,
-            timeStamp: Date().toLocaleString('en-us'),
+            timeStamp
           });
 
           var myHeaders = new Headers();
@@ -308,7 +310,7 @@ export default function Create() {
                     : 2
                   : 2,
                 workHours: hours,
-                timeStamp: Date().toLocaleString('en-us'),
+                timeStamp
               });
 
               var myHeaders = new Headers();
