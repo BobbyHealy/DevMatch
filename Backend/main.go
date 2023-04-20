@@ -1389,8 +1389,8 @@ func getIDS(isProject bool) []string {
 	keys := make([]string, 0, len(v))
 	if isProject {
 		for k := range v {
-			var cur int = len(getProjectFromID(k).MembersID)
-			var max int = (getProjectFromID(k).MaxNum)
+			var cur int = getProjectFromID(k).CurrentNum
+			var max int = getProjectFromID(k).MaxNum
 			//fmt.Println(cur)
 			//fmt.Println(max)
 			if cur < max {
