@@ -184,21 +184,8 @@ export default function Overview({ pid, projectD }) {
         pid: pid,
         name: name,
         skills: skillsArr,
-        tmembers:
-          projectD.tmembers !== undefined ? projectD.tmembers : undefined,
-        owners: projectD.owners !== undefined ? projectD.owners : undefined,
-        projectProfile:
-          projectD.projectProfile !== undefined
-            ? projectD.projectProfile
-            : undefined,
-        projectBannerPic:
-          projectD.projectBannerPic !== undefined
-            ? projectD.projectBannerPic
-            : undefined,
         projectDes: des !== undefined ? des : projectD.projectDes,
-        type: projectD.type !== undefined ? projectD.type : undefined,
         maxNum: Number(maxNum)?Number(maxNum)>=2?Number(maxNum):projectD.maxNum:projectD.maxNum,
-        CurrentNum: projectD.CurrentNum
       });
 
       var myHeaders = new Headers();
@@ -210,7 +197,7 @@ export default function Overview({ pid, projectD }) {
         body: raw,
       };
 
-      fetch("http://localhost:3000/api/addProject", requestOptions)
+      fetch("http://localhost:3000/api/updateProject", requestOptions)
         .then((response) => response.text())
         .then((result) => {
           refreshPage();
@@ -226,18 +213,10 @@ export default function Overview({ pid, projectD }) {
             pid: pid,
             name: name,
             skills: skillsArr,
-            tmembers:
-              projectD.tmembers !== undefined ? projectD.tmembers : undefined,
-            owners: projectD.owners !== undefined ? projectD.owners : undefined,
             projectProfile: url,
-            projectBannerPic:
-              projectD.projectBannerPic !== undefined
-                ? projectD.projectBannerPic
-                : undefined,
             projectDes: des !== undefined ? des : projectD.projectDes,
-            type: projectD.type !== undefined ? projectD.type : undefined,
             maxNum: Number(maxNum)?Number(maxNum)>=2?Number(maxNum):projectD.maxNum:projectD.maxNum,
-            CurrentNum: projectD.CurrentNum
+
           });
 
           var myHeaders = new Headers();
@@ -249,7 +228,7 @@ export default function Overview({ pid, projectD }) {
             body: raw,
           };
 
-          fetch("http://localhost:3000/api/addProject", requestOptions)
+          fetch("http://localhost:3000/api/updateProject", requestOptions)
             .then((response) => response.text())
             .then((result) => {
               refreshPage();
@@ -267,18 +246,9 @@ export default function Overview({ pid, projectD }) {
             pid: pid,
             name: name,
             skills: skillsArr,
-            tmembers:
-              projectD.tmembers !== undefined ? projectD.tmembers : undefined,
-            owners: projectD.owners !== undefined ? projectD.owners : undefined,
-            projectProfile:
-              projectD.projectProfile !== undefined
-                ? projectD.projectProfile
-                : undefined,
             projectBannerPic: url,
             projectDes: des !== undefined ? des : projectD.projectDes,
-            type: projectD.type !== undefined ? projectD.type : undefined,
             maxNum: Number(maxNum)?Number(maxNum)>=2?Number(maxNum):projectD.maxNum:projectD.maxNum,
-            CurrentNum: projectD.CurrentNum
           });
 
           var myHeaders = new Headers();
@@ -290,7 +260,7 @@ export default function Overview({ pid, projectD }) {
             body: raw,
           };
 
-          fetch("http://localhost:3000/api/addProject", requestOptions)
+          fetch("http://localhost:3000/api/updateProject", requestOptions)
             .then((response) => response.text())
             .then((result) => {
               refreshPage();
@@ -311,18 +281,10 @@ export default function Overview({ pid, projectD }) {
                 pid: pid,
                 name: name,
                 skills: skillsArr,
-                tmembers:
-                  projectD.tmembers !== undefined
-                    ? projectD.tmembers
-                    : undefined,
-                owners:
-                  projectD.owners !== undefined ? projectD.owners : undefined,
                 projectProfile: url1,
                 projectBannerPic: url2,
                 projectDes: des !== undefined ? des : projectD.projectDes,
-                type: projectD.type !== undefined ? projectD.type : undefined,
                 maxNum: Number(maxNum)?Number(maxNum)>=2?Number(maxNum):projectD.maxNum:projectD.maxNum,
-                CurrentNum: projectD.CurrentNum
               });
 
               var myHeaders = new Headers();
@@ -334,7 +296,7 @@ export default function Overview({ pid, projectD }) {
                 body: raw,
               };
 
-              fetch("http://localhost:3000/api/addProject", requestOptions)
+              fetch("http://localhost:3000/api/updateProject", requestOptions)
                 .then((response) => response.text())
                 .then((result) => {
                   refreshPage();
