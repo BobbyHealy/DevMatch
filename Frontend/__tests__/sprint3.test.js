@@ -182,7 +182,7 @@ describe("Pin and Unpin Test (User Story #7)", () => {
     }, 10000);
 
     test("User can delete voice channel", async () => {
-        await deleteChannel(pid21,channelVID)
+        await deleteChannel(pid,channelVID)
         const queryData = query(doc(db, "Projects", pid,"VoiceChannels", channelVID));
         const vChannel= await getDoc(queryData);
         // channel is deleted
