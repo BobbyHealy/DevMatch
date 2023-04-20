@@ -73,15 +73,16 @@ type Task struct {
  * returned
  */
 type searchType struct {
-	Project bool     `json:"project"`
-	Limit   int      `json:"limit"`
-	Ignore  []string `json:"ignore"`
-	Skills  []string `json:"skills"`
-	Name    string   `json:"name"`
-	Rating  bool     `json:"rating"`
-	Recent  bool     `json:"recent"`
-	Time    bool     `json:"time"`
-	Type    bool     `json:"type"`
+	Project  bool     `json:"project"`
+	Limit    int      `json:"limit"`
+	Ignore   []string `json:"ignore"`
+	Skills   []string `json:"skills"`
+	Name     string   `json:"name"`
+	Rating   bool     `json:"rating"` //done
+	Recent   bool     `json:"recent"` //???
+	Time     bool     `json:"time"`
+	UserTime string   `json:"userTime"`
+	Type     bool     `json:"type"`
 }
 
 type resume struct {
@@ -1380,6 +1381,8 @@ func searchFilter(c *gin.Context) {
 	ignore := thisSearch.Ignore
 	name := thisSearch.Name
 	rating := thisSearch.Rating
+	time := thisSearch.Time
+	userTime := thisSearch.UserTime
 
 	var ids []string = getIDS(isProject)
 	if name != "" {
@@ -1404,6 +1407,16 @@ func searchFilter(c *gin.Context) {
 	}
 	if rating {
 		result = mergeSort(result, isProject)
+	}
+	if time {
+		var resultWTime []string
+		for g := 0; g < len(result); g++ {
+			if getProjectFromID(result[g]).WorkHours == "N/A" {
+				resultWTime = append(resultWTime, result[g])
+			} else if strconv.ParseFloat(getProjectFromID(result[g]).WorkHours, 64) <= strconv.ParseFloat(userTime, 64) {
+				strconv.ParseInt()
+			}
+		}
 	}
 	if isProject {
 		var resultAndInfo []project
