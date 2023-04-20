@@ -73,16 +73,15 @@ type Task struct {
  * returned
  */
 type searchType struct {
-	Project  bool     `json:"project"`
-	Limit    int      `json:"limit"`
-	Ignore   []string `json:"ignore"`
-	Skills   []string `json:"skills"`
-	Name     string   `json:"name"`
-	Rating   bool     `json:"rating"`
-	Recent   bool     `json:"recent"`
-	Relevant bool     `json:"relevant"`
-	Time     bool     `json:"time"`
-	Type     bool     `json:"type"`
+	Project bool     `json:"project"`
+	Limit   int      `json:"limit"`
+	Ignore  []string `json:"ignore"`
+	Skills  []string `json:"skills"`
+	Name    string   `json:"name"`
+	Rating  bool     `json:"rating"`
+	Recent  bool     `json:"recent"`
+	Time    bool     `json:"time"`
+	Type    bool     `json:"type"`
 }
 
 type resume struct {
@@ -1380,6 +1379,7 @@ func searchFilter(c *gin.Context) {
 	skills := thisSearch.Skills
 	ignore := thisSearch.Ignore
 	name := thisSearch.Name
+	rating := thisSearch.Rating
 
 	var ids []string = getIDS(isProject)
 	if name != "" {
@@ -1401,6 +1401,9 @@ func searchFilter(c *gin.Context) {
 			break
 		}
 		result = append(result, ids[i])
+	}
+	if rating {
+		result = mergeSort(result, isProject)
 	}
 	if isProject {
 		var resultAndInfo []project
@@ -1748,6 +1751,85 @@ func getPastUsers(c *gin.Context) {
 	}
 	var pastUsers []string = (getUserFromID(uid)).PastUsers
 	c.IndentedJSON(http.StatusOK, []interface{}{pastUsers})
+
+}
+
+func merge(fp []string, sp []string, isProject bool) []string {
+	var n = make([]string, len(fp)+len(sp))
+
+	var fpIndex = 0
+	var spIndex = 0
+
+	var nIndex = 0
+
+	if isProject {
+		for fpIndex < len(fp) && spIndex < len(sp) {
+			if getUserFromID(getProjectFromID(fp[fpIndex]).OwnersID[0]).Rating > getUserFromID(getProjectFromID(sp[spIndex]).OwnersID[0]).Rating {
+				n[nIndex] = fp[fpIndex]
+				fpIndex++
+			} else if getUserFromID(getProjectFromID(sp[spIndex]).OwnersID[0]).Rating > getUserFromID(getProjectFromID(fp[fpIndex]).OwnersID[0]).Rating {
+				n[nIndex] = sp[spIndex]
+				spIndex++
+			}
+
+			nIndex++
+		}
+
+		for fpIndex < len(fp) {
+			n[nIndex] = fp[fpIndex]
+
+			fpIndex++
+			nIndex++
+		}
+
+		for spIndex < len(sp) {
+			n[nIndex] = sp[spIndex]
+
+			spIndex++
+			nIndex++
+		}
+
+		return n
+	}
+
+	for fpIndex < len(fp) && spIndex < len(sp) {
+		if getUserFromID(fp[fpIndex]).Rating > getUserFromID(sp[spIndex]).Rating {
+			n[nIndex] = fp[fpIndex]
+			fpIndex++
+		} else if getUserFromID(sp[spIndex]).Rating > getUserFromID(fp[fpIndex]).Rating {
+			n[nIndex] = sp[spIndex]
+			spIndex++
+		}
+
+		nIndex++
+	}
+
+	for fpIndex < len(fp) {
+		n[nIndex] = fp[fpIndex]
+
+		fpIndex++
+		nIndex++
+	}
+
+	for spIndex < len(sp) {
+		n[nIndex] = sp[spIndex]
+
+		spIndex++
+		nIndex++
+	}
+
+	return n
+}
+
+func mergeSort(arr []string, isProject bool) []string {
+	if len(arr) == 1 {
+		return arr
+	}
+
+	var fp = mergeSort(arr[0:len(arr)/2], isProject)
+	var sp = mergeSort(arr[len(arr)/2:], isProject)
+
+	return merge(fp, sp, isProject)
 
 }
 
