@@ -11,7 +11,10 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import DeactivateModal from "./DeactivateModal";
 import { useState, useEffect } from "react";
-import { ExclamationTriangleIcon, ChevronUpDownIcon } from "@heroicons/react/24/outline";
+import {
+  ExclamationTriangleIcon,
+  ChevronUpDownIcon,
+} from "@heroicons/react/24/outline";
 
 import Router from "next/router";
 import {
@@ -27,6 +30,7 @@ import { db } from "@/config/firebase";
 import { v4 as uuid } from "uuid";
 import { handleRoleChange } from "@/functions/roleFunctions";
 import ProjComponent from "./ProjectComponent";
+import PastProjectModal from "./PastProjectsModal";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -56,13 +60,14 @@ export default function UserComponent(props) {
     role = false,
     pid = null,
   } = props;
+
   const { userInfo } = useAuth();
+
   const combinedId =
     userInfo.userID > user.userID
       ? userInfo.userID + "-" + user.userID
       : user.userID + "-" + userInfo.userID;
 
-  const inviteMessage = `Come join the project! here is the link: http://localhost:3000/project?pid=${inviteProjectID}`;
   const handleSelect = async () => {
     //check whether the group(chats in firestore) exists, if not create
     try {
@@ -197,13 +202,13 @@ export default function UserComponent(props) {
         </div>
         <div className='min-w-0 flex-1'>
           <p className='text-sm font-semibold text-gray-900'>
-          <a
-                href='#'
-                className='hover:underline'
-                onClick={() => setShowPast(true)}
-              >
-                {user.name}
-              </a>
+            <a
+              href='#'
+              className='hover:underline'
+              onClick={() => setShowPast(true)}
+            >
+              {user.name}
+            </a>
           </p>
           {!role ? (
             <div>
@@ -460,21 +465,21 @@ export default function UserComponent(props) {
         </div>
       </DeactivateModal>
 
-      <DeactivateModal
-        isVisible={showPast}
-        onClose={() => setShowPast(false)}
-      >
+      {/* <DeactivateModal isVisible={showPast} onClose={() => setShowPast(false)}>
         <div>
-          <p className="font-bold">User's past projects:</p>
+          <p className='font-bold'>User's past projects:</p>
           <div>
-            <label htmlFor="past" className="block text-sm font-medium leading-6 text-gray-900">
+            <label
+              htmlFor='past'
+              className='block text-sm font-medium leading-6 text-gray-900'
+            >
               Select for more details
             </label>
             <select
-              id="past"
-              name="past"
-              className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
-              defaultValue="Test Project"
+              id='past'
+              name='past'
+              className='mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6'
+              defaultValue='Test Project'
             >
               <option>Test Project 1</option>
               <option>Test Project 2</option>
@@ -482,7 +487,12 @@ export default function UserComponent(props) {
             </select>
           </div>
         </div>
-      </DeactivateModal>
+      </DeactivateModal> */}
+      <PastProjectModal
+        showPast={showPast}
+        setShowPast={setShowPast}
+        uid={user.userID}
+      />
     </div>
   );
 }
