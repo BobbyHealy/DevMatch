@@ -9,9 +9,11 @@ export default function Invites(props) {
   const [projects, setProjects] = useState([]);
 
   useEffect(() => {
+    console.log("Hey");
     setIsLoaded(true);
+    console.log(userInfo.pending);
     setInvites(userInfo.pending != null ? userInfo.pending : []);
-  }, []);
+  }, [userInfo]);
 
   const getProject = async (pid) => {
     var myHeaders = new Headers();
@@ -51,7 +53,7 @@ export default function Invites(props) {
     return await new Promise((resolve, reject) => {
       fetch("http://localhost:3000/api/acceptInvite", requestOptions)
         .then((response) => response.text())
-        .then((result) => resolve(JSON.parse(result)))
+        .then((result) => window.location.reload(false))
         .catch((err) => {
           reject(err);
         });
@@ -74,7 +76,7 @@ export default function Invites(props) {
     return await new Promise((resolve, reject) => {
       fetch("http://localhost:3000/api/declineInvite", requestOptions)
         .then((response) => response.text())
-        .then((result) => resolve(JSON.parse(result)))
+        .then((result) => window.location.reload(false))
         .catch((err) => {
           reject(err);
         });
@@ -96,6 +98,7 @@ export default function Invites(props) {
           <h2 className='text-5xl'>Invites</h2>
           {isLoaded &&
             projects.map((proj) => {
+              console.log("Hello");
               console.log(proj);
               return (
                 <div key={proj}>
