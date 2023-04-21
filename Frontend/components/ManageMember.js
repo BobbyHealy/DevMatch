@@ -83,8 +83,8 @@ export default function ManageMember({ pid, project }) {
                 <UserComponent user={e}  role={true} pid={project.pid}/>
               </div>
             )
-
-        ))}
+          );
+        })}
 
       <div className="py-1">
         <h1 className="">Reported Users: </h1>
