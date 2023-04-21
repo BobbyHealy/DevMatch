@@ -1512,7 +1512,7 @@ func searchFilter(c *gin.Context) {
 		} else {
 			var resultWTime []string
 			for g := 0; g < len(result); g++ {
-				if getUserFromID(result[g]).WorkHours == "N/A" || userTime == "N/A" {
+				if getUserFromID(result[g]).WorkHours == "N/A" || userTime == "" {
 					resultWTime = append(resultWTime, result[g])
 				} else {
 					a, err1 := strconv.Atoi(getUserFromID(result[g]).WorkHours)
