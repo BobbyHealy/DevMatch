@@ -133,7 +133,7 @@ export default function Feed() {
     <div className='min-h-screen bg-gray-100'>
       <div className='sticky top-0 z-30'>
         <Header updateSeachName={updateSeachName} />
-        <ProjectPreference/>
+        <ProjectPreference enabled ={enabled} setEnabled={setEnabled}/>
       </div>
 
       {user && (
@@ -145,7 +145,7 @@ export default function Feed() {
                 className='sticky top-6 divide-y divide-gray-300'
               >
                 {/* Left */}
-                Looking for Users?
+                {/* Looking for Users?
                 <Switch
                   checked={enabled}
                   onChange={setEnabled}
@@ -162,7 +162,7 @@ export default function Feed() {
                       "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
                     )}
                   />
-                </Switch>
+                </Switch> */}
               </nav>
               <fieldset>
                 <legend className='text-base font-semibold leading-6 text-gray-900'>

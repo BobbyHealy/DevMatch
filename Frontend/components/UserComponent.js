@@ -50,7 +50,6 @@ export default function UserComponent(props) {
   const {
     user = default_user,
     inviteProjectID = null,
-    removeID = null,
     role = false,
     pid = null,
   } = props;
@@ -275,7 +274,8 @@ export default function UserComponent(props) {
         </div>
 
         <div className='flex flex-shrink-0  space-x-3 self-center'>
-          {role ? (
+      
+          {role&&user.role!=="owner" ? (
             <div className='space-x-3'>
               <button
                 onClick={() => setManageModal(true)}
@@ -478,7 +478,7 @@ export default function UserComponent(props) {
             type='submit'
             className='inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto'
             onClick={() =>
-              handleRoleChange(user.role, selectedRole, user.userID, removeID)
+              handleRoleChange(user.role, selectedRole, user.userID, pid)
             }
           >
             Save

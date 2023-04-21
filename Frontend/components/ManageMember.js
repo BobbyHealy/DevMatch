@@ -80,15 +80,24 @@ export default function ManageMember({ pid, project }) {
           return (
             e.userID !== user.uid && (
               <div key={e.toString() + i} className='pb-6'>
-                <UserComponent user={e} removeID={project.pid} role={true} />
+                <UserComponent user={e}  role={true} pid={project.pid}/>
               </div>
             )
           );
         })}
-      <div className='py-6'>
-        <h1 className=''>Reported Users</h1>
-        <ReportDetail name={user.name} />
+
+      <div className="py-1">
+        <h1 className="">Reported Users: </h1>
       </div>
+
+      {members &&
+        members.map((u,i) => (
+            u.userID !== user.uid && u.reports !== null &&(
+              <div className="py-1">
+                <ReportDetail name={u}/>
+              </div>
+            )
+        ))}
     </div>
   );
 }

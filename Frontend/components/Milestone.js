@@ -10,7 +10,7 @@ import { addMS, sendToApprove, approveRequest, denyRequest, deleteMS } from "@/f
 import { onSnapshot, collection } from "firebase/firestore";
 import { db } from "@/config/firebase";
 import { 
-    EllipsisVerticalIcon, 
+    EllipsisVerticalIcon, CheckIcon, 
   } from '@heroicons/react/20/solid'
 import RequestedMS from "./RequestedMS";
 
@@ -41,6 +41,7 @@ function refreshPage() {
 
 export default function Milestone({pid, project}) {
   const [showModal, setShowModal] = useState(false);
+  const [showApproval, setApprovalModal] = useState(false);
   const{ user }= useAuth();
   const [assigned, setAssigned] = useState(defaultAssignees[0])
   const [labelled, setLabelled] = useState(labels[0])
@@ -57,10 +58,10 @@ export default function Milestone({pid, project}) {
   const handleShow= ()=>{
     setOpen(true)
   }
-  useEffect(() => {
-    fetchMS()
+    useEffect(() => {
+        fetchMS()
 
-}, []);
+    },[]);
 
 
 
@@ -166,10 +167,10 @@ useEffect(() => {
   return (
     <div>
 
-        <div className="px-4 sm:px-6 py-6 lg:px-8 h-[calc(50vh)]">
+        <div className="px-4 sm:px-6 py-6 lg:px-8 h-[calc(50vh)] overflow-y-scroll">
             <div className="sm:flex sm:items-center">
                 <div className="sm:flex-auto">
-                <h1 className="text-base font-semibold leading-6 text-gray-900">Milestones</h1>
+                <h1 className="text-base font-bold leading-6 text-gray-900">Ongoing milestones:</h1>
                 </div>
                 <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
                 {project.owners?.includes(user.uid)&&<button
@@ -279,7 +280,7 @@ useEffect(() => {
                             type="button"
                             className="inline-flex items-center rounded bg-white px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white"
                         >
-                            Mark all as complete
+                            {project.owners?.includes(user.uid)?"Mark all as complete":"Send Complete Request"}
                         </button>
                         </div>
                     )}
@@ -359,49 +360,33 @@ useEffect(() => {
                 </div>
             </div>
         </div>
-        <div className="h-[calc(50vh)] bg-gray-300 px-4">
-        <h1 className="text-base font-semibold leading-6 text-gray-900">Completed Milestones</h1>
-                    <table className="min-w-full table-fixed divide-y divide-gray-300 ">
-                        <thead>
-                        <tr>
-                            <th ref={checkbox} className="hidden">
-            
-                            </th>
-                            <th scope="col" className="min-w-[12rem] py-3.5 pr-3 text-left text-sm font-semibold text-gray-900">
-                            Title
-                            </th>
-                            <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                            Assingned to
-                            </th>
-                            <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                            Labels
-                            </th>
 
-                        </tr>
-                        </thead>
-                   
-                    <tbody className="divide-y divide-gray-200 bg-gray-400">
+        
+        <div className="px-4 h-[calc(50vh)] overflow-y-scroll bg-gray-200">
+            <p className="font-bold py-6 px-2">Completed milestones:</p>
+                <table className="min-w-full table-fixed divide-y divide-gray-300">
+                <tbody className="px-4 divide-y divide-gray-200 bg-gray-300">
                         {milestones?.map((milestone) => (
-                            milestone.data().complete&&<tr key={milestone.data().dueDate} className={selectedMilestones?.includes(milestone) ? 'bg-gray-50' : undefined}>
+                            milestone.data().complete&&<tr key={milestone.data().dueDate} className={selectedMilestones?.includes(milestone) ? 'bg-gray-50 px-4' : undefined}>
                            
                             <td
                                 className={classNames(
-                                'whitespace-nowrap py-4 pr-3 text-sm font-medium',
+                                'whitespace-nowrap py-4 pl-3 text-sm font-medium',
                                 selectedMilestones?.includes(milestone) ? 'text-indigo-600' : 'text-gray-900'
                                 )}
                             >
                                 {milestone.data().title}
                             </td>
-                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{milestone.data().assignee}</td>
-                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{milestone.data().label}</td>
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">Done by {milestone.data().assignee}</td>
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{milestone.data().label} Task</td>
 
           
                             </tr>
                         ))}
                         </tbody>
-                        
-                        </table>
-                        </div>
+                    </table>
+            </div>
+        
         <MilestoneModal isVisible={showModal} onClose={() => setShowModal(false)}>
             <div>
               <form className="relative">
@@ -623,6 +608,42 @@ useEffect(() => {
                     </div>
                 </div>
                 </form>
+            </div>
+        </MilestoneModal>
+
+        <MilestoneModal isVisible={showApproval} onClose={() => setApprovalModal(false)}>
+            <div className='sm:flex sm:items-start'>
+            <div className='mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left'>
+                <h3 className='text-base font-semibold leading-6 text-gray-900'>
+                Approve milestone
+                </h3>
+                <div className='mt-2'>
+                <p className='text-sm text-gray-500'>
+                    Would you like to approve this pending milestone?
+                </p>
+                </div>
+              </div>
+            </div>
+
+            <div className='mt-5 space-x-3 px-3 sm:mt-4 sm:flex sm:flex-row-reverse'>
+                <div className="px-2">
+                    <button
+                    type='button'
+                    className='inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto'
+                >
+                    Yes
+                </button>
+                </div>
+                <div className="px-2">
+                    <button
+                    type='button'
+                    className='mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto'
+                    onClick={() => setApprovalModal(false)}
+                >
+                    Cancel
+                </button>
+                </div>
+                
             </div>
         </MilestoneModal>
     </div>

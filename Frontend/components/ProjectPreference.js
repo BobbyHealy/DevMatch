@@ -57,13 +57,11 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function ProjectPreference(props) {
+export default function ProjectPreference({project, enabled, setEnabled}) {
 
   const [open, setOpen] = useState(false)
-  const [enabled, setEnabled] = useState(false)
-  const {
-    project = null
-  } = props;
+  // const [enabled, setEnabled] = useState(false)
+
 
   return (
     <div className="bg-gray-50 w-full">
