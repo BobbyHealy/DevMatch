@@ -1,6 +1,6 @@
 import { Fragment, useState, useEffect } from "react";
 import { Menu, Transition } from "@headlessui/react";
-import { EnvelopeIcon } from "@heroicons/react/20/solid";
+import { EnvelopeIcon, EyeIcon } from "@heroicons/react/20/solid";
 import { UserGroupIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "@/context/AuthContext";
 import ProjectModal from "./ProjectModal";
@@ -36,6 +36,7 @@ export default function ProjComponent(props) {
   const [members, setMembers] = useState([]);
   const [otherMembers, setOtherMembers] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showHideModal, setHideModal] = useState(false);
 
   function refreshPage() {
     window.location.reload(false);
@@ -271,8 +272,49 @@ export default function ProjComponent(props) {
               <EnvelopeIcon className='ml-2 -mr-1 h-5 w-5' aria-hidden='true' />
             </button>
           </div>
+          <div className='flex flex-shrink-0 self-center'>
+            <button
+              type='button'
+              className='inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
+              onClick={() => setHideModal(true)}
+            >
+              <EyeIcon className='ml-1 -mr-1 h-5 w-5' aria-hidden='true' />
+            </button>
+          </div>
         </div>
       </div>
+
+      <ProjectModal isVisible={showHideModal} onClose={() => setHideModal(false)}>
+      <div className='sm:flex sm:items-start'>
+          <div className='mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left'>
+            <h3 className='text-base font-semibold leading-6 text-gray-900'>
+              Hide project
+            </h3>
+            <div className='mt-2'>
+              <p className='text-sm text-gray-500'>
+                Hide this project from your feed?
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className='mt-5 sm:mt-4 sm:flex sm:flex-row-reverse'>
+          <button
+            type='submit'
+            className='inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto'
+          >
+            Hide
+          </button>
+          <button
+            type='button'
+            className='mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto'
+            onClick={() => setHideModal(false)}
+          >
+            Cancel
+          </button>
+        </div>
+      </ProjectModal>
+
       <ProjectModal isVisible={showModal} onClose={() => setShowModal(false)}>
         <div className='overflow-hidden bg-white shadow sm:rounded-lg'>
           <h1>
