@@ -11,33 +11,15 @@ export default function ManageMember({ pid, project }) {
   const { user } = useAuth();
 
   useEffect(() => {
+    if (user.uid) {
+      switchProjPage(user.uid, "#Manage")
+    }
+  }, []);
+
+  useEffect(() => {
     if (!load && project.owners) {
       setload(true);
-      var owners = [];
       var members = [];
-      project.owners.map((owner) => {
-        var myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
-        var raw = JSON.stringify({
-          userID: owner,
-        });
-        var requestOptions = {
-          method: "POST",
-          headers: myHeaders,
-          body: raw,
-        };
-        fetch("http://localhost:3000/api/getUser", requestOptions)
-          .then((response) => response.text())
-          .then((result) => {
-            owners.push(JSON.parse(result).name);
-            if (project.owners.length === owners.length) {
-              setOwners(owners);
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      });
       project.tmembers.map((mem) => {
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");

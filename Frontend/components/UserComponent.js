@@ -42,6 +42,7 @@ const default_user = {
 
 export default function UserComponent(props) {
   const [showModal, setShowModal] = useState(false);
+  const [confirmation, setConfirmation] = useState("");
   const [showReportModal, setReportModal] = useState(false);
   const [showManage, setManageModal] = useState(false);
   const [selectedRole, setSelectedRole] = useState("");
@@ -51,6 +52,7 @@ export default function UserComponent(props) {
     inviteProjectID = null,
     removeID = null,
     role = false,
+    pid = null,
   } = props;
   const { userInfo } = useAuth();
   const combinedId =
@@ -163,11 +165,26 @@ export default function UserComponent(props) {
   };
 
   const handleRemove = async () => {
-    //Unfinished
-    try {
-    } catch (err) {
-      console.log("THERE WAS AN ERROR " + err);
-    }
+    setShowModal(false)
+
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+      var raw = JSON.stringify({
+        pid,
+        uid: user.userID,
+      });
+      var requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+      };
+  
+      fetch("http://localhost:3000/api/leaveProject", requestOptions)
+        .then((response) => response.text())
+        .then((result) => console.log(result))
+        .catch((err) => {
+          console.log(err);
+        });
   };
 
   const handleReport = () => {
@@ -258,7 +275,7 @@ export default function UserComponent(props) {
         </div>
 
         <div className='flex flex-shrink-0  space-x-3 self-center'>
-          {inviteProjectID === null && removeID === null ? (
+          {inviteProjectID === null && pid === null ? (
             <button
               onClick={handleSelect}
               type='button'
@@ -267,7 +284,7 @@ export default function UserComponent(props) {
               Message
               <EnvelopeIcon className='ml-2 -mr-1 h-5 w-5' aria-hidden='true' />
             </button>
-          ) : removeID === null ? (
+          ) : pid === null ? (
             <button
               onClick={handleInvite}
               type='button'
@@ -338,6 +355,8 @@ export default function UserComponent(props) {
                 <input
                   type='text'
                   name='confirm'
+                  onChange={(e) =>
+                    setConfirmation(e.target.value)}
                   className='block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
                 />
               </div>
@@ -346,11 +365,16 @@ export default function UserComponent(props) {
         </div>
 
         <div className='mt-5 sm:mt-4 sm:flex sm:flex-row-reverse'>
-          <button
-            //disabled={confirmation !== completeUser.name}
-            type='button'
-            className={`inline-flex w-full justify-center rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto`}
-          >
+        <button
+          disabled={confirmation !== user.name}
+          type='button'
+          className={`inline-flex w-full justify-center rounded-md bg-${
+            confirmation !== user.name
+              ? "gray-600"
+              : "indigo-600 hover:bg-indigo-500"
+          } px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto`}
+          onClick={handleRemove}
+        >
             Remove
           </button>
           <button

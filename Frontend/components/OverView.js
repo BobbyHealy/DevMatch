@@ -808,7 +808,7 @@ export default function Overview({ pid, projectD }) {
                               htmlFor='email'
                               className='block text-sm font-medium leading-6 text-gray-900'
                             >
-                              Confirm by writting project name
+                              Confirm by writting "Complete"
                             </label>
                             <div className='mt-2'>
                               <input
@@ -819,7 +819,7 @@ export default function Overview({ pid, projectD }) {
                                   setConfirmation(e.target.value)
                                 }
                                 value={confirmation}
-                                placeholder={name}
+                                placeholder={"Please confirm by typing the key word\"Complete\""}
                               />
                             </div>
                           </div>
@@ -828,10 +828,10 @@ export default function Overview({ pid, projectD }) {
 
                       <div className='mt-5 sm:mt-4 sm:flex sm:flex-row-reverse'>
                         <button
-                          disabled={confirmation !== name}
+                          disabled={confirmation !== "Complete"}
                           type='button'
                           className={`inline-flex w-full justify-center rounded-md bg-${
-                            confirmation !== name
+                            confirmation !== "Complete"
                               ? "gray-600"
                               : "indigo-600 hover:bg-indigo-500"
                           } px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto`}

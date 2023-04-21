@@ -12,7 +12,7 @@ export default function ProjectDashBoard() {
       "https://images.unsplash.com/photo-1444628838545-ac4016a5418a?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80",
   };
   return (
-    <div className='bg-white px-4 py-5 sm:py-6 rounded-lg'>
+    <div className='bg-white px-4 py-5 sm:py-6 rounded-lg overflow-y-scroll'>
       <h2 className='text-xl pb-3 semibold'>Your Projects</h2>
       <Projects />
     </div>
