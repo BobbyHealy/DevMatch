@@ -99,68 +99,29 @@ export default function UserComponent(props) {
     } catch (err) {}
   };
 
-  const handleInvite = async () => {
+  const handleInvite = async (pid, uid) => {
     //check whether the group(chats in firestore) exists, if not create
-    try {
-      const res = await getDoc(doc(db, "chats", combinedId));
+    console.log("Hello");
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    var raw = JSON.stringify({
+      pid: pid,
+      uid: uid,
+    });
+    var requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+    };
 
-      if (!res.exists()) {
-        //create a chat in chats collection
-        await setDoc(doc(db, "chats", combinedId), {});
-
-        await updateDoc(doc(db, "userChats", userInfo.userID), {
-          [combinedId + ".userInfo"]: {
-            uid: user.userID,
-            displayName: user.name,
-            photoURL: user.profilePic,
-          },
-          [combinedId + ".date"]: serverTimestamp(),
+    return await new Promise((resolve, reject) => {
+      fetch("http://localhost:3000/api/sendInvite", requestOptions)
+        .then((response) => response.text())
+        .then((result) => resolve(JSON.parse(result)))
+        .catch((err) => {
+          reject(err);
         });
-
-        await updateDoc(doc(db, "userChats", user.userID), {
-          [combinedId + ".userInfo"]: {
-            uid: userInfo.userID,
-            displayName: userInfo.name,
-            photoURL: userInfo.profilePic,
-          },
-          [combinedId + ".date"]: serverTimestamp(),
-        });
-      }
-      await updateDoc(doc(db, "users", userInfo.userID), {
-        currentChat: {
-          uid: user.userID,
-          displayName: user.name,
-          photoURL: user.profilePic,
-        },
-        currentPage: "DMs",
-      });
-      const msgID = uuid();
-      await updateDoc(doc(db, "chats", combinedId), {
-        messages: arrayUnion({
-          id: msgID,
-          text: inviteMessage,
-          senderId: userInfo.userID,
-          date: Timestamp.now(),
-        }),
-      });
-      await updateDoc(doc(db, "userChats", userInfo.userID), {
-        [combinedId + ".lastMessage"]: {
-          text: inviteMessage,
-        },
-        [combinedId + ".date"]: serverTimestamp(),
-      });
-
-      await updateDoc(doc(db, "userChats", user.userID), {
-        [combinedId + ".lastMessage"]: {
-          text: inviteMessage,
-        },
-        [combinedId + ".date"]: serverTimestamp(),
-      });
-
-      Router.push("/account");
-    } catch (err) {
-      console.log("THERE WAS AN ERROR " + err);
-    }
+    });
   };
 
   const handleRemove = async () => {
@@ -274,8 +235,7 @@ export default function UserComponent(props) {
         </div>
 
         <div className='flex flex-shrink-0  space-x-3 self-center'>
-      
-          {role&&user.role!=="owner" ? (
+          {role && user.role !== "owner" ? (
             <div className='space-x-3'>
               <button
                 onClick={() => setManageModal(true)}
@@ -294,7 +254,7 @@ export default function UserComponent(props) {
             </div>
           ) : inviteProjectID !== null ? (
             <button
-              onClick={handleInvite}
+              onClick={() => handleInvite(inviteProjectID, user.userID)}
               type='button'
               className='inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
             >
