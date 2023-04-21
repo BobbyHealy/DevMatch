@@ -906,6 +906,9 @@ func userToProject(c *gin.Context) {
 	}
 	updateProjectHelp(proj)
 	updateUserHelp(v)
+	for i := 0; i < len(proj.MembersID); i++ {
+		updatePastUsers(proj.MembersID[i], proj.ProjectID)
+	}
 	updatePastUsers(uid, pid)
 
 }
