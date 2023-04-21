@@ -104,20 +104,20 @@ describe("Pin and Unpin Test (User Story #7)", () => {
         const queryData = query(doc(db, "chats", DMID, "messages", msgID ));
         await pinMsg(DMID,msgID,senderID)
         const result= await getDoc(queryData);
-        expect(result.data().pinned).toBe(true);
+        await expect(result.data().pinned).toBe(true);
     }, 100000);
     test("User can unpin a msg in DMs", async () => {
-        await unpinMsg(DMID,msgID)
-        const queryData = query(doc(db, "chats", DMID, "messages", msgID));
-        const msg= await getDoc(queryData);
-        expect(msg.data().pinned).toBe(false);
+        unpinMsg(DMID,msgID).then(async ()=>{ 
+            const queryData = query(doc(db, "chats", DMID, "messages", msgID));
+            const msg= await getDoc(queryData);
+            expect(msg.data().pinned).toBe(false);})
+       
         deleteDoc(doc(db, "userChats",senderID ));
         deleteDoc(doc(db, "userChats", receiverID));
         deleteDM(DMID)
     }, 10000);
     test("Msgs in GC are default as unpin", async () => {
         createProject(pid)
-
         //send a messege in the Jest test GC
         await  sendGC(pid,channel,msgID,user,text)
         //Fetch the Msg in the GC
@@ -133,16 +133,18 @@ describe("Pin and Unpin Test (User Story #7)", () => {
         await pinGC(pid,channel,msgID, user.userID, user.name)
         const result= await getDoc(queryData);
         //Check that pinned is true
-        expect(result.data().pinned).toBe(true);
+        await expect(result.data().pinned).toBe(true);
     }, 10000);
     test("User can unpin a msg in GC", async () => {
 
         // Unpin the msg
-        await unpinGC(pid,channel,msgID)
-        const queryData = query(doc(db, "Projects", pid,"TextChannels", channel, "messages", msgID));
-        const msg= await getDoc(queryData);
-        // Check the pinned is false
-        await expect(msg.data().pinned).toBe(false);
+        unpinGC(pid,channel,msgID).then(async ()=>{
+                const queryData = query(doc(db, "Projects", pid,"TextChannels", channel, "messages", msgID));
+                const msg= await getDoc(queryData);
+                expect(msg.data().pinned).toBe(false);
+            }
+        )
+        
         deleteProject(pid)
         
     }, 10000);
