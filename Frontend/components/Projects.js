@@ -204,7 +204,7 @@ export default function Projects() {
         // console.log(currProj.projects);
         return (
           <div>
-          {!project.complete&&<div
+          {!project.complete&&!userInfo.pOwned.includes(project.pid)&&<div
             className='flex p-2 items-center gap-2 hover:bg-gray-200'
             onClick={() => redirectToProject(project.pid)}
             onDragStart={(e) => dragStart(e, index)}
@@ -293,7 +293,7 @@ export default function Projects() {
         // console.log(currProj.projects);
         return (
           <div>
-          {project.complete&&<div
+          {project.complete&&!userInfo.pOwned.includes(project.pid)&&<div
             className='flex p-2 items-center gap-2 hover:bg-gray-200'
             onClick={() => redirectToProject(project.pid)}
             onDragStart={(e) => dragStart(e, index)}
