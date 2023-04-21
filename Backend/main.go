@@ -1438,13 +1438,13 @@ func searchFilter(c *gin.Context) {
 	}
 	//fmt.Println(len(ids))
 	//var skilled []string = searchSkill(ignored, skills, isProject)
-	var result []string
-	for i := 0; i < len(ids); i++ {
+	var result []string = ids
+	/*for i := 0; i < len(ids); i++ {
 		if len(result) == limit {
 			break
 		}
 		result = append(result, ids[i])
-	}
+	} */
 	if t != "" {
 		var resultWType []string
 		for l := 0; l < len(result); l++ {
@@ -1473,6 +1473,14 @@ func searchFilter(c *gin.Context) {
 			return getProjectFromID(result[:][i]).TimeStamp > getProjectFromID(result[:][j]).TimeStamp
 		})
 	}
+	var hold []string
+	for i := 0; i < len(result); i++ {
+		if len(hold) == limit {
+			break
+		}
+		hold = append(hold, result[i])
+	}
+	result = hold
 	if time {
 		if isProject {
 			var resultWTime []string
