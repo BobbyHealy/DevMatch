@@ -50,7 +50,6 @@ export default function UserComponent(props) {
   const {
     user = default_user,
     inviteProjectID = null,
-    removeID = null,
     role = false,
     pid = null,
   } = props;

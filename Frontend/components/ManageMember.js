@@ -80,7 +80,7 @@ export default function ManageMember({ pid, project }) {
           return (
             e.userID !== user.uid && (
               <div key={e.toString() + i} className='pb-6'>
-                <UserComponent user={e} removeID={project.pid} role={true} />
+                <UserComponent user={e}  role={true} pid={project.pid}/>
               </div>
             )
           );
