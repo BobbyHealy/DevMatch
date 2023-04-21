@@ -24,7 +24,7 @@ const user ={
     profilePic: "https://www.nicepng.com/png/detail/73-730154_open-default-profile-picture-png.png"
 }
 
-describe("Milestone Test(User Story #6)", () => {
+describe("Milestone Test- Owner (User Story #6)", () => {
     const pid = "US6Test"
     const MSID = "US6MS"
     const title = "MSTEST"
@@ -32,58 +32,33 @@ describe("Milestone Test(User Story #6)", () => {
     const label = "Frontend"
     const dueDate ="Tommorrow"
 
-    test("Complete default as false", async () => {
+    test("Pending default as false", async () => {
         await createProject(pid)
         await addMS(pid,MSID,title,assign,dueDate,label)
         const queryData = query(doc(db, "Projects", pid, "MileStones", MSID));
         const milestone= await getDoc(queryData);
-        expect(milestone.data().complete).toBe(false);
-    }, 10000);
-
-    test("Pending default as false", async () => {
-        const queryData = query(doc(db, "Projects", pid, "MileStones", MSID));
-        const milestone= await getDoc(queryData);
         expect(milestone.data().pending).toBe(false);
     }, 10000);
 
-    test("Milestone can send to be pending review", async () => {
-        await sendToApprove(pid, MSID)
-        const queryData = query(doc(db, "Projects", pid, "MileStones", MSID));
-        const milestone= await getDoc(queryData);
-        expect(milestone.data().pending).toBe(true);
-    }, 10000);
 
-    test("Milestone is not mark as complete once rejected", async () => {
+    test("Milestone is removed from pending once rejected", async () => {
+        await sendToApprove(pid, MSID)
+        await new Promise(res => setTimeout(res, 3000));
         await denyRequest(pid, MSID)
         const queryData = query(doc(db, "Projects", pid, "MileStones", MSID));
         const milestone= await getDoc(queryData);
         expect(milestone.data().pending).toBe(false);
-        expect(milestone.data().complete).toBe(false);
-    }, 10000);
-
-    test("Milestone is removed from pending once rejected", async () => {
-        const queryData = query(doc(db, "Projects", pid, "MileStones", MSID));
-        const milestone= await getDoc(queryData);
-        expect(milestone.data().pending).toBe(false);
-    }, 10000);
-
-    test("Milestone is mark as complete once approved", async () => {
-        await sendToApprove(pid, MSID)
-        await approveRequest(pid, MSID)
-        const queryData = query(doc(db, "Projects", pid, "MileStones", MSID));
-        const milestone= await getDoc(queryData);
-        expect(milestone.data().complete).toBe(true);
-       
     }, 10000);
 
     test("Milestone is removed from pending once approved", async () => {
+        await sendToApprove(pid, MSID)
+        await new Promise(res => setTimeout(res, 3000));
+        await approveRequest(pid, MSID)
         const queryData = query(doc(db, "Projects", pid, "MileStones", MSID));
         const milestone= await getDoc(queryData);
         expect(milestone.data().pending).toBe(false);
         deleteProject(pid)
     }, 10000);
-
-    
 
 });
 
@@ -119,13 +94,14 @@ describe("Pin and Unpin Test (User Story #7)", () => {
     test("Msgs in GC are default as unpin", async () => {
         createProject(pid)
         //send a messege in the Jest test GC
-        await  sendGC(pid,channel,msgID,user,text)
+        sendGC(pid,channel,msgID,user,text)
         //Fetch the Msg in the GC
+        await new Promise(res => setTimeout(res, 5000));
         const queryData = query(doc(db, "Projects", pid,"TextChannels", channel, "messages", msgID));
         const msg= await getDoc(queryData);
         //Check if pinned is false 
         expect(msg.data().pinned).toBe(false);
-    }, 10000);
+    }, 100000);
     test("User can pin a msg in GC", async () => {
         //Fetch the Msg in the GC
         const queryData = query(doc(db, "Projects", pid,"TextChannels", channel, "messages", msgID));
@@ -149,6 +125,55 @@ describe("Pin and Unpin Test (User Story #7)", () => {
         
     }, 10000);
   });
+
+  describe("Milestone Test- User(User Story #8)", () => {
+    const pid = "US8Test"
+    const MSID = "US8MS"
+    const title = "MSTEST"
+    const assign = "US8"
+    const label = "Frontend"
+    const dueDate ="Tommorrow"
+
+    test("Complete default as false", async () => {
+        await createProject(pid)
+        await addMS(pid,MSID,title,assign,dueDate,label)
+        const queryData = query(doc(db, "Projects", pid, "MileStones", MSID));
+        const milestone= await getDoc(queryData);
+        expect(milestone.data().complete).toBe(false);
+    }, 10000);
+
+    test("Pending default as false", async () => {
+        const queryData = query(doc(db, "Projects", pid, "MileStones", MSID));
+        const milestone= await getDoc(queryData);
+        expect(milestone.data().pending).toBe(false);
+    }, 10000);
+
+    test("Milestone can send to be pending review", async () => {
+        await sendToApprove(pid, MSID)
+        const queryData = query(doc(db, "Projects", pid, "MileStones", MSID));
+        const milestone= await getDoc(queryData);
+        expect(milestone.data().pending).toBe(true);
+    }, 10000);
+
+    test("Milestone is not mark as complete once rejected", async () => {
+        await denyRequest(pid, MSID)
+        const queryData = query(doc(db, "Projects", pid, "MileStones", MSID));
+        const milestone= await getDoc(queryData);
+        expect(milestone.data().complete).toBe(false);
+    }, 10000);
+
+
+    test("Milestone is mark as complete once approved", async () => {
+        await sendToApprove(pid, MSID)
+        await approveRequest(pid, MSID)
+        const queryData = query(doc(db, "Projects", pid, "MileStones", MSID));
+        const milestone= await getDoc(queryData);
+        expect(milestone.data().complete).toBe(true);
+       
+    }, 10000);
+
+
+});
 
   describe("Voice Channel Test (User Story #21)", () => {
     const pid = "US21Test"
