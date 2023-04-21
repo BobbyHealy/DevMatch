@@ -11,51 +11,15 @@ export default function ManageMember({ pid, project }) {
   const { user } = useAuth();
 
   useEffect(() => {
-    var myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    var raw = JSON.stringify({
-      pid: pid,
-    });
-    var requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-    };
-    fetch("http://localhost:3000/api/getProject", requestOptions)
-      .then((response) => response.text())
-      .then((result) => setProject(JSON.parse(result)))
-      .catch((err) => {
-        console.log(err);
-      });
+    if (user.uid) {
+      switchProjPage(user.uid, "#Manage")
+    }
   }, []);
+
   useEffect(() => {
     if (!load && project.owners) {
       setload(true);
-      var owners = [];
       var members = [];
-      project.owners.map((owner) => {
-        var myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
-        var raw = JSON.stringify({
-          userID: owner,
-        });
-        var requestOptions = {
-          method: "POST",
-          headers: myHeaders,
-          body: raw,
-        };
-        fetch("http://localhost:3000/api/getUser", requestOptions)
-          .then((response) => response.text())
-          .then((result) => {
-            owners.push(JSON.parse(result).name);
-            if (project.owners.length === owners.length) {
-              setOwners(owners);
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      });
       project.tmembers.map((mem) => {
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
@@ -70,7 +34,7 @@ export default function ManageMember({ pid, project }) {
         fetch("http://localhost:3000/api/getUser", requestOptions)
           .then((response) => response.text())
           .then((result) => {
-            members.push(JSON.parse(result).name);
+            members.push(JSON.parse(result));
             if (project.tmembers.length === members.length) {
               setMembers(members);
             }
@@ -90,15 +54,14 @@ export default function ManageMember({ pid, project }) {
         </p>
       </div>
       {members &&
-        members.map((e, i) => {
-          return (
-            e.userID !== user.uid && (
-              <div key={e.toString() + i} className='pb-6'>
-                <UserComponent user={e} inviteProjectID = {null} removeID={project.pid} />
+        members.map((u,i) => (
+            u.userID !== user.uid && (
+              <div key={i} className='pb-6'>
+                <UserComponent user={u} inviteProjectID = {null} pid={project.pid} />
               </div>
             )
-          );
-        })}
+
+        ))}
       <div className="py-6">
         <h1 className="">Reported Users</h1>
         <ReportDetail name={user.name}/>
