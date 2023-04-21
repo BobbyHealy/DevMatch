@@ -137,6 +137,7 @@ describe("Pin and Unpin Test (User Story #7)", () => {
     test("Complete default as false", async () => {
         await createProject(pid)
         await addMS(pid,MSID,title,assign,dueDate,label)
+        await new Promise(res => setTimeout(res, 3000));
         const queryData = query(doc(db, "Projects", pid, "MileStones", MSID));
         const milestone= await getDoc(queryData);
         expect(milestone.data().complete).toBe(false);
