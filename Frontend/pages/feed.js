@@ -12,6 +12,8 @@ import { userExampleArray } from "@/mockup_data/user_array";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/config/firebase";
 import { useAuth } from "@/context/AuthContext";
+import PreferenceFilter from "@/components/Preference";
+import ProjectPreference from "@/components/ProjectPreference";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -131,6 +133,7 @@ export default function Feed() {
     <div className='min-h-screen bg-gray-100'>
       <div className='sticky top-0 z-30'>
         <Header updateSeachName={updateSeachName} />
+        <ProjectPreference/>
       </div>
 
       {user && (
