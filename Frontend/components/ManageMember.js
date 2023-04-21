@@ -12,7 +12,7 @@ export default function ManageMember({ pid, project }) {
 
   useEffect(() => {
     if (user.uid) {
-      switchProjPage(user.uid, "#Manage")
+      switchProjPage(user.uid, "#Manage");
     }
   }, []);
 
@@ -34,10 +34,30 @@ export default function ManageMember({ pid, project }) {
         fetch("http://localhost:3000/api/getUser", requestOptions)
           .then((response) => response.text())
           .then((result) => {
-            members.push(JSON.parse(result));
-            if (project.tmembers.length === members.length) {
-              setMembers(members);
-            }
+            var requestOptions = {
+              method: "GET",
+              redirect: "follow",
+            };
+            var raw = JSON.stringify({
+              pid: project.pid,
+              uid: JSON.parse(result).userID,
+            });
+            var requestOptions = {
+              method: "POST",
+              headers: myHeaders,
+              body: raw,
+            };
+            fetch("http://localhost:3000/api/getRole", requestOptions)
+              .then((response1) => response1.text())
+              .then((result1) => {
+                const tmp = { role: JSON.parse(result1) };
+                const memberAndRole = { ...tmp, ...JSON.parse(result) };
+                members.push(memberAndRole);
+                if (project.tmembers.length === members.length) {
+                  setMembers(members);
+                }
+              })
+              .catch((error) => console.log("error", error));
           })
           .catch((err) => {
             console.log(err);
@@ -54,10 +74,13 @@ export default function ManageMember({ pid, project }) {
         </p>
       </div>
       {members &&
-        members.map((u,i) => (
-            u.userID !== user.uid && (
-              <div key={i} className='pb-6'>
-                <UserComponent user={u} inviteProjectID = {null} pid={project.pid} />
+        members.map((e, i) => {
+          console.log("CONTENTS OF E:");
+          console.log(e);
+          return (
+            e.userID !== user.uid && (
+              <div key={e.toString() + i} className='pb-6'>
+                <UserComponent user={e}  role={true} pid={project.pid}/>
               </div>
             )
 

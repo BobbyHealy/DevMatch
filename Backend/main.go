@@ -477,7 +477,9 @@ func getRating(c *gin.Context) {
 	}
 
 	var u user = getUserFromID(uid) //user to be rated
-
+	if u.UserID == "" {
+		return
+	}
 	u.Rating = calculateRating(u.Ratings)
 
 	updateUserHelp(u)
