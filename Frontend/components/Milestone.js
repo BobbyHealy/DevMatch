@@ -58,10 +58,10 @@ export default function Milestone({pid, project}) {
   const handleShow= ()=>{
     setOpen(true)
   }
-  useEffect(() => {
-    fetchMS()
+    useEffect(() => {
+        fetchMS()
 
-}, []);
+    },[]);
 
 
 
@@ -167,7 +167,7 @@ useEffect(() => {
   return (
     <div>
 
-        <div className="px-4 sm:px-6 py-6 lg:px-8 h-[calc(50vh)]">
+        <div className="px-4 sm:px-6 py-6 lg:px-8 h-[calc(50vh)] overflow-y-scroll">
             <div className="sm:flex sm:items-center">
                 <div className="sm:flex-auto">
                 <h1 className="text-base font-bold leading-6 text-gray-900">Ongoing milestones:</h1>
@@ -361,57 +361,24 @@ useEffect(() => {
             </div>
         </div>
 
-        {project.owners?.includes(user.uid)&&<div>
-                <p className="font-bold py-6 px-6">Pending milestones:</p>
-                <table className="min-w-full table-fixed divide-y divide-gray-300">
-                        <tbody className="divide-y divide-gray-200 bg-white">
-                        {milestones?.map((milestone) => (
-                            <tr key={milestone.data().dueDate} className={selectedMilestones?.includes(milestone) ? 'bg-gray-50' : undefined}>
-                            <td className="relative px-7 sm:w-12 sm:px-6">
-                                {selectedMilestones?.includes(milestone) && (
-                                <div className="absolute inset-y-0 left-0 w-0.5 bg-indigo-600" />
-                                )}
-                                <button
-                                    type="button"
-                                    className="rounded-full bg-indigo-600 p-1.5 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                >
-                                    <PlusIcon className="h-5 w-5" aria-hidden="true" onClick={() => setApprovalModal(true)} />
-                                </button>
-                            </td>
-                            <td
-                                className={classNames(
-                                'whitespace-nowrap py-4 pr-3 text-sm font-medium',
-                                selectedMilestones?.includes(milestone) ? 'text-indigo-600' : 'text-gray-900'
-                                )}
-                            >
-                                {milestone.data().title}
-                            </td>
-                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{milestone.data().assignee}</td>
-                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{milestone.data().label}</td>
-                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{milestone.data().dueDate}</td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-            </div>}
         
-        <div className="px-4">
+        <div className="px-4 h-[calc(50vh)] overflow-y-scroll bg-gray-200">
             <p className="font-bold py-6 px-2">Completed milestones:</p>
                 <table className="min-w-full table-fixed divide-y divide-gray-300">
-                <tbody className="px-4 divide-y divide-gray-200 bg-white">
+                <tbody className="px-4 divide-y divide-gray-200 bg-gray-300">
                         {milestones?.map((milestone) => (
                             milestone.data().complete&&<tr key={milestone.data().dueDate} className={selectedMilestones?.includes(milestone) ? 'bg-gray-50 px-4' : undefined}>
                            
                             <td
                                 className={classNames(
-                                'whitespace-nowrap py-4 pr-3 text-sm font-medium',
+                                'whitespace-nowrap py-4 pl-3 text-sm font-medium',
                                 selectedMilestones?.includes(milestone) ? 'text-indigo-600' : 'text-gray-900'
                                 )}
                             >
                                 {milestone.data().title}
                             </td>
-                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{milestone.data().assignee}</td>
-                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{milestone.data().label}</td>
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">Done by {milestone.data().assignee}</td>
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{milestone.data().label} Task</td>
 
           
                             </tr>
