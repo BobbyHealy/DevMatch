@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
-import { EnvelopeIcon } from "@heroicons/react/20/solid";
+import { DocumentCheckIcon, EnvelopeIcon } from "@heroicons/react/20/solid";
 import {
   CodeBracketIcon,
   EllipsisVerticalIcon,
@@ -44,6 +44,7 @@ const default_user = {
 
 export default function UserComponent(props) {
   const [showModal, setShowModal] = useState(false);
+  const [showResume, setShowResume] = useState(false);
   const [confirmation, setConfirmation] = useState("");
   const [showReportModal, setReportModal] = useState(false);
   const [showManage, setManageModal] = useState(false);
@@ -260,14 +261,25 @@ export default function UserComponent(props) {
               </button>
             </div>
           ) : inviteProjectID !== null ? (
-            <button
-              onClick={() => handleInvite(inviteProjectID, user.userID)}
-              type='button'
-              className='inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
-            >
-              Invite to Project
-              <EnvelopeIcon className='ml-2 -mr-1 h-5 w-5' aria-hidden='true' />
-            </button>
+            <div className="space-x-3">
+              <button
+                onClick={() => handleInvite(inviteProjectID, user.userID)}
+                type='button'
+                className='inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
+              >
+                Invite to Project
+                <EnvelopeIcon className='ml-2 -mr-1 h-5 w-5' aria-hidden='true' />
+              </button>
+              <button
+                onClick={() => setShowResume(true)}
+                type='button'
+                className='inline-flex items-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2'
+              >
+                Resume
+                <DocumentCheckIcon className='ml-2 -mr-1 h-5 w-5' aria-hidden='true' />
+              </button>
+            </div>
+
           ) : inviteProjectID === null && pid === null ? (
             <button
               onClick={handleSelect}
@@ -481,6 +493,24 @@ export default function UserComponent(props) {
               <option>Test Project 3</option>
             </select>
           </div>
+        </div>
+      </DeactivateModal>
+
+      <DeactivateModal
+        isVisible={showResume}
+        onClose={() => setShowResume(false)}
+      >
+        <div class="bg-blue-900 w-1/8 p-10 h-auto space-y-3 flex-auto">
+          <p className="font-bold text-white">{user.name}</p>
+          <img
+            className='h-16 w-16 rounded-full shadow-md'
+            src={
+              user.profilePic !== undefined
+                ? user.profilePic
+                : "https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+            }
+            alt=''
+          />
         </div>
       </DeactivateModal>
     </div>
