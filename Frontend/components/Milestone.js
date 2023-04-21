@@ -2,13 +2,18 @@ import {Fragment, useEffect, useState, useLayoutEffect, useRef} from "react";
 import { useAuth } from "@/context/AuthContext";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import MilestoneModal from "./MilestoneModal";
-import { Listbox, Transition } from '@headlessui/react'
+import { Listbox, Transition,Menu, Dialog } from '@headlessui/react'
 import { CalendarIcon, PaperClipIcon, TagIcon, UserCircleIcon } from '@heroicons/react/20/solid'
 import { switchProjPage } from "@/fireStoreBE/User"
 import { v4 as uuid } from "uuid";
 import { addMS, sendToApprove, approveRequest, denyRequest, deleteMS } from "@/fireStoreBE/Milestones";
 import { onSnapshot, collection } from "firebase/firestore";
 import { db } from "@/config/firebase";
+import { 
+    EllipsisVerticalIcon, 
+  } from '@heroicons/react/20/solid'
+import RequestedMS from "./RequestedMS";
+
 
 
 const defaultAssignees = [
@@ -48,30 +53,12 @@ export default function Milestone({pid, project}) {
   const [title, setTitle] = useState("")
   const [assignees, setAsignees] =useState(defaultAssignees)
   const [members, setMembers] = useState()
+  const [open, setOpen] = useState(false)
+  const handleShow= ()=>{
+    setOpen(true)
+  }
   useEffect(() => {
     fetchMS()
-    // var myHeaders = new Headers();
-    // myHeaders.append("Content-Type", "application/json");
-    // console.log(pid)
-    // var raw = JSON.stringify({
-    //   pid: pid,
-    // });
-    // var requestOptions = {
-    //   method: "POST",
-    //   headers: myHeaders,
-    //   body: raw,
-    // };
-    // fetch("http://localhost:3000/api/getMilestones", requestOptions)
-    //   .then((response) => response.text())
-    //   .then((result) => {
-    //     console.log(JSON.parse(result))
-
-    //     setMilestones(JSON.parse(result)[0])
-    // })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
-
 
 }, []);
 
@@ -161,36 +148,6 @@ useEffect(() => {
         setIndeterminate(false)
     }
     const addMilestone= async ()=>{
-        // if(pid&&title.trim())
-        // {
-        //     var myHeaders = new Headers();
-        //     myHeaders.append("Content-Type", "application/json");
-        //     var raw = JSON.stringify({
-        //     pid: pid,
-        //     "milestone":  {
-        //         title: title.trim(),
-        //         assignedto: assigned.name,
-        //         labels: labelled.name,
-        //         duedate: dated.name,
-        //         complete:false
-        //     },
-        //     });
-
-        //     var requestOptions = {
-        //     method: "POST",
-        //     headers: myHeaders,
-        //     body: raw,
-        //     };
-
-        //     await fetch("http://localhost:3000/api/addMilestone", requestOptions)
-        //     .then((response) => response.text())
-        //     .then((result) => {
-        //         console.log(JSON.parse(result));
-        //     })
-        //     .catch((error) => console.log("error", error));
-        //     await setShowModal(false)
-        //     refreshPage()
-        // }
         if(title.trim())
         {
             await addMS(pid, uuid(), title.trim(),assigned.name,dated.name,labelled.name)
@@ -198,6 +155,7 @@ useEffect(() => {
         }
         
     }
+    
     useEffect(() => {
         if(user.uid)
         {
@@ -208,7 +166,7 @@ useEffect(() => {
   return (
     <div>
 
-        <div className="px-4 sm:px-6 py-6 lg:px-8">
+        <div className="px-4 sm:px-6 py-6 lg:px-8 h-[calc(50vh)]">
             <div className="sm:flex sm:items-center">
                 <div className="sm:flex-auto">
                 <h1 className="text-base font-semibold leading-6 text-gray-900">Milestones</h1>
@@ -223,6 +181,86 @@ useEffect(() => {
                     <PlusIcon className='ml-2 -mr-1 h-5 w-5' aria-hidden='true' />
                 </button>}
                 </div>
+                <Menu as="div" className=" relative inline-block text-left">
+            <div>
+              {project.owners?.includes(user.uid)&&<Menu.Button className="flex items-center  bg-blue h-12 text-gray-400 hover:text-gray-200 focus:outline-none p-3">
+                <span className="sr-only">Open options</span>
+                <EllipsisVerticalIcon className="h-5 w-5" aria-hidden="true" />
+              </Menu.Button>}
+            </div>
+            <Transition
+              as={Fragment}
+              enter="transition ease-out duration-100"
+              enterFrom="transform opacity-0 scale-95"
+              enterTo="transform opacity-100 scale-100"
+              leave="transition ease-in duration-75"
+              leaveFrom="transform opacity-100 scale-100"
+              leaveTo="transform opacity-0 scale-95"
+            >
+              <Menu.Items className="absolute right-0 z-10 mt-2 w-36 origin-top-right rounded-md  shadow-lg bg-gray-100 ring-1 ring-gray-700 focus:outline-none">
+                <div className="py-1">
+                  {<Menu.Item>
+                    {({ active }) => (
+                      <a
+                        href="#"
+                        onClick={handleShow}
+                        className={classNames(
+                          active ? 'bg-gray-100 text-black' : 'text-gray-700',
+                          'block px-4 py-2 text-sm'
+                        )}
+                      >
+                       Show Request
+                      </a>
+                    )}
+                  </Menu.Item>}
+                </div>
+              </Menu.Items>
+            </Transition>
+          </Menu>
+          <Transition.Root show={open} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={setOpen}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 z-10 overflow-y-auto">
+            <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                enterTo="opacity-100 translate-y-0 sm:scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              >
+                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-blue-300 h-[calc(90vh)]  w-[calc(50%)] px-4 pb-4 pt-5 text-left shadow-xl transition-all ">
+                  <div>
+                    <div className="mt-3 text-center sm:mt-5 ">
+                      <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900 ">
+                        Request
+                      </Dialog.Title>
+                      <div className="mt-2 h-[calc(90vh)] w-[calc(100vw-246px)] overflow-scroll ">
+                        {milestones.map((ms) => (
+                          ms.data().pending&&<RequestedMS pid={pid} MSID={ms.id} title={ms.data().title} assign={ms.data().assignee} label={ms.data().label}/>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition.Root>
             </div>
             <div className="mt-8 flow-root">
                 <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -241,7 +279,7 @@ useEffect(() => {
                             type="button"
                             className="inline-flex items-center rounded bg-white px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white"
                         >
-                            Mark all as complete
+                            {project.owners?.includes(user.uid)?"Mark all as complete":"Send Complete Request"}
                         </button>
                         </div>
                     )}
@@ -276,7 +314,7 @@ useEffect(() => {
                         </thead>
                         <tbody className="divide-y divide-gray-200 bg-white">
                         {milestones?.map((milestone) => (
-                            <tr key={milestone.data().dueDate} className={selectedMilestones?.includes(milestone) ? 'bg-gray-50' : undefined}>
+                            !milestone.data().complete&&<tr key={milestone.data().dueDate} className={selectedMilestones?.includes(milestone) ? 'bg-gray-50' : undefined}>
                             <td className="relative px-7 sm:w-12 sm:px-6">
                                 {selectedMilestones?.includes(milestone) && (
                                 <div className="absolute inset-y-0 left-0 w-0.5 bg-indigo-600" />
@@ -314,12 +352,56 @@ useEffect(() => {
                             </tr>
                         ))}
                         </tbody>
+            
                     </table>
                     </div>
                 </div>
                 </div>
             </div>
         </div>
+        <div className="h-[calc(50vh)] bg-gray-300 px-4">
+        <h1 className="text-base font-semibold leading-6 text-gray-900">Completed Milestones</h1>
+                    <table className="min-w-full table-fixed divide-y divide-gray-300 ">
+                        <thead>
+                        <tr>
+                            <th ref={checkbox} className="hidden">
+            
+                            </th>
+                            <th scope="col" className="min-w-[12rem] py-3.5 pr-3 text-left text-sm font-semibold text-gray-900">
+                            Title
+                            </th>
+                            <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                            Assingned to
+                            </th>
+                            <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                            Labels
+                            </th>
+
+                        </tr>
+                        </thead>
+                   
+                    <tbody className="divide-y divide-gray-200 bg-gray-400">
+                        {milestones?.map((milestone) => (
+                            milestone.data().complete&&<tr key={milestone.data().dueDate} className={selectedMilestones?.includes(milestone) ? 'bg-gray-50' : undefined}>
+                           
+                            <td
+                                className={classNames(
+                                'whitespace-nowrap py-4 pr-3 text-sm font-medium',
+                                selectedMilestones?.includes(milestone) ? 'text-indigo-600' : 'text-gray-900'
+                                )}
+                            >
+                                {milestone.data().title}
+                            </td>
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{milestone.data().assignee}</td>
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{milestone.data().label}</td>
+
+          
+                            </tr>
+                        ))}
+                        </tbody>
+                        
+                        </table>
+                        </div>
         <MilestoneModal isVisible={showModal} onClose={() => setShowModal(false)}>
             <div>
               <form className="relative">
