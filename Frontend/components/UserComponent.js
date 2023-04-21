@@ -6,11 +6,12 @@ import {
   EllipsisVerticalIcon,
   FlagIcon,
   StarIcon,
+  CheckIcon,
 } from "@heroicons/react/20/solid";
 import { useAuth } from "@/context/AuthContext";
 import DeactivateModal from "./DeactivateModal";
-import { useState } from "react";
-import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { useState, useEffect } from "react";
+import { ExclamationTriangleIcon, ChevronUpDownIcon } from "@heroicons/react/24/outline";
 
 import Router from "next/router";
 import {
@@ -25,6 +26,7 @@ import {
 import { db } from "@/config/firebase";
 import { v4 as uuid } from "uuid";
 import { handleRoleChange } from "@/functions/roleFunctions";
+import ProjComponent from "./ProjectComponent";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -45,6 +47,7 @@ export default function UserComponent(props) {
   const [confirmation, setConfirmation] = useState("");
   const [showReportModal, setReportModal] = useState(false);
   const [showManage, setManageModal] = useState(false);
+  const [showPast, setShowPast] = useState(false);
   const [selectedRole, setSelectedRole] = useState("");
 
   const {
@@ -194,9 +197,13 @@ export default function UserComponent(props) {
         </div>
         <div className='min-w-0 flex-1'>
           <p className='text-sm font-semibold text-gray-900'>
-            <a href='#' className='hover:underline'>
-              {user.name}
-            </a>
+          <a
+                href='#'
+                className='hover:underline'
+                onClick={() => setShowPast(true)}
+              >
+                {user.name}
+              </a>
           </p>
           {!role ? (
             <div>
@@ -450,6 +457,30 @@ export default function UserComponent(props) {
           >
             Cancel
           </button>
+        </div>
+      </DeactivateModal>
+
+      <DeactivateModal
+        isVisible={showPast}
+        onClose={() => setShowPast(false)}
+      >
+        <div>
+          <p className="font-bold">User's past projects:</p>
+          <div>
+            <label htmlFor="past" className="block text-sm font-medium leading-6 text-gray-900">
+              Select for more details
+            </label>
+            <select
+              id="past"
+              name="past"
+              className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              defaultValue="Test Project"
+            >
+              <option>Test Project 1</option>
+              <option>Test Project 2</option>
+              <option>Test Project 3</option>
+            </select>
+          </div>
         </div>
       </DeactivateModal>
     </div>
