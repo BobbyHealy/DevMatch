@@ -1454,11 +1454,6 @@ func searchFilter(c *gin.Context) {
 		}
 		result = resultWType
 	}
-	if recent {
-		sort.Slice(result[:], func(i, j int) bool {
-			return getProjectFromID(result[:][i]).TimeStamp > getProjectFromID(result[:][j]).TimeStamp
-		})
-	}
 	if rating {
 		//fmt.Println("here 1")
 		//result = mergeSort(result, isProject)
@@ -1472,6 +1467,11 @@ func searchFilter(c *gin.Context) {
 			})
 		}
 		//fmt.Println("here 2")
+	}
+	if recent {
+		sort.Slice(result[:], func(i, j int) bool {
+			return getProjectFromID(result[:][i]).TimeStamp > getProjectFromID(result[:][j]).TimeStamp
+		})
 	}
 	if time {
 		if isProject {
