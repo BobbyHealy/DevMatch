@@ -16,7 +16,7 @@ export default function ReportDetail(props) {
           </div>
           <div className='mt-5 text-center sm:mt-0 sm:ml-4 sm:text-left'>
             <h3 className='text-base font-semibold leading-6 text-gray-900'>
-              Reported User: {name}
+              Reported User: {name.name}
             </h3>
             <div className='mt-2'>
               Reason given:
@@ -24,7 +24,7 @@ export default function ReportDetail(props) {
 
             <div className='mt-2'>
               <div className='mt-2'>
-                <h2>Insert text here</h2>
+                <h2>{name.reports}</h2>
               </div>
             </div>
           </div>
