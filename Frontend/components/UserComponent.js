@@ -274,7 +274,8 @@ export default function UserComponent(props) {
         </div>
 
         <div className='flex flex-shrink-0  space-x-3 self-center'>
-          {role ? (
+      
+          {role&&user.role!=="owner" ? (
             <div className='space-x-3'>
               <button
                 onClick={() => setManageModal(true)}
