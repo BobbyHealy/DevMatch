@@ -154,11 +154,12 @@ export default function Projects() {
   };
   return (
     <div className='bg-white'>
+      <h3 className='text-l pb-3 semibold text-gray-600'>Ongoing Projects</h3>
       {currProj.map((project, index) => {
-        // console.log("PRoject:");
-        // console.log(currProj.projects);
+
         return (
-          <div
+          <div>
+          {!project.complete&&<div
             className='flex p-2 items-center gap-2 hover:bg-gray-200'
             onClick={() => redirectToProject(project.pid)}
             onDragStart={(e) => dragStart(e, index)}
@@ -193,6 +194,7 @@ export default function Projects() {
                 </a>
               </div>
             </div>
+          </div>}
           </div>
         );
       })}
@@ -201,7 +203,8 @@ export default function Projects() {
         // console.log("PRoject:");
         // console.log(currProj.projects);
         return (
-          <div
+          <div>
+          {!project.complete&&<div
             className='flex p-2 items-center gap-2 hover:bg-gray-200'
             onClick={() => redirectToProject(project.pid)}
             onDragStart={(e) => dragStart(e, index)}
@@ -236,6 +239,96 @@ export default function Projects() {
                 </a>
               </div>
             </div>
+          </div>}
+          </div>
+        );
+      })}
+    <h3 className='text-l pb-3 semibold text-gray-600'>Completed Projects</h3>
+      {currProj.map((project, index) => {
+
+        return (
+          <div>
+          {project.complete&&<div
+            className='flex p-2 items-center gap-2 hover:bg-gray-200'
+            onClick={() => redirectToProject(project.pid)}
+            onDragStart={(e) => dragStart(e, index)}
+            onDragEnter={(e) => dragEnter(e, index)}
+            onDragEnd={drop}
+            key={index}
+            draggable
+          >
+            <div className='flex-shrink-0'>
+              <img
+                className='h-10 w-10 rounded-full'
+                src={
+                  project.projectProfile !== ""
+                    ? project.projectProfile
+                    : "https://cvhrma.org/wp-content/uploads/2015/07/default-profile-photo.jpg"
+                }
+                alt=''
+              />
+            </div>
+            <div className='min-w-0 flex-1'>
+              <p className='text-sm font-semibold text-gray-900'>
+                <a href='#' className='hover:underline'>
+                  {project.name}
+                </a>
+              </p>
+              <div className='text-sm text-gray-500'>
+                <a href='#' className='hover:underline'>
+                  Skills Needed:{" "}
+                  {project.skills != undefined
+                    ? project.skills.map((e, i) => <p key={i}>{e + " "}</p>)
+                    : "N/a"}
+                </a>
+              </div>
+            </div>
+          </div>}
+          </div>
+        );
+      })}
+
+      {joinedProj.map((project, index) => {
+        // console.log("PRoject:");
+        // console.log(currProj.projects);
+        return (
+          <div>
+          {project.complete&&<div
+            className='flex p-2 items-center gap-2 hover:bg-gray-200'
+            onClick={() => redirectToProject(project.pid)}
+            onDragStart={(e) => dragStart(e, index)}
+            onDragEnter={(e) => dragEnter(e, index)}
+            onDragEnd={drop}
+            key={index}
+            draggable
+          >
+            <div className='flex-shrink-0'>
+              <img
+                className='h-10 w-10 rounded-full'
+                src={
+                  project.projectProfile !== ""
+                    ? project.projectProfile
+                    : "https://cvhrma.org/wp-content/uploads/2015/07/default-profile-photo.jpg"
+                }
+                alt=''
+              />
+            </div>
+            <div className='min-w-0 flex-1'>
+              <p className='text-sm font-semibold text-gray-900'>
+                <a href='#' className='hover:underline'>
+                  {project.name}
+                </a>
+              </p>
+              <div className='text-sm text-gray-500'>
+                <a href='#' className='hover:underline'>
+                  Skills Needed:{" "}
+                  {project.skills != undefined
+                    ? project.skills.map((e, i) => <p key={i}>{e + " "}</p>)
+                    : "N/a"}
+                </a>
+              </div>
+            </div>
+          </div>}
           </div>
         );
       })}
