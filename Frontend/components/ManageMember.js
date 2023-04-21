@@ -12,7 +12,7 @@ export default function ManageMember({ pid, project }) {
 
   useEffect(() => {
     if (user.uid) {
-      switchProjPage(user.uid, "#Manage")
+      switchProjPage(user.uid, "#Manage");
     }
   }, []);
 
@@ -80,12 +80,7 @@ export default function ManageMember({ pid, project }) {
           return (
             e.userID !== user.uid && (
               <div key={e.toString() + i} className='pb-6'>
-                <UserComponent
-                  user={e}
-                  inviteProjectID={null}
-                  removeID={project.pid}
-                  role={true}
-                />
+                <UserComponent user={e} removeID={project.pid} role={true} />
               </div>
             )
           );

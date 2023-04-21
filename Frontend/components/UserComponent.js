@@ -165,26 +165,26 @@ export default function UserComponent(props) {
   };
 
   const handleRemove = async () => {
-    setShowModal(false)
+    setShowModal(false);
 
-      var myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-      var raw = JSON.stringify({
-        pid,
-        uid: user.userID,
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    var raw = JSON.stringify({
+      pid,
+      uid: user.userID,
+    });
+    var requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+    };
+
+    fetch("http://localhost:3000/api/leaveProject", requestOptions)
+      .then((response) => response.text())
+      .then((result) => console.log(result))
+      .catch((err) => {
+        console.log(err);
       });
-      var requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-      };
-  
-      fetch("http://localhost:3000/api/leaveProject", requestOptions)
-        .then((response) => response.text())
-        .then((result) => console.log(result))
-        .catch((err) => {
-          console.log(err);
-        });
   };
 
   const handleReport = () => {
@@ -275,25 +275,7 @@ export default function UserComponent(props) {
         </div>
 
         <div className='flex flex-shrink-0  space-x-3 self-center'>
-          {inviteProjectID === null && pid === null ? (
-            <button
-              onClick={handleSelect}
-              type='button'
-              className='inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
-            >
-              Message
-              <EnvelopeIcon className='ml-2 -mr-1 h-5 w-5' aria-hidden='true' />
-            </button>
-          ) : pid === null ? (
-            <button
-              onClick={handleInvite}
-              type='button'
-              className='inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
-            >
-              Invite to Project
-              <EnvelopeIcon className='ml-2 -mr-1 h-5 w-5' aria-hidden='true' />
-            </button>
-          ) : inviteProjectID === null ? (
+          {role ? (
             <div className='space-x-3'>
               <button
                 onClick={() => setManageModal(true)}
@@ -310,6 +292,24 @@ export default function UserComponent(props) {
                 Remove from Project
               </button>
             </div>
+          ) : inviteProjectID !== null ? (
+            <button
+              onClick={handleInvite}
+              type='button'
+              className='inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
+            >
+              Invite to Project
+              <EnvelopeIcon className='ml-2 -mr-1 h-5 w-5' aria-hidden='true' />
+            </button>
+          ) : inviteProjectID === null && pid === null ? (
+            <button
+              onClick={handleSelect}
+              type='button'
+              className='inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
+            >
+              Message
+              <EnvelopeIcon className='ml-2 -mr-1 h-5 w-5' aria-hidden='true' />
+            </button>
           ) : (
             <></>
           )}
@@ -355,8 +355,7 @@ export default function UserComponent(props) {
                 <input
                   type='text'
                   name='confirm'
-                  onChange={(e) =>
-                    setConfirmation(e.target.value)}
+                  onChange={(e) => setConfirmation(e.target.value)}
                   className='block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
                 />
               </div>
@@ -365,16 +364,16 @@ export default function UserComponent(props) {
         </div>
 
         <div className='mt-5 sm:mt-4 sm:flex sm:flex-row-reverse'>
-        <button
-          disabled={confirmation !== user.name}
-          type='button'
-          className={`inline-flex w-full justify-center rounded-md bg-${
-            confirmation !== user.name
-              ? "gray-600"
-              : "indigo-600 hover:bg-indigo-500"
-          } px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto`}
-          onClick={handleRemove}
-        >
+          <button
+            disabled={confirmation !== user.name}
+            type='button'
+            className={`inline-flex w-full justify-center rounded-md bg-${
+              confirmation !== user.name
+                ? "gray-600"
+                : "indigo-600 hover:bg-indigo-500"
+            } px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto`}
+            onClick={handleRemove}
+          >
             Remove
           </button>
           <button
