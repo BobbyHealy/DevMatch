@@ -4,61 +4,66 @@ import PreferenceFilter from "./Preference";
 
 import { useAuth } from "@/context/AuthContext";
 import { switchProjPage } from "@/fireStoreBE/User";
+import ProjectPreference from "./ProjectPreference";
 export default function Explore({ project }) {
   const [posts, setPosts] = useState(null);
+  const [searchSettings, setSearchSettings] = useState({
+    project: false,
+    limit: 10,
+    ignore: [""],
+    skills: [""],
+    name: "",
+    rating: false,
+    time: false,
+    userTime: "",
+    type: "",
+    recent: true,
+  });
   const { user } = useAuth();
 
-  var myHeaders = new Headers();
-  myHeaders.append("Content-Type", "application/json");
-
-  var raw = JSON.stringify({
-    project: true,
-    limit: 21,
-  });
-
-  var raw2 = JSON.stringify({
-    project: false,
-    limit: 21,
-  });
-
-  var requestOptions = {
-    method: "POST",
-    headers: myHeaders,
-    body: raw,
-    redirect: "follow",
-  };
-
-  var requestOptions2 = {
-    method: "POST",
-    headers: myHeaders,
-    body: raw2,
-    redirect: "follow",
-  };
   useEffect(() => {
     if (user.uid) {
-      switchProjPage(user.uid, "#Explore")
+      switchProjPage(user.uid, "#Explore");
     }
   }, []);
 
   useEffect(() => {
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    var raw = JSON.stringify({
+      project: false,
+      limit: searchSettings.limit,
+      ignore: searchSettings.ignore != undefined ? searchSettings.ignore : [""],
+      skills: searchSettings.skills != undefined ? searchSettings.skills : [""],
+      name: searchSettings.name,
+      rating: searchSettings.rating,
+      time: searchSettings.time,
+      userTime: searchSettings.userTime,
+      type: searchSettings.type,
+      recent: true,
+    });
+
+    var requestOptions2 = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+      redirect: "follow",
+    };
     setPosts(null);
-    fetch("http://localhost:3000/api/getSearch", requestOptions2)
+
+    fetch("http://localhost:3000/api/getSearchFilter", requestOptions2)
       .then((response) => response.text())
       .then((result) => {
-        setPosts(
-          Object.entries(JSON.parse(result)).map((e) => {
-            const obj = JSON.parse(JSON.stringify(e[1]));
-            obj.pid = e[0];
-            return obj;
-          })
-        );
+        const resultArr = JSON.parse(result)[0];
+        if (resultArr[0] !== null) {
+          setPosts(resultArr);
+        }
       })
       .catch((err) => {
         console.log(err);
       });
-  }, []);
-
-  useEffect(() => {}, [posts]);
+  }, [searchSettings]);
 
   return (
     <div className='bg-gray-100'>
@@ -67,7 +72,12 @@ export default function Explore({ project }) {
           Explore
         </p>
         <h1 className='mt-2 text-3xl font-bold tracking-tight text-gray-900'>
-          <PreferenceFilter project={project}/>
+          {/* <PreferenceFilter project={project} /> */}
+          <ProjectPreference
+            isFeed={false}
+            message={`Find the right fit for ${project.name}`}
+            setSearchSettings={setSearchSettings}
+          />
         </h1>
       </div>
       {posts &&

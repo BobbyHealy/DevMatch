@@ -28,6 +28,18 @@ export default function Feed() {
   const [enabled, setEnabled] = useState(false);
   const [skillArr, setSkillArr] = useState([""]);
   const [searchName, setSearchName] = useState("");
+  const [searchSettings, setSearchSettings] = useState({
+    project: false,
+    limit: 10,
+    ignore: [""],
+    skills: [""],
+    name: "",
+    rating: false,
+    time: false,
+    userTime: "",
+    type: "",
+    recent: true,
+  });
   const { user } = useAuth();
 
   useEffect(() => {
@@ -44,86 +56,47 @@ export default function Feed() {
     }
   }, []);
 
-  var myHeaders = new Headers();
-  myHeaders.append("Content-Type", "application/json");
-
-  var raw = JSON.stringify({
-    project: !enabled,
-    limit: 21,
-  });
-
-  var raw2 = JSON.stringify({
-    project: !enabled,
-    limit: 20,
-    ignore: [""],
-    skills: skillArr,
-    name: "",
-  });
-
-  var requestOptions2 = {
-    method: "POST",
-    headers: myHeaders,
-    body: raw2,
-    redirect: "follow",
-  };
-
   useEffect(() => {
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    var raw = JSON.stringify({
+      project: searchSettings.project,
+      limit: searchSettings.limit,
+      ignore: searchSettings.ignore != undefined ? searchSettings.ignore : [""],
+      skills: searchSettings.skills != undefined ? searchSettings.skills : [""],
+      name: searchSettings.name,
+      rating: searchSettings.rating,
+      time: searchSettings.time,
+      userTime: searchSettings.userTime,
+      type: searchSettings.type,
+      recent: true,
+    });
+
+    var requestOptions2 = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+      redirect: "follow",
+    };
     setPosts(null);
 
     fetch("http://localhost:3000/api/getSearchFilter", requestOptions2)
       .then((response) => response.text())
       .then((result) => {
         const resultArr = JSON.parse(result)[0];
-        setPosts(resultArr);
+        if (resultArr[0] !== null) {
+          setPosts(resultArr);
+        }
       })
       .catch((err) => {
         console.log(err);
       });
-  }, [enabled, skillArr]);
+  }, [searchSettings]);
 
   useEffect(() => {
     console.log(posts);
   }, [posts]);
-
-  const skills = [
-    { id: 1, name: "JavaScript" },
-    { id: 2, name: "HTML" },
-    { id: 3, name: "CSS" },
-    { id: 4, name: "Java" },
-    { id: 5, name: "C" },
-    { id: 5, name: "C++" },
-    { id: 5, name: "Go" },
-  ];
-
-  const defaultSkillsSelected = {
-    JavaScript: false,
-    HTML: false,
-    CSS: false,
-    Java: false,
-    C: false,
-    "C++": false,
-    Go: false,
-  };
-
-  const [selectedSkills, setSelectedSkills] = useState(defaultSkillsSelected);
-
-  useEffect(() => {
-    const arr = createSkillArray();
-    setSkillArr(arr.length > 0 ? arr : [""]);
-  }, [selectedSkills]);
-
-  const createSkillArray = () => {
-    const arr = Object.entries(selectedSkills)
-      .filter((e) => e[1])
-      .map((e) => e[0]);
-    return arr;
-  };
-
-  const updateSkill = (name, checked) => {
-    const cpy = { ...selectedSkills };
-    cpy[name] = checked;
-    setSelectedSkills(cpy);
-  };
 
   const updateSeachName = (name) => {
     setSearchName(name);
@@ -133,7 +106,12 @@ export default function Feed() {
     <div className='min-h-screen bg-gray-100'>
       <div className='sticky top-0 z-30'>
         <Header updateSeachName={updateSeachName} />
-        <ProjectPreference enabled ={enabled} setEnabled={setEnabled}/>
+        <ProjectPreference
+          enabled={enabled}
+          setEnabled={setEnabled}
+          isFeed={true}
+          setSearchSettings={setSearchSettings}
+        />
       </div>
 
       {user && (
@@ -143,65 +121,12 @@ export default function Feed() {
               <nav
                 aria-label='Sidebar'
                 className='sticky top-6 divide-y divide-gray-300'
-              >
-                {/* Left */}
-                {/* Looking for Users?
-                <Switch
-                  checked={enabled}
-                  onChange={setEnabled}
-                  className={classNames(
-                    enabled ? "bg-indigo-600" : "bg-gray-200",
-                    "relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
-                  )}
-                >
-                  <span className='sr-only'>Use setting</span>
-                  <span
-                    aria-hidden='true'
-                    className={classNames(
-                      enabled ? "translate-x-5" : "translate-x-0",
-                      "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
-                    )}
-                  />
-                </Switch> */}
-              </nav>
-              <fieldset>
-                <legend className='text-base font-semibold leading-6 text-gray-900'>
-                  Skills
-                </legend>
-                <div className='mt-4 divide-y divide-gray-200 border-b border-t border-gray-200'>
-                  {skills.map((person, personIdx) => (
-                    <div
-                      key={personIdx}
-                      className='relative flex items-start py-4'
-                    >
-                      <div className='min-w-0 flex-1 text-sm leading-6'>
-                        <label
-                          htmlFor={`person-${person.id}`}
-                          className='select-none font-medium text-gray-900'
-                        >
-                          {person.name}
-                        </label>
-                      </div>
-                      <div className='ml-3 flex h-6 items-center'>
-                        <input
-                          id={`person-${person.id}`}
-                          name={`person-${person.id}`}
-                          type='checkbox'
-                          onChange={(e) =>
-                            updateSkill(person.name, e.target.checked)
-                          }
-                          className='h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600'
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </fieldset>
+              ></nav>
             </div>
             <main className='lg:col-span-9 xl:col-span-6'>
               {/* Update this to use API + map to generate a bunch of enties of either User or Project components */}
               {/* ProjComponent on feed example */}
-              {posts && !enabled ? (
+              {posts !== null && searchSettings.project ? (
                 posts
                   .filter((e) =>
                     searchName == ""
@@ -223,7 +148,7 @@ export default function Feed() {
                 <></>
               )}
               {/* UserComponent on feed example */}
-              {posts !== null && enabled ? (
+              {posts !== null && !searchSettings.project ? (
                 posts
                   .filter((e) =>
                     searchName == ""
