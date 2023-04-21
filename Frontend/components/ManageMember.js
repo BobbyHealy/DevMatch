@@ -11,24 +11,6 @@ export default function ManageMember({ pid, project }) {
   const { user } = useAuth();
 
   useEffect(() => {
-    var myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    var raw = JSON.stringify({
-      pid: pid,
-    });
-    var requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-    };
-    fetch("http://localhost:3000/api/getProject", requestOptions)
-      .then((response) => response.text())
-      .then((result) => setProject(JSON.parse(result)))
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
-  useEffect(() => {
     if (!load && project.owners) {
       setload(true);
       var owners = [];
@@ -70,10 +52,30 @@ export default function ManageMember({ pid, project }) {
         fetch("http://localhost:3000/api/getUser", requestOptions)
           .then((response) => response.text())
           .then((result) => {
-            members.push(JSON.parse(result).name);
-            if (project.tmembers.length === members.length) {
-              setMembers(members);
-            }
+            var requestOptions = {
+              method: "GET",
+              redirect: "follow",
+            };
+            var raw = JSON.stringify({
+              pid: project.pid,
+              uid: JSON.parse(result).userID,
+            });
+            var requestOptions = {
+              method: "POST",
+              headers: myHeaders,
+              body: raw,
+            };
+            fetch("http://localhost:3000/api/getRole", requestOptions)
+              .then((response1) => response1.text())
+              .then((result1) => {
+                const tmp = { role: JSON.parse(result1) };
+                const memberAndRole = { ...tmp, ...JSON.parse(result) };
+                members.push(memberAndRole);
+                if (project.tmembers.length === members.length) {
+                  setMembers(members);
+                }
+              })
+              .catch((error) => console.log("error", error));
           })
           .catch((err) => {
             console.log(err);
@@ -91,17 +93,24 @@ export default function ManageMember({ pid, project }) {
       </div>
       {members &&
         members.map((e, i) => {
+          console.log("CONTENTS OF E:");
+          console.log(e);
           return (
             e.userID !== user.uid && (
               <div key={e.toString() + i} className='pb-6'>
-                <UserComponent user={e} inviteProjectID = {null} removeID={project.pid} />
+                <UserComponent
+                  user={e}
+                  inviteProjectID={null}
+                  removeID={project.pid}
+                  role={true}
+                />
               </div>
             )
           );
         })}
-      <div className="py-6">
-        <h1 className="">Reported Users</h1>
-        <ReportDetail name={user.name}/>
+      <div className='py-6'>
+        <h1 className=''>Reported Users</h1>
+        <ReportDetail name={user.name} />
       </div>
     </div>
   );
