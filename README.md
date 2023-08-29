@@ -4,21 +4,21 @@ Team 17 CS 307 Project
 
 ## Setup
 
-To run the backend:
+### Backend
 
 Go to the `Backend` folder
 
-&ensp;Run `go run .` command
+Run `go run .` command
 
-&ensp;To run the frontend:
+### Frontend
 
 Go to the `Frontend` folder
 
-&ensp;Run `npm i`
+Run `npm i`
 
-&ensp;Then Run `npm run dev` to start the application
+Then Run `npm run dev` to start the application
 
-&ensp;Go to `localhost:3000` to access the website
+Go to `localhost:3000` to access the website
 
 
 ## Features
