@@ -1,6 +1,14 @@
 # DevMatch
-Team 17 CS 307 Project
-(Write a description of the project here)
+DevMatch is a website that aims to make the process of forming and operating in teams
+seamless. Our platform matches users with the right people for their projects and provides
+tools to help manage them after a team has been formed. 
+
+We provide an all-in-one project-building service that not only helps with finding team members but also includes
+document editing, messaging, calling, and task management features. This simplifies the
+project creation and organization process by eliminating the need to connect on several
+different platforms to achieve different tasks.
+
+
 
 ## Setup
 
