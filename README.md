@@ -7,13 +7,17 @@ Team 17 CS 307 Project
 To run the backend:
 
 Go to the `Backend` folder
+
 Run `go run .` command
 
 To run the frontend:
 
 Go to the `Frontend` folder
+
 Run `npm i`
+
 Then Run `npm run dev` to start the application
+
 Go to `localhost:3000` to access the website
 
 
