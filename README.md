@@ -82,4 +82,6 @@ Go to `localhost:3000` to access the website
 
 
 ## Source
-Voice Channel Function - https://github.com/divanov11/Voice-Chat-Rooms/tree/master/7-Displaying-Avatars 
+[Text Editor](https://github.com/jpuri/react-draft-wysiwyg)\
+[Messaging Function](https://www.youtube.com/watch?v=k4mjF4sPITE)\
+[Voice Channel Function](https://github.com/divanov11/Voice-Chat-Rooms/tree/master/7-Displaying-Avatars)
